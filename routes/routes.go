@@ -35,7 +35,15 @@ func (d *deps) Index(w http.ResponseWriter, r *http.Request) {
 
 	type info struct {
 		DisplayName, Name, Desc, Idle string
-		d                             time.Time
+
+		// UpdatedAt is a formatted datetime of the repository's last commit.
+		UpdatedAt string
+
+		// UpdatedAtRaw is RFC3339 formatted datetime of the repository's last commit.
+		UpdatedAtRaw string
+
+		// d holds last update time same to UpdatedAt, for sorting purpose.
+		d time.Time
 	}
 
 	infos := []info{}
@@ -67,11 +75,13 @@ func (d *deps) Index(w http.ResponseWriter, r *http.Request) {
 		}
 
 		infos = append(infos, info{
-			DisplayName: getDisplayName(name),
-			Name:        name,
-			Desc:        getDescription(path),
-			Idle:        humanize.Time(c.Author.When),
-			d:           c.Author.When,
+			DisplayName:  getDisplayName(name),
+			Name:         name,
+			Desc:         getDescription(path),
+			Idle:         humanize.Time(c.Author.When),
+			UpdatedAt:    c.Author.When.Format(time.DateTime),
+			UpdatedAtRaw: c.Author.When.Format(time.RFC3339),
+			d:            c.Author.When,
 		})
 	}
 

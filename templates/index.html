@@ -12,7 +12,7 @@
       {{ range .info }}
        <div class="index-name"><a href="/{{ .Name }}">{{ .DisplayName }}</a></div>
        <div class="desc">{{ .Desc }}</div>
-       <div>{{ .Idle }}</div>
+       <time datetime="{{ .UpdatedAtRaw }}" title="{{ .UpdatedAt }}">{{ .Idle }}</time>
       {{ end }}
       </div>
     </main>
