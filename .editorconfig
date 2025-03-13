@@ -1,0 +1,27 @@
+# Copyright 2025 Shota FUJI <pockawoooh@gmail.com>
+# SPDX-License-Identifier: MIT
+
+# Do not use `.editorconfig` file outside this project.
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = tab
+
+[{*.html,*.css,readme}]
+indent_style = space
+indent_size = 2
+
+# YAML does not support tab indentation
+[*.{yaml,yml}]
+indent_style = space
+indent_size = 2
+
+# Nix does not like tab indentation
+# https://github.com/NixOS/nix/issues/3759
+[*.nix]
+indent_style = space
+indent_size = 2
