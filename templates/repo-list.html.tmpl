@@ -7,6 +7,7 @@ SPDX-License-Identifier: MIT
 <html lang="en">
 	<head>
 		{{ template "head" }}
+		<link rel="stylesheet" href="/static/repo-list.css" />
 		<title>{{ .Config.Meta.Title }}</title>
 		{{- if .Config.Meta.Description }}
 		<meta name="description" content="{{ .Config.Meta.Description }}" />
@@ -20,20 +21,25 @@ SPDX-License-Identifier: MIT
 			</div>
 		</header>
 		<main class="main">
-			<ul>
+			<ul class="repos">
 				{{- range .Repositories }}
 				<li>
-					<a href="/{{ .DirName }}">
-						<span>
+					<a class="repo-link" href="/{{ .DirName }}">
+						<span class="repo-link--name">
 							{{- .DisplayName -}}
 						</span>
-						<span>{{ .Description }}</span>
-						<time
-							datetime='{{ .LastCommit.Committer.When.Format "2006-01-02T15:04:05-0700" }}'
-							title='{{ .LastCommit.Committer.When.Format "2006-01-02 15:04:05 -0700" }}'
-						>
-							{{- .LastCommitAtRelative -}}
-						</time>
+						{{- if .Description }}
+						<span class="repo-link--description">{{ .Description }}</span>
+						{{ end -}}
+						<span class="repo-link--update-time">
+						Updated
+							<time
+								datetime='{{ .LastCommit.Committer.When.Format "2006-01-02T15:04:05-0700" }}'
+								title='{{ .LastCommit.Committer.When.Format "2006-01-02 15:04:05 -0700" }}'
+							>
+								{{- .LastCommitAtRelative -}}
+							</time>
+						</span>
 					</a>
 				</li>
 				{{- end -}}

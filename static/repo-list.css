@@ -1,0 +1,47 @@
+/* Copyright 2025 Shota FUJI <pockawoooh@gmail.com>
+ * SPDX-License-Identifier: MIT
+ */
+
+.repos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  padding-block-start: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+.repo-link {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-lg);
+  margin: 0;
+
+  color: var(--color-fg);
+  border-radius: var(--radii-sm);
+  text-decoration: none;
+}
+@media (any-hover: hover) {
+  .repo-link:hover {
+    background-color: var(--color-bg-hover);
+  }
+}
+
+.repo-link--name {
+  font-size: var(--font-lg);
+  font-weight: var(--font-thick);
+}
+
+.repo-link--description {
+  font-size: var(--font-md);
+
+  color: var(--color-fg-weak);
+}
+
+.repo-link--update-time {
+  font-size: var(--font-sm);
+
+  color: var(--color-fg-subtle);
+}
