@@ -19,8 +19,8 @@ SPDX-License-Identifier: MIT
 	</head>
 	<body>
 		{{- $meta := .Meta -}}
-		<header>
-			<ol>
+		<header class="header">
+			<ol class="breadcrumbs">
 				<li>
 					<a href="/">Top</a>
 				</li>
@@ -39,17 +39,18 @@ SPDX-License-Identifier: MIT
 					{{- $trail = printf "%s/%s" $trail $seg -}}
 					{{- end -}}
 					{{- end -}}
-					<a href="/{{ $meta.DisplayName }}/tree/{{ $meta.Ref }}{{ $trail }}">{{ $segment }}</a>
+					{{- $aria_current := "false" -}}
+					{{- if eq $trail $path -}}
+					{{- $aria_current = "page" -}}
+					{{- end -}}
+					<a href="/{{ $meta.DisplayName }}/tree/{{ $meta.Ref }}{{ $trail }}" aria-current="{{ $aria_current }}">{{ $segment }}</a>
 				</li>
 				{{- end }}
 			</ol>
-			<span>{{ .Meta.DisplayName }}</span>
-			{{ if .Meta.Description -}}
-			<p>{{ .Meta.Description }}</p>
-			{{- end -}}
+			{{ template "repo-header" . }}
+			{{ template "repo-nav" . }}
 		</header>
-		{{ template "repo-nav" . }}
-		<main>
+		<main class="main">
 			{{- $prefix := $path -}}
 			{{- if $prefix -}}
 			{{- $prefix = printf "%s/" $prefix -}}

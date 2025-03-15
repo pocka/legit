@@ -14,8 +14,8 @@ SPDX-License-Identifier: MIT
 		<meta name="description" content='{{ $shorthash }} in {{ .Meta.DisplayName }}' />
 	</head>
 	<body>
-		<header>
-			<ol>
+		<header class="header">
+			<ol class="breadcrumbs">
 				<li>
 					<a href="/">Top</a>
 				</li>
@@ -23,111 +23,114 @@ SPDX-License-Identifier: MIT
 					<a href="/{{ .Meta.DisplayName }}">{{ .Meta.DisplayName }}</a>
 				</li>
 				<li>
-					<a href="/{{ .Meta.DisplayName }}/commit/{{ .Meta.Ref }}">{{ $shorthash }}</a>
+					<a href="/{{ .Meta.DisplayName }}/commit/{{ .Meta.Ref }}" aria-current="page">
+						{{- $shorthash -}}
+					</a>
 				</li>
 			</ol>
-			<span>{{ .Meta.DisplayName }}</span>
-			{{ if .Meta.Description -}}
-			<p>{{ .Meta.Description }}</p>
-			{{- end -}}
+			{{ template "repo-header" . }}
+			{{ template "repo-nav" . }}
 		</header>
-		{{ template "repo-nav" . }}
-		<main>
-			<h1>{{ $shorthash }}</h1>
-			<pre>
-				{{- .Commit.Message -}}
-			</pre>
-			<h2>Metadata</h2>
-			<dl>
-				<dt>Author</dt>
-				<dd>
-					<a href="mailto:{{ .Commit.Author.Email }}">
-						{{- .Commit.Author.Name -}}
-					</a>
-					authored at
-					<time datetime='{{ .Commit.Author.When.Format "2006-01-02T15:04:05-0700" }}'>
-						{{ .Commit.Author.When.Format "2006-01-02 15:04:05 -0700" }}
-					</time>
-				</dd>
-				<dt>Committer</dt>
-				<dd>
-					<a href="mailto:{{ .Commit.Committer.Email }}">
-						{{- .Commit.Committer.Name -}}
-					</a>
-					commited at
-					<time datetime='{{ .Commit.Committer.When.Format "2006-01-02T15:04:05-0700" }}'>
-						{{ .Commit.Committer.When.Format "2006-01-02 15:04:05 -0700" }}
-					</time>
-				</dd>
-				{{- if .Commit.PGPSignature }}
-				<dt>Signature</dt>
-				<dd>
-					<details>
-						<summary>View</summary>
-						<pre><code>{{ .Commit.PGPSignature }}</code></pre>
-					</details>
-				</dd>
-				{{ end -}}
-				{{- if not .Parent.Hash.IsZero }}
-				<dt>Parent</dt>
-				<dd>
-					<a href="/{{ .Meta.DisplayName }}/commit/{{ .Parent.Hash.String }}">
-						{{- slice .Parent.Hash.String 0 8 -}}
-					</a>
-				</dd>
-				{{ end -}}
-			</dl>
-			<h2>Changes</h2>
-			<p>
-				{{ .Diff.Stat.FilesChanged }} changed files
-				(+{{ .Diff.Stat.Insertions }}/-{{ .Diff.Stat.Deletions }})
-			</p>
-			<ul>
-				{{ $meta := .Meta }}
-				{{ $root := . }}
-				{{- range .Diff.Files }}
-				<li>
-					<div>
-						{{- if or .IsRename .IsDelete }}
-						<a href="/{{ $meta.DisplayName }}/blob/{{ $root.Parent.Hash.String }}/{{ .OldName }}">{{ .OldName }}</a>
-						{{- if .IsRename }}
-						&gt;
-						{{- else }}
-						(deleted)
-						{{- end }}
-						{{- end}}
-						<a href="/{{ $meta.DisplayName }}/blob/{{ $root.Commit.Hash.String }}/{{ .NewName }}">{{ .NewName }}</a>
-						{{- if not .OldName }}
-						<span>(new)</span>
-						{{ end -}}
-					</div>
-					<div>
-						{{ if .IsBinary -}}
-						<p>Diff for binary file is unavailable.</p>
-						{{- else -}}
-						<ul>
-							{{- range .TextFragments }}
-							<li>
-								<span>{{ .Header }}</span>
-								<pre>
-									{{- range .Lines -}}
-									{{- $op := "" -}}
-									{{- if eq .Op.String "+" -}}
-									{{- $op = "add" -}}
-									{{- else if eq .Op.String "-" -}}
-									{{- $op = "delete" -}}
-									{{- end -}}
-									<span data-op="{{ $op }}">{{ .String }}</span>
-									{{- end -}}
-								</pre>
-							</li>
+		<main class="passthru">
+			<div class="main">
+				<h1>{{ $shorthash }}</h1>
+				<pre>
+					{{- .Commit.Message -}}
+				</pre>
+				<h2>Changes</h2>
+				<p>
+					{{ .Diff.Stat.FilesChanged }} changed files
+					(+{{ .Diff.Stat.Insertions }}/-{{ .Diff.Stat.Deletions }})
+				</p>
+				<ul>
+					{{ $meta := .Meta }}
+					{{ $root := . }}
+					{{- range .Diff.Files }}
+					<li>
+						<div>
+							{{- if or .IsRename .IsDelete }}
+							<a href="/{{ $meta.DisplayName }}/blob/{{ $root.Parent.Hash.String }}/{{ .OldName }}">{{ .OldName }}</a>
+							{{- if .IsRename }}
+							&gt;
+							{{- else }}
+							(deleted)
+							{{- end }}
+							{{- end}}
+							<a href="/{{ $meta.DisplayName }}/blob/{{ $root.Commit.Hash.String }}/{{ .NewName }}">{{ .NewName }}</a>
+							{{- if not .OldName }}
+							<span>(new)</span>
 							{{ end -}}
-						</ul>
-						{{- end }}
-					</div>
-				</li>
-				{{ end -}}
-			</ul>
+						</div>
+						<div>
+							{{ if .IsBinary -}}
+							<p>Diff for binary file is unavailable.</p>
+							{{- else -}}
+							<ul>
+								{{- range .TextFragments }}
+								<li>
+									<span>{{ .Header }}</span>
+									<pre>
+										{{- range .Lines -}}
+										{{- $op := "" -}}
+										{{- if eq .Op.String "+" -}}
+										{{- $op = "add" -}}
+										{{- else if eq .Op.String "-" -}}
+										{{- $op = "delete" -}}
+										{{- end -}}
+										<span data-op="{{ $op }}">{{ .String }}</span>
+										{{- end -}}
+									</pre>
+								</li>
+								{{ end -}}
+							</ul>
+							{{- end }}
+						</div>
+					</li>
+					{{ end -}}
+				</ul>
+			</div>
+			<div class="aside">
+				<h2>Metadata</h2>
+				<dl>
+					<dt>Author</dt>
+					<dd>
+						<a href="mailto:{{ .Commit.Author.Email }}">
+							{{- .Commit.Author.Name -}}
+						</a>
+						authored at
+						<time datetime='{{ .Commit.Author.When.Format "2006-01-02T15:04:05-0700" }}'>
+							{{ .Commit.Author.When.Format "2006-01-02 15:04:05 -0700" }}
+						</time>
+					</dd>
+					<dt>Committer</dt>
+					<dd>
+						<a href="mailto:{{ .Commit.Committer.Email }}">
+							{{- .Commit.Committer.Name -}}
+						</a>
+						commited at
+						<time datetime='{{ .Commit.Committer.When.Format "2006-01-02T15:04:05-0700" }}'>
+							{{ .Commit.Committer.When.Format "2006-01-02 15:04:05 -0700" }}
+						</time>
+					</dd>
+					{{- if .Commit.PGPSignature }}
+					<dt>Signature</dt>
+					<dd>
+						<details>
+							<summary>View</summary>
+							<pre><code>{{ .Commit.PGPSignature }}</code></pre>
+						</details>
+					</dd>
+					{{ end -}}
+					{{- if not .Parent.Hash.IsZero }}
+					<dt>Parent</dt>
+					<dd>
+						<a href="/{{ .Meta.DisplayName }}/commit/{{ .Parent.Hash.String }}">
+							{{- slice .Parent.Hash.String 0 8 -}}
+						</a>
+					</dd>
+					{{ end -}}
+				</dl>
+			</div>
 		</main>
 	</body>
 </html>

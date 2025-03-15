@@ -1,0 +1,21 @@
+<!--
+Share UI for pages specific to a repository. This template requires "Meta repositoryMeta"
+to be defined at the top of data structure (pipeline).
+
+	<body>
+		<header>
+			{{ template "repo-header" . }}
+		</header>
+	</body>
+
+Copyright 2025 Shota FUJI <pockawoooh@gmail.com>
+SPDX-License-Identifier: MIT
+-->
+{{ define "repo-header" -}}
+<div class="header-title">
+	<span class="header-title--name">{{ .Meta.DisplayName }}</span>
+	{{ if .Meta.Description -}}
+	<p class="header-title--description">{{ .Meta.Description }}</p>
+	{{- end -}}
+</div>
+{{- end -}}

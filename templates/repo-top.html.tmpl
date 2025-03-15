@@ -19,62 +19,61 @@ SPDX-License-Identifier: MIT
 		{{- end }}
 	</head>
 	<body>
-		<header>
-			<ol>
+		<header class="header">
+			<ol class="breadcrumbs">
 				<li>
 					<a href="/">Top</a>
 				</li>
 				<li>
-					<a href="/{{ .Meta.DisplayName }}">{{ .Meta.DisplayName }}</a>
+					<a aria-current="page" href="/{{ .Meta.DisplayName }}">{{ .Meta.DisplayName }}</a>
 				</li>
 			</ol>
-			<span>{{ .Meta.DisplayName }}</span>
-			{{ if .Meta.Description -}}
-			<p>{{ .Meta.Description }}</p>
-			{{- end -}}
+			{{ template "repo-header" . }}
+			{{ template "repo-nav" . }}
 		</header>
-		{{ template "repo-nav" . }}
-		<main>
+		<main class="main">
 			{{- .Readme -}}
 		</main>
-		<aside>
-			<dl>
-				<dt>Default branch</dt>
-				<dd>{{ .DefaultBranch }}</dd>
-				<dt>Clone URL</dt>
-				<dd><code>https://{{ .Config.Server.Name }}/{{ .Meta.DirName }}</code></dd>
-				{{- if and .IsGoModule .Config.Server.Name -}}
-				<dt>Go Module</dt>
-				<dd>{{ .Config.Server.Name }}/{{ .Meta.DisplayName }}</dd>
-				{{- end -}}
-			</dl>
-		</aside>
-		<aside>
-			<h2>Recent commits</h2>
-			<ol>
-				{{ $meta := .Meta }}
-				{{- range .RecentCommits }}
-					<li>
-						<div>
-							<a href="/{{ $meta.DisplayName }}/commit/{{ .Hash.String }}">
-								{{- slice .Hash.String 0 8 -}}
-							</a>
-							-
-							<a href="mailto:{{ .Committer.Email }}">
-								{{- .Committer.Name -}}
-							</a>
-							comitted at
-							<time datetime='{{ .Committer.When.Format "2006-01-02T15:04:05-0700" }}'>
-								{{ .Committer.When.Format "2006-01-02 15:04:05 -0700" }}
-							</time>
-						</div>
-						<pre>
-							{{- .Message -}}
-						</pre>
-					</li>
-				{{- end -}}
-			</ol>
-		</aside>
+		<div class="aside">
+			<aside>
+				<dl>
+					<dt>Default branch</dt>
+					<dd>{{ .DefaultBranch }}</dd>
+					<dt>Clone URL</dt>
+					<dd><code>https://{{ .Config.Server.Name }}/{{ .Meta.DirName }}</code></dd>
+					{{- if and .IsGoModule .Config.Server.Name -}}
+					<dt>Go Module</dt>
+					<dd>{{ .Config.Server.Name }}/{{ .Meta.DisplayName }}</dd>
+					{{- end -}}
+				</dl>
+			</aside>
+			<aside>
+				<h2>Recent commits</h2>
+				<ol>
+					{{ $meta := .Meta }}
+					{{- range .RecentCommits }}
+						<li>
+							<div>
+								<a href="/{{ $meta.DisplayName }}/commit/{{ .Hash.String }}">
+									{{- slice .Hash.String 0 8 -}}
+								</a>
+								-
+								<a href="mailto:{{ .Committer.Email }}">
+									{{- .Committer.Name -}}
+								</a>
+								comitted at
+								<time datetime='{{ .Committer.When.Format "2006-01-02T15:04:05-0700" }}'>
+									{{ .Committer.When.Format "2006-01-02 15:04:05 -0700" }}
+								</time>
+							</div>
+							<pre>
+								{{- .Message -}}
+							</pre>
+						</li>
+					{{- end -}}
+				</ol>
+			</aside>
+		</div>
 	</body>
 </html>
 {{- end }}

@@ -13,8 +13,8 @@ SPDX-License-Identifier: MIT
 		<meta name="description" content='Commit history on {{ .Meta.DisplayName }} at {{ .Meta.Ref }}' />
 	</head>
 	<body>
-		<header>
-			<ol>
+		<header class="header">
+			<ol class="breadcrumbs">
 				<li>
 					<a href="/">Top</a>
 				</li>
@@ -22,16 +22,15 @@ SPDX-License-Identifier: MIT
 					<a href="/{{ .Meta.DisplayName }}">{{ .Meta.DisplayName }}</a>
 				</li>
 				<li>
-					<a href="/{{ .Meta.DisplayName }}/log/{{ .Meta.Ref }}">Commits</a>
+					<a href="/{{ .Meta.DisplayName }}/log/{{ .Meta.Ref }}" aria-current="page">
+						Commits
+					</a>
 				</li>
 			</ol>
-			<span>{{ .Meta.DisplayName }}</span>
-			{{ if .Meta.Description -}}
-			<p>{{ .Meta.Description }}</p>
-			{{- end -}}
+			{{ template "repo-header" . }}
+			{{ template "repo-nav" . }}
 		</header>
-		{{ template "repo-nav" . }}
-		<main>
+		<main class="main">
 			<h1>Commits at {{ .Meta.Ref }}</h1>
 			<ol>
 				{{- $meta := .Meta -}}

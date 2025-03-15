@@ -19,8 +19,8 @@ SPDX-License-Identifier: MIT
 		<meta name="description" content='{{ $path }} in {{ .Meta.DisplayName }}' />
 	</head>
 	<body>
-		<header>
-			<ol>
+		<header class="header">
+			<ol class="breadcrumbs">
 				<li>
 					<a href="/">Top</a>
 				</li>
@@ -40,21 +40,18 @@ SPDX-License-Identifier: MIT
 					{{- $trail = printf "%s/%s" $trail $seg -}}
 					{{- end -}}
 					{{- end -}}
-					{{- $type := "tree" -}}
 					{{- if eq $segment $name -}}
-					{{- $type = "blob" -}}
+						<a href="/{{ $meta.DisplayName }}/blob/{{ $meta.Ref }}{{ $trail }}" aria-current="page">{{ $segment }}</a>
+					{{- else -}}
+						<a href="/{{ $meta.DisplayName }}/tree/{{ $meta.Ref }}{{ $trail }}">{{ $segment }}</a>
 					{{- end -}}
-					<a href="/{{ $meta.DisplayName }}/{{ $type }}/{{ $meta.Ref }}{{ $trail }}">{{ $segment }}</a>
 				</li>
 				{{- end }}
 			</ol>
-			<span>{{ .Meta.DisplayName }}</span>
-			{{ if .Meta.Description -}}
-			<p>{{ .Meta.Description }}</p>
-			{{- end -}}
+			{{ template "repo-header" . }}
+			{{ template "repo-nav" . }}
 		</header>
-		{{ template "repo-nav" . }}
-		<main>
+		<main class="main">
 			<div style="display:grid;grid-template-columns:max-content minmax(0,1fr);gap:1px 1ch;font-family:monospace;line-height:1.3;">
 				<ol style="list-style:none;padding:0;">
 					{{- range .LineNumbers -}}

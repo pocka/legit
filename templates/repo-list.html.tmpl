@@ -13,16 +13,13 @@ SPDX-License-Identifier: MIT
 		{{- end }}
 	</head>
 	<body>
-		<header>
-			<ol>
-				<li>
-					<a href="/">Top</a>
-				</li>
-			</ol>
-			<h1>{{ .Config.Meta.Title }}</h1>
+		<header class="header">
+			<div class="header-title">
+				<h1 class="header-title--name">{{ .Config.Meta.Title }}</h1>
+				<p class="header-title--description">{{ .Config.Meta.Description }}</p>
+			</div>
 		</header>
-		<main>
-			<p>{{ .Config.Meta.Description }}</p>
+		<main class="main">
 			<ul>
 				{{- range .Repositories }}
 				<li>
