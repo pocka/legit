@@ -19,6 +19,8 @@ FEATURES
 
 INSTALLING
 
+This application requires Go >= v1.24.1.
+
 Clone it, 'go build' it.
 
 

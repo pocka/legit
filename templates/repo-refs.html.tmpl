@@ -1,0 +1,67 @@
+<!--
+Copyright 2025 Shota FUJI <pockawoooh@gmail.com>
+SPDX-License-Identifier: MIT
+-->
+{{ define "repo-refs" -}}
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		{{ template "head" }}
+		<title>Refs - {{ .Meta.DisplayName }}</title>
+		<meta name="description" content="Git refs of {{ .Meta.DisplayName }}" />
+	</head>
+	<body>
+		<header>
+			<ol>
+				<li>
+					<a href="/">Top</a>
+				</li>
+				<li>
+					<a href="/{{ .Meta.DisplayName }}">{{ .Meta.DisplayName }}</a>
+				</li>
+				<li>
+					<a href="/{{ .Meta.DisplayName }}/refs">Refs</a>
+				</li>
+			</ol>
+			<span>{{ .Meta.DisplayName }}</span>
+			{{ if .Meta.Description -}}
+			<p>{{ .Meta.Description }}</p>
+			{{- end -}}
+		</header>
+		{{ template "repo-nav" . }}
+		<main>
+			{{- $meta := .Meta -}}
+			<h2>Branches</h2>
+			<ul>
+				{{- range  .Branches }}
+				<li>
+					<span>{{ .Name.Short }}</span>
+					<div>
+						<a href="/{{ $meta.DisplayName }}/log/{{ .Name.Short }}">Commits</a>
+						<a href="/{{ $meta.DisplayName }}/tree/{{ .Name.Short }}">Files</a>
+						<a href="/{{ $meta.DisplayName }}/archive/{{ .Name.Short }}.tar.gz">Download archive</a>
+					</div>
+				</li>
+				{{ end -}}
+			</ul>
+			<h2>Tags</h2>
+			{{- if .Tags }}
+			<ul>
+				{{- range .Tags }}
+				<li>
+					<span>{{ .Name }}</span>
+					<div>
+						<a href="/{{ $meta.DisplayName }}/log/{{ .Name }}">Commits</a>
+						<a href="/{{ $meta.DisplayName }}/tree/{{ .Name }}">Files</a>
+						<a href="/{{ $meta.DisplayName }}/archive/{{ .Name }}.tar.gz">Download archive</a>
+					</div>
+				</li>
+				{{ end -}}
+			</ul>
+			{{- else -}}
+			<p>This repository has no tags.</p>
+			{{ end -}}
+		</main>
+	</body>
+</html>
+{{- end }}

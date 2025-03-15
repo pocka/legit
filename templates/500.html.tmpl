@@ -1,0 +1,30 @@
+<!--
+Copyright 2025 Shota FUJI <pockawoooh@gmail.com>
+SPDX-License-Identifier: MIT
+-->
+{{ define "500" -}}
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		{{ template "head" }}
+		<title>{{ .Config.Meta.Title }}</title>
+		{{- if .Config.Meta.Description }}
+		<meta name="description" content="{{ .Config.Meta.Description }}" />
+		{{- end }}
+	</head>
+	<body>
+		<header>
+			<ol>
+				<li>
+					<a href="/">Top</a>
+				</li>
+			</ol>
+		</header>
+		<main>
+			<h1>Internal error</h1>
+			<p>Sorry, we can't serve this page due to our application error.</p>
+		</main>
+	</body>
+</html>
+{{- end }}
+

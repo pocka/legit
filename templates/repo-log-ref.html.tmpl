@@ -1,0 +1,71 @@
+<!--
+Copyright 2025 Shota FUJI <pockawoooh@gmail.com>
+SPDX-License-Identifier: MIT
+-->
+{{ define "repo-log-ref" -}}
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		{{ template "head" }}
+		<title>
+			Commit history at {{ .Meta.Ref }} - {{ .Meta.DisplayName }}
+		</title>
+		<meta name="description" content='Commit history on {{ .Meta.DisplayName }} at {{ .Meta.Ref }}' />
+	</head>
+	<body>
+		<header>
+			<ol>
+				<li>
+					<a href="/">Top</a>
+				</li>
+				<li>
+					<a href="/{{ .Meta.DisplayName }}">{{ .Meta.DisplayName }}</a>
+				</li>
+				<li>
+					<a href="/{{ .Meta.DisplayName }}/log/{{ .Meta.Ref }}">Commits</a>
+				</li>
+			</ol>
+			<span>{{ .Meta.DisplayName }}</span>
+			{{ if .Meta.Description -}}
+			<p>{{ .Meta.Description }}</p>
+			{{- end -}}
+		</header>
+		{{ template "repo-nav" . }}
+		<main>
+			<h1>Commits at {{ .Meta.Ref }}</h1>
+			<ol>
+				{{- $meta := .Meta -}}
+				{{ range .Commits -}}
+				<li>
+					<div>
+						<a href="/{{ $meta.DisplayName }}/commit/{{ .Hash.String }}">
+							{{- slice .Hash.String 0 8 -}}
+						</a>
+						-
+						<a href="mailto:{{ .Committer.Email }}">
+							{{- .Committer.Name -}}
+						</a>
+						comitted at
+						<time datetime='{{ .Committer.When.Format "2006-01-02T15:04:05-0700" }}'>
+							{{ .Committer.When.Format "2006-01-02 15:04:05 -0700" }}
+						</time>
+					</div>
+					<div>
+						<a href="mailto:{{ .Author.Email }}">
+							{{- .Author.Name -}}
+						</a>
+						authored at
+						<time datetime='{{ .Author.When.Format "2006-01-02T15:04:05-0700" }}'>
+							{{ .Author.When.Format "2006-01-02 15:04:05 -0700" }}
+						</time>
+					</div>
+					<pre>
+						{{- .Message -}}
+					</pre>
+				</li>
+				{{- end }}
+			</ol>
+		</main>
+	</body>
+</html>
+{{- end }}

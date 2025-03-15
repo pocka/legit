@@ -1,0 +1,47 @@
+<!--
+Copyright 2025 Shota FUJI <pockawoooh@gmail.com>
+SPDX-License-Identifier: MIT
+-->
+{{ define "repo-list" -}}
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		{{ template "head" }}
+		<title>{{ .Config.Meta.Title }}</title>
+		{{- if .Config.Meta.Description }}
+		<meta name="description" content="{{ .Config.Meta.Description }}" />
+		{{- end }}
+	</head>
+	<body>
+		<header>
+			<ol>
+				<li>
+					<a href="/">Top</a>
+				</li>
+			</ol>
+			<h1>{{ .Config.Meta.Title }}</h1>
+		</header>
+		<main>
+			<p>{{ .Config.Meta.Description }}</p>
+			<ul>
+				{{- range .Repositories }}
+				<li>
+					<a href="/{{ .DirName }}">
+						<span>
+							{{- .DisplayName -}}
+						</span>
+						<span>{{ .Description }}</span>
+						<time
+							datetime='{{ .LastCommit.Author.When.Format "2006-01-02T15:04:05-0700" }}'
+							title='{{ .LastCommit.Author.When.Format "2006-01-02 15:04:05 -0700" }}'
+						>
+							{{- .LastCommitAtRelative -}}
+						</time>
+					</a>
+				</li>
+				{{- end -}}
+			</ul>
+		</main>
+	</body>
+</html>
+{{- end }}

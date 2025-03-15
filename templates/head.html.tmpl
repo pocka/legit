@@ -1,0 +1,16 @@
+<!--
+Shared HTML tags to put inside <head> tag.
+Include inside <head> tag, like this:
+	<head>
+		{{ template "head" }}
+		<title>Page Title</title>
+	</head>
+
+Copyright 2025 Shota FUJI <pockawoooh@gmail.com>
+SPDX-License-Identifier: MIT
+-->
+{{- define "head" -}}
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" href="/favicon.png" type="image/png" />
+{{- end }}

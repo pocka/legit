@@ -1,0 +1,77 @@
+<!--
+Copyright 2025 Shota FUJI <pockawoooh@gmail.com>
+SPDX-License-Identifier: MIT
+-->
+{{ define "repo-tree-ref" -}}
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		{{ template "head" }}
+		{{- $path := "" -}}
+		{{- range .Path -}}
+		{{- $path = printf "%s/%s" $path . -}}
+		{{- end -}}
+		<title>
+			{{ or $path "Files" }}
+			at {{ .Meta.Ref }} - {{ .Meta.DisplayName }}
+		</title>
+		<meta name="description" content='{{ or $path "List of files" }} in {{ .Meta.DisplayName }}' />
+	</head>
+	<body>
+		{{- $meta := .Meta -}}
+		<header>
+			<ol>
+				<li>
+					<a href="/">Top</a>
+				</li>
+				<li>
+					<a href="/{{ .Meta.DisplayName }}">{{ .Meta.DisplayName }}</a>
+				</li>
+				<li>
+					<a href="/{{ .Meta.DisplayName }}/tree/{{ .Meta.Ref }}">Files</a>
+				</li>
+				{{- $path_slice := .Path -}}
+				{{ range $i, $segment := .Path -}}
+				<li>
+					{{- $trail := "" -}}
+					{{- range $j, $seg := $path_slice -}}
+					{{- if le $j $i }}
+					{{- $trail = printf "%s/%s" $trail $seg -}}
+					{{- end -}}
+					{{- end -}}
+					<a href="/{{ $meta.DisplayName }}/tree/{{ $meta.Ref }}{{ $trail }}">{{ $segment }}</a>
+				</li>
+				{{- end }}
+			</ol>
+			<span>{{ .Meta.DisplayName }}</span>
+			{{ if .Meta.Description -}}
+			<p>{{ .Meta.Description }}</p>
+			{{- end -}}
+		</header>
+		{{ template "repo-nav" . }}
+		<main>
+			{{- $prefix := $path -}}
+			{{- if $prefix -}}
+			{{- $prefix = printf "%s/" $prefix -}}
+			{{- end -}}
+			<ul>
+				{{ range .Files -}}
+					<li>
+						{{ if not .IsFile -}}
+						<a href="/{{ $meta.DisplayName }}/tree/{{ $meta.Ref }}/{{ $prefix }}{{ .Name }}">
+							{{ .Name }}/
+						</a>
+						{{- else -}}
+						<a href="/{{ $meta.DisplayName }}/blob/{{ $meta.Ref }}/{{ $prefix }}{{ .Name }}">
+							{{ .Name }}
+						</a>
+						{{- end }}
+						<span>{{ .Mode }}</span>
+						<span>{{ .Size }} bytes</span>
+					</li>
+				{{- end }}
+			</ul>
+		</main>
+	</body>
+</html>
+{{- end }}

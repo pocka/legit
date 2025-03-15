@@ -1,0 +1,80 @@
+<!--
+Copyright 2025 Shota FUJI <pockawoooh@gmail.com>
+SPDX-License-Identifier: MIT
+-->
+{{ define "repo-top" -}}
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		{{ template "head" }}
+		<title>{{ .Meta.DisplayName }} | {{ .Config.Meta.Title }}</title>
+		{{- if .Meta.Description }}
+		<meta name="description" content="{{ .Meta.Description }}" />
+		{{- end }}
+		{{- if and .IsGoModule .Config.Server.Name }}
+		<meta
+			name="go-import"
+			content="{{ .Config.Server.Name }}/{{ .Meta.DisplayName }} git https://{{ .Config.Server.Name }}/{{ .Meta.DirName }}"
+		/>
+		{{- end }}
+	</head>
+	<body>
+		<header>
+			<ol>
+				<li>
+					<a href="/">Top</a>
+				</li>
+				<li>
+					<a href="/{{ .Meta.DisplayName }}">{{ .Meta.DisplayName }}</a>
+				</li>
+			</ol>
+			<span>{{ .Meta.DisplayName }}</span>
+			{{ if .Meta.Description -}}
+			<p>{{ .Meta.Description }}</p>
+			{{- end -}}
+		</header>
+		{{ template "repo-nav" . }}
+		<main>
+			{{- .Readme -}}
+		</main>
+		<aside>
+			<dl>
+				<dt>Default branch</dt>
+				<dd>{{ .DefaultBranch }}</dd>
+				<dt>Clone URL</dt>
+				<dd><code>https://{{ .Config.Server.Name }}/{{ .Meta.DirName }}</code></dd>
+				{{- if and .IsGoModule .Config.Server.Name -}}
+				<dt>Go Module</dt>
+				<dd>{{ .Config.Server.Name }}/{{ .Meta.DisplayName }}</dd>
+				{{- end -}}
+			</dl>
+		</aside>
+		<aside>
+			<h2>Recent commits</h2>
+			<ol>
+				{{ $meta := .Meta }}
+				{{- range .RecentCommits }}
+					<li>
+						<div>
+							<a href="/{{ $meta.DisplayName }}/commit/{{ .Hash.String }}">
+								{{- slice .Hash.String 0 8 -}}
+							</a>
+							-
+							<a href="mailto:{{ .Committer.Email }}">
+								{{- .Committer.Name -}}
+							</a>
+							comitted at
+							<time datetime='{{ .Committer.When.Format "2006-01-02T15:04:05-0700" }}'>
+								{{ .Committer.When.Format "2006-01-02 15:04:05 -0700" }}
+							</time>
+						</div>
+						<pre>
+							{{- .Message -}}
+						</pre>
+					</li>
+				{{- end -}}
+			</ol>
+		</aside>
+	</body>
+</html>
+{{- end }}

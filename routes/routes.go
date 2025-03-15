@@ -11,7 +11,6 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	"time"
 
 	"git.icyphox.sh/legit/config"
 	"git.icyphox.sh/legit/git"
@@ -33,20 +32,7 @@ func (d *deps) Index(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	type info struct {
-		DisplayName, Name, Desc, Idle string
-
-		// UpdatedAt is a formatted datetime of the repository's last commit.
-		UpdatedAt string
-
-		// UpdatedAtRaw is RFC3339 formatted datetime of the repository's last commit.
-		UpdatedAtRaw string
-
-		// d holds last update time same to UpdatedAt, for sorting purpose.
-		d time.Time
-	}
-
-	infos := []info{}
+	summaries := []repositorySummary{}
 
 	for _, dir := range dirs {
 		name := dir.Name()
@@ -74,29 +60,28 @@ func (d *deps) Index(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		infos = append(infos, info{
-			DisplayName:  getDisplayName(name),
-			Name:         name,
-			Desc:         getDescription(path),
-			Idle:         humanize.Time(c.Author.When),
-			UpdatedAt:    c.Author.When.Format(time.DateTime),
-			UpdatedAtRaw: c.Author.When.Format(time.RFC3339),
-			d:            c.Author.When,
+		summaries = append(summaries, repositorySummary{
+			DisplayName:          getDisplayName(name),
+			DirName:              name,
+			Description:          getDescription(path),
+			LastCommitAtRelative: humanize.Time(c.Author.When),
+			LastCommit:           c,
 		})
 	}
 
-	sort.Slice(infos, func(i, j int) bool {
-		return infos[j].d.Before(infos[i].d)
+	sort.Slice(summaries, func(i, j int) bool {
+		return summaries[j].LastCommit.Author.When.Before(summaries[i].LastCommit.Author.When)
 	})
 
 	tpath := filepath.Join(d.c.Dirs.Templates, "*")
 	t := template.Must(template.ParseGlob(tpath))
 
-	data := make(map[string]interface{})
-	data["meta"] = d.c.Meta
-	data["info"] = infos
+	data := repoListData{
+		Config:       d.c,
+		Repositories: summaries,
+	}
 
-	if err := t.ExecuteTemplate(w, "index", data); err != nil {
+	if err := t.ExecuteTemplate(w, "repo-list", data); err != nil {
 		log.Println(err)
 		return
 	}
@@ -170,18 +155,21 @@ func (d *deps) RepoIndex(w http.ResponseWriter, r *http.Request) {
 		commits = commits[:3]
 	}
 
-	data := make(map[string]any)
-	data["name"] = name
-	data["displayname"] = getDisplayName(name)
-	data["ref"] = mainBranch
-	data["readme"] = readmeContent
-	data["commits"] = commits
-	data["desc"] = getDescription(path)
-	data["servername"] = d.c.Server.Name
-	data["meta"] = d.c.Meta
-	data["gomod"] = isGoModule(gr)
+	data := repoTopData{
+		Config: d.c,
+		Meta: repositoryMeta{
+			DisplayName: getDisplayName(name),
+			DirName:     name,
+			Description: getDescription(path),
+			Ref:         mainBranch,
+		},
+		Readme:        readmeContent,
+		DefaultBranch: mainBranch,
+		RecentCommits: commits,
+		IsGoModule:    isGoModule(gr),
+	}
 
-	if err := t.ExecuteTemplate(w, "repo", data); err != nil {
+	if err := t.ExecuteTemplate(w, "repo-top", data); err != nil {
 		log.Println(err)
 		return
 	}
@@ -218,15 +206,31 @@ func (d *deps) RepoTree(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := make(map[string]any)
-	data["name"] = name
-	data["displayname"] = getDisplayName(name)
-	data["ref"] = ref
-	data["parent"] = treePath
-	data["desc"] = getDescription(path)
-	data["dotdot"] = filepath.Dir(treePath)
+	relpath := []string{}
+	if len(treePath) > 0 {
+		relpath = strings.Split(treePath, "/")
+	}
 
-	d.listFiles(files, data, w)
+	data := repoTreeRefData{
+		Config: d.c,
+		Meta: repositoryMeta{
+			DisplayName: getDisplayName(name),
+			DirName:     name,
+			Description: getDescription(path),
+			Ref:         ref,
+		},
+		Path:  relpath,
+		Files: files,
+	}
+
+	tpath := filepath.Join(d.c.Dirs.Templates, "*")
+	t := template.Must(template.ParseGlob(tpath))
+
+	if err := t.ExecuteTemplate(w, "repo-tree-ref", data); err != nil {
+		log.Println(err)
+		return
+	}
+
 	return
 }
 
@@ -263,22 +267,66 @@ func (d *deps) FileContent(w http.ResponseWriter, r *http.Request) {
 		d.Write500(w)
 		return
 	}
-	data := make(map[string]any)
-	data["name"] = name
-	data["displayname"] = getDisplayName(name)
-	data["ref"] = ref
-	data["desc"] = getDescription(path)
-	data["path"] = treePath
 
 	if raw {
-		d.showRaw(contents, w)
-	} else {
-		if d.c.Meta.SyntaxHighlight == "" {
-			d.showFile(contents, data, w)
+		w.WriteHeader(http.StatusOK)
+		w.Header().Set("Content-Type", "text/plain")
+		w.Write([]byte(contents))
+		return
+	}
+
+	lc, err := countLines(strings.NewReader(contents))
+	if err != nil {
+		log.Printf("Failed to count lines for %s: %s", r.URL.Path, err)
+		d.Write500(w)
+		return
+	}
+
+	lines := make([]uint, lc)
+	for i := range lines {
+		if i < 0 {
+			continue
+		}
+
+		lines[i] = uint(i + 1)
+	}
+
+	relpath := []string{}
+	if len(treePath) > 0 {
+		relpath = strings.Split(treePath, "/")
+	}
+
+	data := repoBlobRefData{
+		Config: d.c,
+		Meta: repositoryMeta{
+			DisplayName: getDisplayName(name),
+			DirName:     name,
+			Description: getDescription(path),
+			Ref:         ref,
+		},
+		Path:        relpath,
+		Content:     contents,
+		LineNumbers: lines,
+	}
+
+	if d.c.Meta.SyntaxHighlight != "" {
+		highlighted, err := highlightCode(treePath, contents, d.c.Meta.SyntaxHighlight)
+		if err != nil {
+			log.Println(err)
 		} else {
-			d.showFileWithHighlight(treePath, contents, data, w)
+			data.SyntaxHighlightedContent = highlighted
 		}
 	}
+
+	tpath := filepath.Join(d.c.Dirs.Templates, "*")
+	t := template.Must(template.ParseGlob(tpath))
+
+	if err := t.ExecuteTemplate(w, "repo-blob-ref", data); err != nil {
+		log.Println(err)
+		return
+	}
+
+	return
 }
 
 func (d *deps) Archive(w http.ResponseWriter, r *http.Request) {
@@ -369,16 +417,18 @@ func (d *deps) Log(w http.ResponseWriter, r *http.Request) {
 	tpath := filepath.Join(d.c.Dirs.Templates, "*")
 	t := template.Must(template.ParseGlob(tpath))
 
-	data := make(map[string]interface{})
-	data["commits"] = commits
-	data["meta"] = d.c.Meta
-	data["name"] = name
-	data["displayname"] = getDisplayName(name)
-	data["ref"] = ref
-	data["desc"] = getDescription(path)
-	data["log"] = true
+	data := repoLogRefData{
+		Config: d.c,
+		Meta: repositoryMeta{
+			DisplayName: getDisplayName(name),
+			DirName:     name,
+			Description: getDescription(path),
+			Ref:         ref,
+		},
+		Commits: commits,
+	}
 
-	if err := t.ExecuteTemplate(w, "log", data); err != nil {
+	if err := t.ExecuteTemplate(w, "repo-log-ref", data); err != nil {
 		log.Println(err)
 		return
 	}
@@ -414,18 +464,20 @@ func (d *deps) Diff(w http.ResponseWriter, r *http.Request) {
 	tpath := filepath.Join(d.c.Dirs.Templates, "*")
 	t := template.Must(template.ParseGlob(tpath))
 
-	data := make(map[string]interface{})
+	data := repoCommitData{
+		Config: d.c,
+		Meta: repositoryMeta{
+			DisplayName: getDisplayName(name),
+			DirName:     name,
+			Description: getDescription(path),
+			Ref:         diff.Commit.Hash.String(),
+		},
+		Commit: diff.Commit,
+		Parent: diff.Parent,
+		Diff:   diff,
+	}
 
-	data["commit"] = diff.Commit
-	data["stat"] = diff.Stat
-	data["diff"] = diff.Diff
-	data["meta"] = d.c.Meta
-	data["name"] = name
-	data["displayname"] = getDisplayName(name)
-	data["ref"] = ref
-	data["desc"] = getDescription(path)
-
-	if err := t.ExecuteTemplate(w, "commit", data); err != nil {
+	if err := t.ExecuteTemplate(w, "repo-commit", data); err != nil {
 		log.Println(err)
 		return
 	}
@@ -464,19 +516,29 @@ func (d *deps) Refs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	mainBranch, err := gr.FindMainBranch(d.c.Repo.MainBranch)
+	if err != nil {
+		d.Write500(w)
+		log.Println(err)
+		return
+	}
+
 	tpath := filepath.Join(d.c.Dirs.Templates, "*")
 	t := template.Must(template.ParseGlob(tpath))
 
-	data := make(map[string]interface{})
+	data := repoRefsData{
+		Config: d.c,
+		Meta: repositoryMeta{
+			DisplayName: getDisplayName(name),
+			DirName:     name,
+			Description: getDescription(path),
+			Ref:         mainBranch,
+		},
+		Tags:     tags,
+		Branches: branches,
+	}
 
-	data["meta"] = d.c.Meta
-	data["name"] = name
-	data["displayname"] = getDisplayName(name)
-	data["branches"] = branches
-	data["tags"] = tags
-	data["desc"] = getDescription(path)
-
-	if err := t.ExecuteTemplate(w, "refs", data); err != nil {
+	if err := t.ExecuteTemplate(w, "repo-refs", data); err != nil {
 		log.Println(err)
 		return
 	}
