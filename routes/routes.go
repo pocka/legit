@@ -64,13 +64,13 @@ func (d *deps) Index(w http.ResponseWriter, r *http.Request) {
 			DisplayName:          getDisplayName(name),
 			DirName:              name,
 			Description:          getDescription(path),
-			LastCommitAtRelative: humanize.Time(c.Author.When),
+			LastCommitAtRelative: humanize.Time(c.Committer.When),
 			LastCommit:           c,
 		})
 	}
 
 	sort.Slice(summaries, func(i, j int) bool {
-		return summaries[j].LastCommit.Author.When.Before(summaries[i].LastCommit.Author.When)
+		return summaries[j].LastCommit.Committer.When.Before(summaries[i].LastCommit.Committer.When)
 	})
 
 	tpath := filepath.Join(d.c.Dirs.Templates, "*")
