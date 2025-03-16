@@ -227,6 +227,41 @@ body {
   }
 }
 
+.commit-summary {
+  padding: 0;
+  margin: var(--space-xl) 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+.commit-summary + .commit-summary {
+  margin: calc(var(--space-xxl) * var(--space-scale)) 0;
+}
+
+.commit-summary--hash {
+  display: inline-flex;
+  align-self: flex-start;
+}
+
+.commit-summary--message {
+  margin: 0;
+  padding: 0;
+  font-size: var(--font-md);
+  line-height: 1.2;
+  height: calc(1.2 * var(--font-md));
+  width: 100%;
+  white-space: pre;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.commit-summary--committer {
+  font-size: var(--font-xs);
+
+  color: var(--color-fg-weak);
+}
+
 /* Sticky header and aside */
 @media (min-height: 50rem) {
   .header {

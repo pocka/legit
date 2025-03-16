@@ -30,6 +30,10 @@
   margin-block-start: var(--space-xl);
 }
 
+.recent-commits--item + .recent-commits--item {
+  margin: calc(var(--space-xxl) * var(--space-scale)) 0;
+}
+
 .recent-commits--title {
   margin: 0;
   font-size: var(--font-lg);
@@ -39,41 +43,6 @@
   list-style: none;
   padding: 0;
   margin: 0;
-}
-
-.recent-commits--item {
-  padding: 0;
-  margin: var(--space-xl) 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
-}
-.recent-commits--item + .recent-commits--item {
-  margin: calc(var(--space-xxl) * var(--space-scale)) 0;
-}
-
-.recent-commits--item--hash {
-  display: inline-flex;
-  align-self: flex-start;
-}
-
-.recent-commits--item--message {
-  margin: 0;
-  padding: 0;
-  font-size: var(--font-md);
-  line-height: 1.2;
-  height: calc(1.2 * var(--font-md));
-  width: 100%;
-  white-space: pre;
-
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.recent-commits--item--committer {
-  font-size: var(--font-xs);
-
-  color: var(--color-fg-weak);
 }
 
 .readme {

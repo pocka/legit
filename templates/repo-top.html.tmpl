@@ -57,14 +57,14 @@ SPDX-License-Identifier: MIT
 				<ol class="recent-commits--list">
 					{{ $meta := .Meta }}
 					{{- range .RecentCommits }}
-						<li class="recent-commits--item">
-							<a class="recent-commits--item--hash" href="/{{ $meta.DisplayName }}/commit/{{ .Hash.String }}">
+						<li class="recent-commits--item commit-summary">
+							<a class="commit-summary--hash" href="/{{ $meta.DisplayName }}/commit/{{ .Hash.String }}">
 								{{- slice .Hash.String 0 8 -}}
 							</a>
-							<span class="recent-commits--item--message" title="{{- .Message -}}">
+							<span class="commit-summary--message" title="{{- .Message -}}">
 								{{- .Message -}}
 							</span>
-							<span class="recent-commits--item--committer">
+							<span class="commit-summary--committer">
 								<a href="mailto:{{ .Committer.Email }}">
 									{{- .Committer.Name -}}
 								</a>
