@@ -335,8 +335,6 @@ body {
 /* 3-column layout */
 @media (min-width: 100rem) {
   body {
-    --_side-start-y: min(40vh, 15rem);
-
     grid-template-columns: minmax(0, 40rem) minmax(60rem, 1fr) minmax(0, 40rem);
     grid-template-areas: "header main aside";
     gap: var(--space-xxl);
@@ -344,10 +342,12 @@ body {
 
   .header {
     position: sticky;
-    top: var(--_side-start-y);
+    height: 100dvh;
+    top: 0;
     border-block-end: none;
+    border-inline-end: 1px solid var(--color-border-subtle);
 
-    box-shadow: none;
+    box-shadow: 1px 0px 3px var(--color-shadow) inset;
   }
 
   .breadcrumbs {
@@ -371,7 +371,6 @@ body {
   }
 
   .aside {
-    margin-top: var(--_side-start-y);
     top: 0;
   }
 }
