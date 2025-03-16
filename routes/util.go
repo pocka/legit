@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"github.com/alecthomas/chroma/v2/formatters/html"
@@ -39,23 +40,11 @@ func getDescription(path string) (desc string) {
 }
 
 func (d *deps) isUnlisted(name string) bool {
-	for _, i := range d.c.Repo.Unlisted {
-		if name == i {
-			return true
-		}
-	}
-
-	return false
+	return slices.Contains(d.c.Repo.Unlisted, name)
 }
 
 func (d *deps) isIgnored(name string) bool {
-	for _, i := range d.c.Repo.Ignore {
-		if name == i {
-			return true
-		}
-	}
-
-	return false
+	return slices.Contains(d.c.Repo.Ignore, name)
 }
 
 type repoInfo struct {
