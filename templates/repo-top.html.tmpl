@@ -7,6 +7,7 @@ SPDX-License-Identifier: MIT
 <html lang="en">
 	<head>
 		{{ template "head" }}
+		<link rel="stylesheet" href="/static/repo-top.css" />
 		<title>{{ .Meta.DisplayName }} | {{ .Config.Meta.Title }}</title>
 		{{- if .Meta.Description }}
 		<meta name="description" content="{{ .Meta.Description }}" />
@@ -32,32 +33,36 @@ SPDX-License-Identifier: MIT
 			{{ template "repo-nav" . }}
 		</header>
 		<main class="main">
-			{{- .Readme -}}
+			<article class="readme">
+				{{- .Readme -}}
+			</article>
 		</main>
 		<div class="aside">
 			<aside>
-				<dl>
-					<dt>Default branch</dt>
-					<dd>{{ .DefaultBranch }}</dd>
-					<dt>Clone URL</dt>
-					<dd><code>https://{{ .Config.Server.Name }}/{{ .Meta.DirName }}</code></dd>
+				<dl class="metadata">
+					<dt class="metadata--key">Default branch</dt>
+					<dd class="metadata--value">{{ .DefaultBranch }}</dd>
+					<dt class="metadata--key">Clone URL</dt>
+					<dd class="metadata--value">https://{{ .Config.Server.Name }}/{{ .Meta.DirName }}</dd>
 					{{- if and .IsGoModule .Config.Server.Name -}}
-					<dt>Go Module</dt>
-					<dd>{{ .Config.Server.Name }}/{{ .Meta.DisplayName }}</dd>
+					<dt class="metadata--key">Go Module</dt>
+					<dd class="metadata--value">{{ .Config.Server.Name }}/{{ .Meta.DisplayName }}</dd>
 					{{- end -}}
 				</dl>
 			</aside>
-			<aside>
-				<h2>Recent commits</h2>
-				<ol>
+			<aside class="recent-commits">
+				<h2 class="recent-commits--title">Recent commits</h2>
+				<ol class="recent-commits--list">
 					{{ $meta := .Meta }}
 					{{- range .RecentCommits }}
-						<li>
-							<div>
-								<a href="/{{ $meta.DisplayName }}/commit/{{ .Hash.String }}">
-									{{- slice .Hash.String 0 8 -}}
-								</a>
-								-
+						<li class="recent-commits--item">
+							<a class="recent-commits--item--hash" href="/{{ $meta.DisplayName }}/commit/{{ .Hash.String }}">
+								{{- slice .Hash.String 0 8 -}}
+							</a>
+							<span class="recent-commits--item--message" title="{{- .Message -}}">
+								{{- .Message -}}
+							</span>
+							<span class="recent-commits--item--committer">
 								<a href="mailto:{{ .Committer.Email }}">
 									{{- .Committer.Name -}}
 								</a>
@@ -65,13 +70,13 @@ SPDX-License-Identifier: MIT
 								<time datetime='{{ .Committer.When.Format "2006-01-02T15:04:05-0700" }}'>
 									{{ .Committer.When.Format "2006-01-02 15:04:05 -0700" }}
 								</time>
-							</div>
-							<pre>
-								{{- .Message -}}
-							</pre>
+							</span>
 						</li>
 					{{- end -}}
 				</ol>
+				<div>
+					<a href="/{{ .Meta.DisplayName }}/log/{{ .Meta.Ref }}">View more &gt;</a>
+				</div>
 			</aside>
 		</div>
 	</body>

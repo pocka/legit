@@ -18,7 +18,7 @@
   --font-thin: 300;
 
   --color-bg: var(--uchu-yang);
-  --color-bg-hover: var(--uchu-yin-2);
+  --color-bg-hover: var(--uchu-yin-1);
   --color-fg: var(--uchu-yin-9);
   --color-fg-weak: var(--uchu-yin-7);
   --color-fg-subtle: var(--uchu-yin-5);
@@ -85,6 +85,7 @@ body {
     "main"
     "aside";
   align-content: start;
+  gap: var(--space-lg) 0;
   padding: 0;
   margin: 0;
   width: 100vw;
@@ -119,25 +120,23 @@ body {
   }
 }
 
-.main {
-  grid-area: main;
+.main, .aside {
   width: 100%;
   max-width: 60rem;
   margin: 0 auto;
   padding: var(--space-lg);
-  font-size: var(--font-md);
 
   overflow-x: auto;
+}
+
+.main {
+  grid-area: main;
+  font-size: var(--font-md);
 }
 
 .aside {
   grid-area: aside;
   font-size: var(--font-sm);
-  width: 100%;
-  max-width: 60rem;
-  margin: 0 auto;
-
-  overflow-x: auto;
 }
 
 .breadcrumbs {

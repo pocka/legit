@@ -1,0 +1,224 @@
+/* Copyright 2025 Shota FUJI <pockawoooh@gmail.com>
+ * SPDX-License-Identifier: MIT
+ */
+
+.metadata {
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.metadata--key {
+  padding: 0;
+  margin: 0;
+  margin-block-end: var(--space-xxs);
+  font-size: var(--font-xs);
+  font-weight: var(--font-thick);
+
+  color: var(--color-fg-weak);
+}
+
+.metadata--value {
+  padding: 0;
+  margin: 0;
+  font-size: var(--font-md);
+  margin-block-end: var(--space-xl);
+}
+
+.recent-commits {
+  margin-block-start: var(--space-xl);
+}
+
+.recent-commits a {
+  text-decoration: none;
+}
+@media (any-hover: hover) {
+  .recent-commits a:hover {
+    text-decoration: underline;
+  }
+}
+.recent-commits--title {
+  margin: 0;
+  font-size: var(--font-lg);
+}
+
+.recent-commits--list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.recent-commits--item {
+  padding: 0;
+  margin: var(--space-xl) 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+.recent-commits--item + .recent-commits--item {
+  margin: calc(var(--space-xxl) * var(--space-scale)) 0;
+}
+
+.recent-commits--item--hash {
+  display: inline-flex;
+  align-self: flex-start;
+}
+
+.recent-commits--item--message {
+  margin: 0;
+  padding: 0;
+  font-size: var(--font-md);
+  line-height: 1.2;
+  height: calc(1.2 * var(--font-md));
+  width: 100%;
+  white-space: pre;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recent-commits--item--committer {
+  font-size: var(--font-xs);
+
+  color: var(--color-fg-weak);
+}
+
+.readme {
+  line-height: 1.3;
+}
+
+.readme > :first-child {
+  margin-block-start: 0;
+}
+
+.readme h1 {
+  font-size: var(--font-xl);
+  font-weight: var(--font-chonk);
+  margin: var(--space-xxl) 0;
+  line-height: 1.2;
+}
+
+.readme h2 {
+  font-size: var(--font-lg);
+  font-weight: var(--font-chonk);
+  margin: var(--space-xxl) 0;
+  line-height: 1.2;
+}
+
+.readme h3 {
+  font-size: var(--font-md);
+  font-weight: var(--font-chonk);
+  margin: var(--space-xxl) 0;
+  margin-block-end: var(--space-xl);
+  line-height: 1.2;
+}
+
+.readme h4 {
+  font-size: var(--font-md);
+  font-weight: var(--font-thick);
+  margin: var(--space-xl) 0;
+  line-height: 1.2;
+}
+
+.readme h5 {
+  font-size: var(--font-sm);
+  font-weight: var(--font-chonk);
+  margin: var(--space-xl) 0;
+  line-height: 1.2;
+}
+
+.readme h6 {
+  font-size: var(--font-sm);
+  font-weight: var(--font-thick);
+  margin: var(--space-lg) 0;
+  line-height: 1.2;
+}
+
+.readme p {
+  font-size: var(--font-md);
+  font-weight: var(--font-regular);
+  margin: var(--space-lg) 0;
+}
+
+.readme ul, .readme ol {
+  margin: var(--space-lg) 0;
+  padding: 0;
+  padding-inline-start: 1.2em;
+  line-height: 1.2;
+}
+
+.readme li + li {
+  margin-block-start: var(--space-xxs);
+}
+
+.readme pre {
+  margin: var(--space-xl) 0;
+  padding: var(--space-xxl) var(--space-xl);
+  font-family: var(--font-mono);
+  font-size: var(--font-sm);
+  border: 1px solid var(--color-border-subtle);
+  line-height: 1.2;
+
+  border-radius: var(--radii-md);
+  box-shadow: 1px 1px 4px var(--color-shadow);
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.readme table {
+  margin: 0;
+  margin-block-end: var(--space-xxl);
+  min-width: 100%;
+  border-collapse: collapse;
+}
+
+.readme thead > tr {
+  border-block-end: 1px solid var(--color-border-subtle);
+}
+
+.readme tbody > tr:first-of-type > td {
+  padding-block-start: var(--space-md);
+}
+
+.readme th {
+  font-weight: var(--font-regular);
+  color: var(--color-fg-weak);
+}
+
+.readme th, td {
+  font-size: var(--font-sm);
+  padding: var(--space-xs) var(--space-md);
+}
+
+.readme code:not(:where(pre > code)) {
+  font-size: var(--font-sm);
+  font-family: var(--font-mono);
+  font-style: italic;
+
+  color: var(--color-fg-weak);
+}
+.readme a > code {
+  color: inherit;
+}
+
+.readme img[src^="./"] {
+  display: inline-flex;
+  flex-direction: column;
+  padding: var(--space-lg) var(--space-xl);
+  font-size: var(--font-sm);
+  border: 1px solid var(--color-border-subtle);
+  line-height: 1.2;
+  gap: var(--space-xs);
+
+  border-radius: var(--radii-md);
+  box-shadow: 1px 1px 4px var(--color-shadow);
+}
+.readme img[src^="./"]::after {
+  display: block;
+  content: "Rendering of local image is not supported.";
+  font-size: var(--font-xs);
+  font-style: italic;
+
+  color: var(--color-fg-weak);
+}
