@@ -41,7 +41,9 @@ SPDX-License-Identifier: MIT
 			<aside>
 				<dl class="metadata">
 					<dt class="metadata--key">Default branch</dt>
-					<dd class="metadata--value">{{ .DefaultBranch }}</dd>
+					<dd class="metadata--value">
+						<a href="/{{ .Meta.DisplayName }}/refs">{{ .DefaultBranch }}</a>
+					</dd>
 					<dt class="metadata--key">Clone URL</dt>
 					<dd class="metadata--value">https://{{ .Config.Server.Name }}/{{ .Meta.DirName }}</dd>
 					{{- if and .IsGoModule .Config.Server.Name -}}
