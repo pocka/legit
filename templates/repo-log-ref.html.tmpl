@@ -7,6 +7,7 @@ SPDX-License-Identifier: MIT
 <html lang="en">
 	<head>
 		{{ template "head" }}
+		<link rel="stylesheet" href="/static/repo-log-ref.css" />
 		<title>
 			Commit history at {{ .Meta.Ref }} - {{ .Meta.DisplayName }}
 		</title>
@@ -31,25 +32,18 @@ SPDX-License-Identifier: MIT
 			{{ template "repo-nav" . }}
 		</header>
 		<main class="main">
-			<h1>Commits at {{ .Meta.Ref }}</h1>
-			<ol>
+			<h1 class="log-heading">Commits at {{ .Meta.Ref }}</h1>
+			<ol class="log-list">
 				{{- $meta := .Meta -}}
 				{{ range .Commits -}}
-				<li>
-					<div>
-						<a href="/{{ $meta.DisplayName }}/commit/{{ .Hash.String }}">
-							{{- slice .Hash.String 0 8 -}}
-						</a>
-						-
-						<a href="mailto:{{ .Committer.Email }}">
-							{{- .Committer.Name -}}
-						</a>
-						comitted at
-						<time datetime='{{ .Committer.When.Format "2006-01-02T15:04:05-0700" }}'>
-							{{ .Committer.When.Format "2006-01-02 15:04:05 -0700" }}
-						</time>
-					</div>
-					<div>
+				<li class="commit-summary">
+					<a class="commit-summary--hash" href="/{{ $meta.DisplayName }}/commit/{{ .Hash.String }}">
+						{{- slice .Hash.String 0 8 -}}
+					</a>
+					<span class="commit-summary--message" title="{{- .Message -}}">
+						{{- .Message -}}
+					</span>
+					<span class="commit-summary--author">
 						<a href="mailto:{{ .Author.Email }}">
 							{{- .Author.Name -}}
 						</a>
@@ -57,10 +51,16 @@ SPDX-License-Identifier: MIT
 						<time datetime='{{ .Author.When.Format "2006-01-02T15:04:05-0700" }}'>
 							{{ .Author.When.Format "2006-01-02 15:04:05 -0700" }}
 						</time>
-					</div>
-					<pre>
-						{{- .Message -}}
-					</pre>
+					</span>
+					<span class="commit-summary--committer">
+						<a href="mailto:{{ .Committer.Email }}">
+							{{- .Committer.Name -}}
+						</a>
+						comitted at
+						<time datetime='{{ .Committer.When.Format "2006-01-02T15:04:05-0700" }}'>
+							{{ .Committer.When.Format "2006-01-02 15:04:05 -0700" }}
+						</time>
+					</span>
 				</li>
 				{{- end }}
 			</ol>
