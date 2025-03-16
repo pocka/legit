@@ -265,6 +265,30 @@ body {
   color: var(--color-fg-weak);
 }
 
+.metadata {
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.metadata--key {
+  padding: 0;
+  margin: 0;
+  margin-block-end: var(--space-xxs);
+  font-size: var(--font-xs);
+  font-weight: var(--font-thick);
+
+  color: var(--color-fg-weak);
+}
+
+.metadata--value {
+  padding: 0;
+  margin: 0;
+  font-size: var(--font-md);
+  margin-block-end: var(--space-xl);
+}
+
 /* Sticky header and aside */
 @media (min-height: 50rem) {
   .header {

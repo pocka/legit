@@ -8,6 +8,7 @@ SPDX-License-Identifier: MIT
 	{{ $shorthash := slice .Commit.Hash.String 0 8 }}
 	<head>
 		{{ template "head" }}
+		<link rel="stylesheet" href="/static/repo-commit.css" />
 		<title>
 			{{ $shorthash }} - {{ .Meta.DisplayName }}
 		</title>
@@ -33,21 +34,20 @@ SPDX-License-Identifier: MIT
 		</header>
 		<main class="passthru">
 			<div class="main">
-				<h1>{{ $shorthash }}</h1>
-				<pre>
+				<section class="repo-commit--message">
 					{{- .Commit.Message -}}
-				</pre>
-				<h2>Changes</h2>
-				<p>
+				</section>
+				<h2 class="repo-commit--subheading">Changes</h2>
+				<p class="repo-commit--summary">
 					{{ .Diff.Stat.FilesChanged }} changed files
 					(+{{ .Diff.Stat.Insertions }}/-{{ .Diff.Stat.Deletions }})
 				</p>
-				<ul>
+				<ul class="repo-commit--file-list">
 					{{ $meta := .Meta }}
 					{{ $root := . }}
 					{{- range .Diff.Files }}
 					<li>
-						<div>
+						<div class="repo-commit--filename">
 							{{- if or .IsRename .IsDelete }}
 							<a href="/{{ $meta.DisplayName }}/blob/{{ $root.Parent.Hash.String }}/{{ .OldName }}">{{ .OldName }}</a>
 							{{- if .IsRename }}
@@ -65,21 +65,30 @@ SPDX-License-Identifier: MIT
 							{{ if .IsBinary -}}
 							<p>Diff for binary file is unavailable.</p>
 							{{- else -}}
-							<ul>
+							<ul class="repo-commit--diff">
 								{{- range .TextFragments }}
-								<li>
-									<span>{{ .Header }}</span>
-									<pre>
-										{{- range .Lines -}}
-										{{- $op := "" -}}
+								<li class="repo-commit--diff-item">
+									<div class="repo-commit--diff-header">
+										<span class="repo-commit--diff-header-inner">{{ .Header }}</span>
+									</div>
+									{{- range .Lines -}}
+									{{- $op := "" -}}
+									{{- if eq .Op.String "+" -}}
+									{{- $op = "add" -}}
+									{{- else if eq .Op.String "-" -}}
+									{{- $op = "delete" -}}
+									{{- end -}}
+									<span class="repo-commit--diff-line" data-op="{{ $op }}">
+										<span class="repo-commit--diff-icon">
 										{{- if eq .Op.String "+" -}}
-										{{- $op = "add" -}}
+										+
 										{{- else if eq .Op.String "-" -}}
-										{{- $op = "delete" -}}
+										-
 										{{- end -}}
-										<span data-op="{{ $op }}">{{ .String }}</span>
-										{{- end -}}
-									</pre>
+										</span>
+										<span class="repo-commit--diff-line-text">{{- .Line -}}</span>
+									</span>
+									{{- end -}}
 								</li>
 								{{ end -}}
 							</ul>
@@ -90,40 +99,49 @@ SPDX-License-Identifier: MIT
 				</ul>
 			</div>
 			<div class="aside">
-				<h2>Metadata</h2>
-				<dl>
-					<dt>Author</dt>
-					<dd>
+				<dl class="metadata">
+					<dt class="metadata--key">Authored by</dt>
+					<dd class="metadata--value">
 						<a href="mailto:{{ .Commit.Author.Email }}">
 							{{- .Commit.Author.Name -}}
 						</a>
-						authored at
+					</dd>
+					<dt class="metadata--key">Authored at</dt>
+					<dd class="metadata--value">
 						<time datetime='{{ .Commit.Author.When.Format "2006-01-02T15:04:05-0700" }}'>
 							{{ .Commit.Author.When.Format "2006-01-02 15:04:05 -0700" }}
 						</time>
 					</dd>
-					<dt>Committer</dt>
-					<dd>
+					<dt class="metadata--key">Committed by</dt>
+					<dd class="metadata--value">
 						<a href="mailto:{{ .Commit.Committer.Email }}">
 							{{- .Commit.Committer.Name -}}
 						</a>
-						commited at
+					</dd>
+					<dt class="metadata--key">Committed at</dt>
+					<dd class="metadata--value">
 						<time datetime='{{ .Commit.Committer.When.Format "2006-01-02T15:04:05-0700" }}'>
 							{{ .Commit.Committer.When.Format "2006-01-02 15:04:05 -0700" }}
 						</time>
 					</dd>
 					{{- if .Commit.PGPSignature }}
-					<dt>Signature</dt>
-					<dd>
+					<dt class="metadata--key">Signature</dt>
+					<dd class="metadata--value">
 						<details>
 							<summary>View</summary>
-							<pre><code>{{ .Commit.PGPSignature }}</code></pre>
+							<textarea class="repo-commit--signature" readonly>
+								{{- .Commit.PGPSignature -}}
+							</textarea>
 						</details>
 					</dd>
 					{{ end -}}
+					<dt class="metadata--key">Object name</dt>
+					<dd class="metadata--value">
+						{{- .Commit.Hash.String -}}
+					</dd>
 					{{- if not .Parent.Hash.IsZero }}
-					<dt>Parent</dt>
-					<dd>
+					<dt class="metadata--key">Parent</dt>
+					<dd class="metadata--value">
 						<a href="/{{ .Meta.DisplayName }}/commit/{{ .Parent.Hash.String }}">
 							{{- slice .Parent.Hash.String 0 8 -}}
 						</a>

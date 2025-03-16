@@ -1,0 +1,135 @@
+/* Copyright 2025 Shota FUJI <pockawoooh@gmail.com>
+ * SPDX-License-Identifier: MIT
+ */
+
+.repo-commit--message {
+  font-family: var(--font-mono);
+  font-size: var(--font-md);
+  font-weight: var(--font-regular);
+  line-height: 1.2;
+  margin: 0;
+  margin-block-end: var(--space-xxl);
+  padding-block-end: var(--space-xxl);
+  white-space: pre-wrap;
+  border-block-end: 1px solid var(--color-border-subtle);
+}
+.repo-commit--message::first-line {
+  font-size: var(--font-lg);
+  font-weight: var(--font-thick);
+  line-height: 1.3;
+}
+
+.repo-commit--subheading {
+  font-size: var(--font-lg);
+  font-weight: var(--font-thick);
+  margin: var(--space-lg) 0;
+  line-height: 1.1;
+}
+
+.repo-commit--summary {
+  font-size: var(--font-sm);
+  margin: var(--space-lg) 0;
+  line-height: 1;
+}
+
+.repo-commit--filename {
+  font-size: var(--font-md);
+  margin: var(--space-md) 0;
+  margin-block-start: var(--space-xxl);
+  line-height: 1.3;
+}
+
+.repo-commit--signature {
+  font-size: var(--font-sm);
+  line-height: 1.2;
+  margin: 0;
+  margin-block-start: var(--space-md);
+  padding: var(--space-sm);
+  display: block;
+  width: 100%;
+  height: 20rem;
+  border: 1px solid var(--color-border-subtle);
+  resize: none;
+  white-space: pre;
+
+  background: transparent;
+  border-radius: var(--radii-sm);
+  box-shadow: 1px 1px 3px var(--color-shadow);
+  color: var(--color-fg);
+  overflow: auto;
+}
+
+.repo-commit--file-list, .repo-commit--diff {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.repo-commit--file-list {
+  gap: var(--space-xl);
+}
+
+.repo-commit--diff {
+  display: grid;
+  grid-template-columns: minmax(max-content, 100%);
+  font-family: var(--font-mono);
+  font-size: var(--font-sm);
+  line-height:1.3;
+  border: 1px solid var(--color-border-subtle);
+
+  box-shadow: 1px 1px 3px var(--color-shadow);
+  border-radius: var(--radii-md);
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.repo-commit--diff-item {
+  display: contents;
+}
+
+.repo-commit--diff-header {
+  display: block;
+  padding: var(--space-md) var(--space-lg);
+  margin: 0;
+  font-size: var(--font-sm);
+  font-style: italic;
+  line-height: 1.2;
+  border-block-end: 1px solid var(--color-border-subtle);
+
+  color: var(--color-fg-weak);
+}
+.repo-commit--diff-header:not(:where(li:first-child > .repo-commit--diff-header)) {
+  border-block-start: 1px solid var(--color-border-subtle);
+}
+
+.repo-commit--diff-header-inner {
+  position: sticky;
+  left: var(--space-lg);
+}
+
+.repo-commit--diff-line {
+  padding: 0 var(--space-lg);
+}
+.repo-commit--diff-line[data-op="add"] {
+  background-color: oklch(var(--uchu-green-5-raw) / 15%);
+}
+.repo-commit--diff-line[data-op="delete"] {
+  background-color: oklch(var(--uchu-red-5-raw) / 15%);
+}
+
+.repo-commit--diff-icon {
+  display: inline-flex;
+  width: var(--font-md);
+  height: var(--font-md);
+  line-height: 1;
+  font-size: var(--font-md);
+  font-weight: var(--font-thick);
+
+  color: var(--color-fg-subtle);
+}
+
+.repo-commit--diff-line-text {
+  white-space: pre;
+}
