@@ -103,7 +103,7 @@ func highlightCode(fileName string, code string, styleQuery string) (template.HT
 		return "", fmt.Errorf("No chroma style found for '%s'", styleQuery)
 	}
 
-	formatter := html.New()
+	formatter := html.New(html.WithClasses(true), html.ClassPrefix("chroma-"))
 
 	iter, err := lexer.Tokenise(nil, code)
 	if err != nil {

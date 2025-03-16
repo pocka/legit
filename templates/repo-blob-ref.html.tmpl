@@ -7,6 +7,7 @@ SPDX-License-Identifier: MIT
 <html lang="en">
 	<head>
 		{{ template "head" }}
+		<link rel="stylesheet" href="/static/repo-blob-ref.css" />
 		{{- $path := "" -}}
 		{{- $name := "" -}}
 		{{- range .Path -}}
@@ -52,11 +53,11 @@ SPDX-License-Identifier: MIT
 			{{ template "repo-nav" . }}
 		</header>
 		<main class="main">
-			<div style="display:grid;grid-template-columns:max-content minmax(0,1fr);gap:1px 1ch;font-family:monospace;line-height:1.3;">
-				<ol style="list-style:none;padding:0;">
+			<div class="blob-preview">
+				<ol class="blob-preview--line-number-list">
 					{{- range .LineNumbers -}}
 					<li>
-						<a id="L{{ . }}" href="#L{{ . }}">{{ . }}</a>
+						<a id="L{{ . }}" class="blob-preview--line-number" href="#L{{ . }}">{{ . }}</a>
 					</li>
 					{{- end -}}
 				</ol>
