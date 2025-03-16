@@ -12,12 +12,6 @@ SPDX-License-Identifier: MIT
 		{{- if .Meta.Description }}
 		<meta name="description" content="{{ .Meta.Description }}" />
 		{{- end }}
-		{{- if and .IsGoModule .Config.Server.Name }}
-		<meta
-			name="go-import"
-			content="{{ .Config.Server.Name }}/{{ .Meta.DirName }} git https://{{ .Config.Server.Name }}/{{ .Meta.DirName }}"
-		/>
-		{{- end }}
 	</head>
 	<body>
 		<header class="header">
@@ -46,10 +40,6 @@ SPDX-License-Identifier: MIT
 					</dd>
 					<dt class="metadata--key">Clone URL</dt>
 					<dd class="metadata--value">https://{{ .Config.Server.Name }}/{{ .Meta.DirName }}</dd>
-					{{- if and .IsGoModule .Config.Server.Name -}}
-					<dt class="metadata--key">Go Module</dt>
-					<dd class="metadata--value">{{ .Config.Server.Name }}/{{ .Meta.DirName }}</dd>
-					{{- end -}}
 				</dl>
 			</aside>
 			<aside class="recent-commits">
