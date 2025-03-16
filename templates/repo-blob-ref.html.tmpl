@@ -26,10 +26,10 @@ SPDX-License-Identifier: MIT
 					<a href="/">Top</a>
 				</li>
 				<li>
-					<a href="/{{ .Meta.DisplayName }}">{{ .Meta.DisplayName }}</a>
+					<a href="/{{ .Meta.DirName }}">{{ .Meta.DisplayName }}</a>
 				</li>
 				<li>
-					<a href="/{{ .Meta.DisplayName }}/tree/{{ .Meta.Ref }}">Files</a>
+					<a href="/{{ .Meta.DirName }}/tree/{{ .Meta.Ref }}">Files</a>
 				</li>
 				{{- $path_slice := .Path -}}
 				{{- $meta := .Meta }}
@@ -42,9 +42,9 @@ SPDX-License-Identifier: MIT
 					{{- end -}}
 					{{- end -}}
 					{{- if eq $segment $name -}}
-						<a href="/{{ $meta.DisplayName }}/blob/{{ $meta.Ref }}{{ $trail }}" aria-current="page">{{ $segment }}</a>
+						<a href="/{{ $meta.DirName }}/blob/{{ $meta.Ref }}{{ $trail }}" aria-current="page">{{ $segment }}</a>
 					{{- else -}}
-						<a href="/{{ $meta.DisplayName }}/tree/{{ $meta.Ref }}{{ $trail }}">{{ $segment }}</a>
+						<a href="/{{ $meta.DirName }}/tree/{{ $meta.Ref }}{{ $trail }}">{{ $segment }}</a>
 					{{- end -}}
 				</li>
 				{{- end }}

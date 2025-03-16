@@ -20,10 +20,10 @@ SPDX-License-Identifier: MIT
 					<a href="/">Top</a>
 				</li>
 				<li>
-					<a href="/{{ .Meta.DisplayName }}">{{ .Meta.DisplayName }}</a>
+					<a href="/{{ .Meta.DirName }}">{{ .Meta.DisplayName }}</a>
 				</li>
 				<li>
-					<a href="/{{ .Meta.DisplayName }}/log/{{ .Meta.Ref }}" aria-current="page">
+					<a href="/{{ .Meta.DirName }}/log/{{ .Meta.Ref }}" aria-current="page">
 						Commits
 					</a>
 				</li>
@@ -37,7 +37,7 @@ SPDX-License-Identifier: MIT
 				{{- $meta := .Meta -}}
 				{{ range .Commits -}}
 				<li class="commit-summary">
-					<a class="commit-summary--hash" href="/{{ $meta.DisplayName }}/commit/{{ .Hash.String }}">
+					<a class="commit-summary--hash" href="/{{ $meta.DirName }}/commit/{{ .Hash.String }}">
 						{{- slice .Hash.String 0 8 -}}
 					</a>
 					<span class="commit-summary--message" title="{{- .Message -}}">

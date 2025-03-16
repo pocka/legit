@@ -27,10 +27,10 @@ SPDX-License-Identifier: MIT
 					<a href="/">Top</a>
 				</li>
 				<li>
-					<a href="/{{ .Meta.DisplayName }}">{{ .Meta.DisplayName }}</a>
+					<a href="/{{ .Meta.DirName }}">{{ .Meta.DisplayName }}</a>
 				</li>
 				<li>
-					<a href="/{{ .Meta.DisplayName }}/tree/{{ .Meta.Ref }}">Files</a>
+					<a href="/{{ .Meta.DirName }}/tree/{{ .Meta.Ref }}">Files</a>
 				</li>
 				{{- $path_slice := .Path -}}
 				{{ range $i, $segment := .Path -}}
@@ -45,7 +45,7 @@ SPDX-License-Identifier: MIT
 					{{- if eq $trail $path -}}
 					{{- $aria_current = "page" -}}
 					{{- end -}}
-					<a href="/{{ $meta.DisplayName }}/tree/{{ $meta.Ref }}{{ $trail }}" aria-current="{{ $aria_current }}">{{ $segment }}</a>
+					<a href="/{{ $meta.DirName }}/tree/{{ $meta.Ref }}{{ $trail }}" aria-current="{{ $aria_current }}">{{ $segment }}</a>
 				</li>
 				{{- end }}
 			</ol>
@@ -61,7 +61,7 @@ SPDX-License-Identifier: MIT
 				{{ range .Files -}}
 					<li>
 						{{ if not .IsFile -}}
-						<a class="tree-row" href="/{{ $meta.DisplayName }}/tree/{{ $meta.Ref }}/{{ $prefix }}{{ .Name }}">
+						<a class="tree-row" href="/{{ $meta.DirName }}/tree/{{ $meta.Ref }}/{{ $prefix }}{{ .Name }}">
 							<svg class="tree-row--icon tree-row--dir-icon" viewBox="0 0 24 24">
 								<use href="#icon_dir" />
 							</svg>
@@ -70,7 +70,7 @@ SPDX-License-Identifier: MIT
 							<span class="tree-row--size">{{ .Size }} bytes</span>
 						</a>
 						{{- else -}}
-						<a class="tree-row" href="/{{ $meta.DisplayName }}/blob/{{ $meta.Ref }}/{{ $prefix }}{{ .Name }}">
+						<a class="tree-row" href="/{{ $meta.DirName }}/blob/{{ $meta.Ref }}/{{ $prefix }}{{ .Name }}">
 							<svg class="tree-row--icon tree-row--file-icon" viewBox="0 0 24 24">
 								<use href="#icon_file" />
 							</svg>

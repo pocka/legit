@@ -18,10 +18,10 @@ SPDX-License-Identifier: MIT
 					<a href="/">Top</a>
 				</li>
 				<li>
-					<a href="/{{ .Meta.DisplayName }}">{{ .Meta.DisplayName }}</a>
+					<a href="/{{ .Meta.DirName }}">{{ .Meta.DisplayName }}</a>
 				</li>
 				<li>
-					<a href="/{{ .Meta.DisplayName }}/refs" aria-current="page">Refs</a>
+					<a href="/{{ .Meta.DirName }}/refs" aria-current="page">Refs</a>
 				</li>
 			</ol>
 			{{ template "repo-header" . }}
@@ -35,9 +35,9 @@ SPDX-License-Identifier: MIT
 				<li class="ref-item">
 					<span class="ref-name">{{ .Name.Short }}</span>
 					<div class="ref-actions">
-						<a href="/{{ $meta.DisplayName }}/log/{{ .Name.Short }}">Commits</a>
-						<a href="/{{ $meta.DisplayName }}/tree/{{ .Name.Short }}">Files</a>
-						<a href="/{{ $meta.DisplayName }}/archive/{{ .Name.Short }}.tar.gz">Archive</a>
+						<a href="/{{ $meta.DirName }}/log/{{ .Name.Short }}">Commits</a>
+						<a href="/{{ $meta.DirName }}/tree/{{ .Name.Short }}">Files</a>
+						<a href="/{{ $meta.DirName }}/archive/{{ .Name.Short }}.tar.gz">Archive</a>
 					</div>
 				</li>
 				{{ end -}}
@@ -52,9 +52,9 @@ SPDX-License-Identifier: MIT
 					<p class="ref-message">{{ .Message }}</p>
 					{{ end -}}
 					<div class="ref-actions">
-						<a href="/{{ $meta.DisplayName }}/log/{{ .Name }}">Commits</a>
-						<a href="/{{ $meta.DisplayName }}/tree/{{ .Name }}">Files</a>
-						<a href="/{{ $meta.DisplayName }}/archive/{{ .Name }}.tar.gz">Archive</a>
+						<a href="/{{ $meta.DirName }}/log/{{ .Name }}">Commits</a>
+						<a href="/{{ $meta.DirName }}/tree/{{ .Name }}">Files</a>
+						<a href="/{{ $meta.DirName }}/archive/{{ .Name }}.tar.gz">Archive</a>
 					</div>
 				</li>
 				{{ end -}}

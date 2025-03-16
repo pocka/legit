@@ -15,7 +15,7 @@ SPDX-License-Identifier: MIT
 		{{- if and .IsGoModule .Config.Server.Name }}
 		<meta
 			name="go-import"
-			content="{{ .Config.Server.Name }}/{{ .Meta.DisplayName }} git https://{{ .Config.Server.Name }}/{{ .Meta.DirName }}"
+			content="{{ .Config.Server.Name }}/{{ .Meta.DirName }} git https://{{ .Config.Server.Name }}/{{ .Meta.DirName }}"
 		/>
 		{{- end }}
 	</head>
@@ -26,7 +26,7 @@ SPDX-License-Identifier: MIT
 					<a href="/">Top</a>
 				</li>
 				<li>
-					<a aria-current="page" href="/{{ .Meta.DisplayName }}">{{ .Meta.DisplayName }}</a>
+					<a aria-current="page" href="/{{ .Meta.DirName }}">{{ .Meta.DisplayName }}</a>
 				</li>
 			</ol>
 			{{ template "repo-header" . }}
@@ -42,13 +42,13 @@ SPDX-License-Identifier: MIT
 				<dl class="metadata">
 					<dt class="metadata--key">Default branch</dt>
 					<dd class="metadata--value">
-						<a href="/{{ .Meta.DisplayName }}/refs">{{ .DefaultBranch }}</a>
+						<a href="/{{ .Meta.DirName }}/refs">{{ .DefaultBranch }}</a>
 					</dd>
 					<dt class="metadata--key">Clone URL</dt>
 					<dd class="metadata--value">https://{{ .Config.Server.Name }}/{{ .Meta.DirName }}</dd>
 					{{- if and .IsGoModule .Config.Server.Name -}}
 					<dt class="metadata--key">Go Module</dt>
-					<dd class="metadata--value">{{ .Config.Server.Name }}/{{ .Meta.DisplayName }}</dd>
+					<dd class="metadata--value">{{ .Config.Server.Name }}/{{ .Meta.DirName }}</dd>
 					{{- end -}}
 				</dl>
 			</aside>
@@ -58,7 +58,7 @@ SPDX-License-Identifier: MIT
 					{{ $meta := .Meta }}
 					{{- range .RecentCommits }}
 						<li class="recent-commits--item commit-summary">
-							<a class="commit-summary--hash" href="/{{ $meta.DisplayName }}/commit/{{ .Hash.String }}">
+							<a class="commit-summary--hash" href="/{{ $meta.DirName }}/commit/{{ .Hash.String }}">
 								{{- slice .Hash.String 0 8 -}}
 							</a>
 							<span class="commit-summary--message" title="{{- .Message -}}">
@@ -77,7 +77,7 @@ SPDX-License-Identifier: MIT
 					{{- end -}}
 				</ol>
 				<div>
-					<a href="/{{ .Meta.DisplayName }}/log/{{ .Meta.Ref }}">View more &gt;</a>
+					<a href="/{{ .Meta.DirName }}/log/{{ .Meta.Ref }}">View more &gt;</a>
 				</div>
 			</aside>
 		</div>

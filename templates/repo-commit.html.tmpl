@@ -21,10 +21,10 @@ SPDX-License-Identifier: MIT
 					<a href="/">Top</a>
 				</li>
 				<li>
-					<a href="/{{ .Meta.DisplayName }}">{{ .Meta.DisplayName }}</a>
+					<a href="/{{ .Meta.DirName }}">{{ .Meta.DisplayName }}</a>
 				</li>
 				<li>
-					<a href="/{{ .Meta.DisplayName }}/commit/{{ .Meta.Ref }}" aria-current="page">
+					<a href="/{{ .Meta.DirName }}/commit/{{ .Meta.Ref }}" aria-current="page">
 						{{- $shorthash -}}
 					</a>
 				</li>
@@ -49,14 +49,14 @@ SPDX-License-Identifier: MIT
 					<li>
 						<div class="repo-commit--filename">
 							{{- if or .IsRename .IsDelete }}
-							<a href="/{{ $meta.DisplayName }}/blob/{{ $root.Parent.Hash.String }}/{{ .OldName }}">{{ .OldName }}</a>
+							<a href="/{{ $meta.DirName }}/blob/{{ $root.Parent.Hash.String }}/{{ .OldName }}">{{ .OldName }}</a>
 							{{- if .IsRename }}
 							&gt;
 							{{- else }}
 							(deleted)
 							{{- end }}
 							{{- end}}
-							<a href="/{{ $meta.DisplayName }}/blob/{{ $root.Commit.Hash.String }}/{{ .NewName }}">{{ .NewName }}</a>
+							<a href="/{{ $meta.DirName }}/blob/{{ $root.Commit.Hash.String }}/{{ .NewName }}">{{ .NewName }}</a>
 							{{- if not .OldName }}
 							<span>(new)</span>
 							{{ end -}}
@@ -142,7 +142,7 @@ SPDX-License-Identifier: MIT
 					{{- if not .Parent.Hash.IsZero }}
 					<dt class="metadata--key">Parent</dt>
 					<dd class="metadata--value">
-						<a href="/{{ .Meta.DisplayName }}/commit/{{ .Parent.Hash.String }}">
+						<a href="/{{ .Meta.DirName }}/commit/{{ .Parent.Hash.String }}">
 							{{- slice .Parent.Hash.String 0 8 -}}
 						</a>
 					</dd>
