@@ -7,6 +7,7 @@ SPDX-License-Identifier: MIT
 <html lang="en">
 	<head>
 		{{ template "head" }}
+		<link rel="stylesheet" href="/static/repo-refs.css" />
 		<title>Refs - {{ .Meta.DisplayName }}</title>
 		<meta name="description" content="Git refs of {{ .Meta.DisplayName }}" />
 	</head>
@@ -28,35 +29,38 @@ SPDX-License-Identifier: MIT
 		</header>
 		<main class="main">
 			{{- $meta := .Meta -}}
-			<h2>Branches</h2>
-			<ul>
+			<h2 class="ref-heading">Branches</h2>
+			<ul class="ref-list">
 				{{- range  .Branches }}
-				<li>
-					<span>{{ .Name.Short }}</span>
-					<div>
+				<li class="ref-item">
+					<span class="ref-name">{{ .Name.Short }}</span>
+					<div class="ref-actions">
 						<a href="/{{ $meta.DisplayName }}/log/{{ .Name.Short }}">Commits</a>
 						<a href="/{{ $meta.DisplayName }}/tree/{{ .Name.Short }}">Files</a>
-						<a href="/{{ $meta.DisplayName }}/archive/{{ .Name.Short }}.tar.gz">Download archive</a>
+						<a href="/{{ $meta.DisplayName }}/archive/{{ .Name.Short }}.tar.gz">Archive</a>
 					</div>
 				</li>
 				{{ end -}}
 			</ul>
-			<h2>Tags</h2>
+			<h2 class="ref-heading">Tags</h2>
 			{{- if .Tags }}
-			<ul>
+			<ul class="ref-list">
 				{{- range .Tags }}
-				<li>
-					<span>{{ .Name }}</span>
-					<div>
+				<li class="ref-item">
+					<span class="ref-name">{{ .Name }}</span>
+					{{- if .Message }}
+					<p class="ref-message">{{ .Message }}</p>
+					{{ end -}}
+					<div class="ref-actions">
 						<a href="/{{ $meta.DisplayName }}/log/{{ .Name }}">Commits</a>
 						<a href="/{{ $meta.DisplayName }}/tree/{{ .Name }}">Files</a>
-						<a href="/{{ $meta.DisplayName }}/archive/{{ .Name }}.tar.gz">Download archive</a>
+						<a href="/{{ $meta.DisplayName }}/archive/{{ .Name }}.tar.gz">Archive</a>
 					</div>
 				</li>
 				{{ end -}}
 			</ul>
 			{{- else -}}
-			<p>This repository has no tags.</p>
+			<p class="ref-empty">This repository has no tags.</p>
 			{{ end -}}
 		</main>
 	</body>
