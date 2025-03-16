@@ -7,6 +7,7 @@ SPDX-License-Identifier: MIT
 <html lang="en">
 	<head>
 		{{ template "head" }}
+		<link rel="stylesheet" href="/static/repo-tree-ref.css" />
 		{{- $path := "" -}}
 		{{- range .Path -}}
 		{{- $path = printf "%s/%s" $path . -}}
@@ -19,6 +20,7 @@ SPDX-License-Identifier: MIT
 	</head>
 	<body>
 		{{- $meta := .Meta -}}
+		{{- template "icons" -}}
 		<header class="header">
 			<ol class="breadcrumbs">
 				<li>
@@ -55,20 +57,28 @@ SPDX-License-Identifier: MIT
 			{{- if $prefix -}}
 			{{- $prefix = printf "%s/" $prefix -}}
 			{{- end -}}
-			<ul>
+			<ul class="tree-list">
 				{{ range .Files -}}
 					<li>
 						{{ if not .IsFile -}}
-						<a href="/{{ $meta.DisplayName }}/tree/{{ $meta.Ref }}/{{ $prefix }}{{ .Name }}">
-							{{ .Name }}/
+						<a class="tree-row" href="/{{ $meta.DisplayName }}/tree/{{ $meta.Ref }}/{{ $prefix }}{{ .Name }}">
+							<svg class="tree-row--icon tree-row--dir-icon" viewBox="0 0 24 24">
+								<use href="#icon_dir" />
+							</svg>
+							<span class="tree-row--name">{{ .Name }}/</span>
+							<span class="tree-row--mode">{{ .Mode }}</span>
+							<span class="tree-row--size">{{ .Size }} bytes</span>
 						</a>
 						{{- else -}}
-						<a href="/{{ $meta.DisplayName }}/blob/{{ $meta.Ref }}/{{ $prefix }}{{ .Name }}">
-							{{ .Name }}
+						<a class="tree-row" href="/{{ $meta.DisplayName }}/blob/{{ $meta.Ref }}/{{ $prefix }}{{ .Name }}">
+							<svg class="tree-row--icon tree-row--file-icon" viewBox="0 0 24 24">
+								<use href="#icon_file" />
+							</svg>
+							<span class="tree-row--name">{{ .Name }}</span>
+							<span class="tree-row--mode">{{ .Mode }}</span>
+							<span class="tree-row--size">{{ .Size }} bytes</span>
 						</a>
 						{{- end }}
-						<span>{{ .Mode }}</span>
-						<span>{{ .Size }} bytes</span>
 					</li>
 				{{- end }}
 			</ul>

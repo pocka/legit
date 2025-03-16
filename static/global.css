@@ -23,6 +23,7 @@
   --color-fg-weak: var(--uchu-yin-7);
   --color-fg-subtle: var(--uchu-yin-5);
   --color-link: var(--uchu-blue-8);
+  --color-decoration: var(--uchu-blue-6);
   --color-shadow: oklch(var(--uchu-yin-raw) / 5%);
   --color-border-subtle: oklch(var(--uchu-yin-3-raw) / 20%);
   --color-border-normal: oklch(var(--uchu-yin-3-raw) / 50%);
@@ -59,6 +60,7 @@
     --color-fg-weak: var(--uchu-yin-1);
     --color-fg-subtle: var(--uchu-yin-3);
     --color-link: var(--uchu-blue-2);
+    --color-decoration: var(--uchu-blue-4);
   }
 }
 
