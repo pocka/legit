@@ -99,6 +99,12 @@ body {
 
 :where(a) {
   color: var(--color-link);
+  text-decoration: none;
+}
+@media (any-hover) {
+  :where(a:hover) {
+    text-decoration: underline;
+  }
 }
 
 .passthru {
@@ -154,13 +160,6 @@ body {
 .breadcrumbs > li + li::before {
   content: "/";
   margin-inline-end: 0.5ch;
-}
-.breadcrumbs a {
-  color: var(--color-link);
-  text-decoration: none;
-}
-.breadcrumbs a:hover {
-  text-decoration: underline;
 }
 .breadcrumbs a[aria-current="page"] {
   color: var(--color-fg);

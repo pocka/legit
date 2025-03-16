@@ -30,14 +30,6 @@
   margin-block-start: var(--space-xl);
 }
 
-.recent-commits a {
-  text-decoration: none;
-}
-@media (any-hover: hover) {
-  .recent-commits a:hover {
-    text-decoration: underline;
-  }
-}
 .recent-commits--title {
   margin: 0;
   font-size: var(--font-lg);
@@ -198,6 +190,11 @@
 
   color: var(--color-fg-weak);
 }
+
+.readme a {
+  text-decoration: underline;
+}
+
 .readme a > code {
   color: inherit;
 }
