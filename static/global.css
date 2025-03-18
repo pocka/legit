@@ -290,6 +290,19 @@ body {
 	margin-block-end: var(--space-xl);
 }
 
+.tab-selector {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-md);
+}
+
+.tab-selector--select {
+	font-size: var(--font-md);
+	margin: 0;
+	padding: var(--space-xxs) var(--space-sm);
+	max-width: 4em;
+}
+
 /* Sticky header and aside */
 @media (min-height: 50rem) {
 	.header {

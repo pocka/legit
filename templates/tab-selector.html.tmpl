@@ -1,0 +1,24 @@
+<!--
+Copyright 2025 Shota FUJI <pockawoooh@gmail.com>
+SPDX-License-Identifier: MIT
+-->
+{{ define "tab-selector" -}}
+<dt class="metadata--key">Tab width</dt>
+<dd class="metadata--value tab-selector">
+	<script type="module" src="/static/tab-selector.js"></script>
+	<select id="global_tab_width" class="tab-selector--select" disabled>
+		<option value="1">1</option>
+		<option value="2">2</option>
+		<option value="3">3</option>
+		<option value="4" selected>4</option>
+		<option value="6">6</option>
+		<option value="8">8</option>
+		<option value="12">12</option>
+	</select>
+	<noscript>
+		<span class="noscript--feature-unavailable">
+			Changing tab width requires JavaScript enabled.
+		</span>
+	</noscript>
+</dd>
+{{- end -}}
