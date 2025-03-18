@@ -13,7 +13,7 @@ import (
 type NiceDiff struct {
 	Commit *object.Commit
 	Parent *object.Commit
-	Stat struct {
+	Stat   struct {
 		FilesChanged int
 		Insertions   int
 		Deletions    int
