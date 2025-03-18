@@ -3,45 +3,45 @@
  */
 
 .blob-preview {
-  display: grid;
-  grid-template-columns: max-content minmax(0,1fr);
-  gap: var(--space-xxs) var(--space-xs);
-  font-family: var(--font-mono);
-  font-size: var(--font-sm);
-  line-height:1.3;
-  border: 1px solid var(--color-border-subtle);
-  padding: var(--space-md) var(--space-lg);
+	display: grid;
+	grid-template-columns: max-content minmax(0, 1fr);
+	gap: var(--space-xxs) var(--space-xs);
+	font-family: var(--font-mono);
+	font-size: var(--font-sm);
+	line-height: 1.3;
+	border: 1px solid var(--color-border-subtle);
+	padding: var(--space-md) var(--space-lg);
 
-  box-shadow: 1px 1px 3px var(--color-shadow);
-  border-radius: var(--radii-md);
+	box-shadow: 1px 1px 3px var(--color-shadow);
+	border-radius: var(--radii-md);
 }
 
 .blob-preview--line-number-list {
-  padding: 0;
-  margin: 0;
-  list-style: none;
+	padding: 0;
+	margin: 0;
+	list-style: none;
 
-  text-align: end;
+	text-align: end;
 }
 
 .blob-preview--line-number {
-  padding: 0;
-  margin: 0;
-  list-style: none;
+	padding: 0;
+	margin: 0;
+	list-style: none;
 
-  color: var(--color-fg-subtle);
+	color: var(--color-fg-subtle);
 }
 .blob-preview--line-number:target {
-  font-weight: var(--font-thick);
+	font-weight: var(--font-thick);
 
-  color: var(--color-fg);
+	color: var(--color-fg);
 }
 
 .blob-preview > pre {
-  margin: 0;
-  padding: 0;
-  padding-inline-start: var(--space-sm);
-  overflow-x: auto;
+	margin: 0;
+	padding: 0;
+	padding-inline-start: var(--space-sm);
+	overflow-x: auto;
 }
 
 /*
@@ -49,56 +49,67 @@
  */
 
 .chroma-chroma {
-  --_color-string: var(--uchu-blue-9);
-  --_color-keyword: var(--uchu-blue-8);
+	--_color-string: var(--uchu-blue-9);
+	--_color-keyword: var(--uchu-blue-8);
 }
 .chroma-k {
-  color: var(--_color-keyword);
+	color: var(--_color-keyword);
 }
 .chroma-kc, .chroma-kd, .chroma-kp, .chroma-kr {
-  font-weight: var(--font-thick);
+	font-weight: var(--font-thick);
 
-  color: var(--color-fg-weak);
+	color: var(--color-fg-weak);
 }
 .chroma-kn, .chroma-kt {
-  font-weight: var(--font-thick);
-  font-style: italic;
+	font-weight: var(--font-thick);
+	font-style: italic;
 }
 .chroma-na, .chroma-nt {
-  font-weight: var(--font-thick);
+	font-weight: var(--font-thick);
 
-  color: var(--color-fg-weak);
+	color: var(--color-fg-weak);
 }
-.chroma-s, .chroma-sa, .chroma-sb, .chroma-sc, .chroma-dl, .chroma-sd, .chroma-s2,
-.chroma-se, .chroma-sh, .chroma-si, .chroma-sx, .chroma-s1, .chroma-ss {
-  color: var(--_color-string);
+.chroma-s,
+.chroma-sa,
+.chroma-sb,
+.chroma-sc,
+.chroma-dl,
+.chroma-sd,
+.chroma-s2,
+.chroma-se,
+.chroma-sh,
+.chroma-si,
+.chroma-sx,
+.chroma-s1,
+.chroma-ss {
+	color: var(--_color-string);
 }
 .chroma-o, .chroma-ow, .chroma-p {
-  color: var(--color-fg-weak);
+	color: var(--color-fg-weak);
 }
 .chroma-c, .chroma-ch, .chroma-cm, .chroma-cp, .chroma-cpf, .chroma-c1, .chroma-cs {
-  font-style: italic;
+	font-style: italic;
 
-  color: var(--color-fg-subtle);
+	color: var(--color-fg-subtle);
 }
 .chroma-ge {
-  font-style: italic;
+	font-style: italic;
 }
 .chroma-gh, .chroma-gs {
-  font-weight: var(--font-chonk);
+	font-weight: var(--font-chonk);
 }
 .chroma-gu {
-  font-weight: var(--font-thick);
+	font-weight: var(--font-thick);
 
-  color: var(--color-fg-weak);
+	color: var(--color-fg-weak);
 }
 .chroma-gl {
-  text-decoration: underline;
+	text-decoration: underline;
 }
 
 @media (prefers-color-scheme: dark) {
-  .chroma-chroma {
-    --_color-string: var(--uchu-blue-2);
-    --_color-keyword: var(--uchu-blue-1);
-  }
+	.chroma-chroma {
+		--_color-string: var(--uchu-blue-2);
+		--_color-keyword: var(--uchu-blue-1);
+	}
 }

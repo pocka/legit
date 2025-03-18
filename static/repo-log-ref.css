@@ -3,15 +3,15 @@
  */
 
 .log-heading {
-  margin: 0;
-  padding-block-end: var(--space-xxl);
-  font-size: var(--font-xl);
-  font-weight: var(--font-chonk);
-  line-height: 1.2;
+	margin: 0;
+	padding-block-end: var(--space-xxl);
+	font-size: var(--font-xl);
+	font-weight: var(--font-chonk);
+	line-height: 1.2;
 }
 
 .log-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+	list-style: none;
+	padding: 0;
+	margin: 0;
 }
