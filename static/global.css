@@ -92,6 +92,7 @@ body {
 	margin: 0;
 	width: 100vw;
 	min-height: 100dvh;
+	tab-size: 4;
 
 	background-color: var(--color-bg);
 	color: var(--color-fg);
