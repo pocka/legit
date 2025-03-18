@@ -1,0 +1,40 @@
+// Copyright 2025 Shota FUJI <pockawoooh@gmail.com>
+// SPDX-License-Identifier: MIT
+{
+	// Shared configuration
+	"lineWidth": 100,
+	"useTabs": true,
+	"newLineKind": "lf",
+
+	// CSS
+	// https://dprint.dev/plugins/malva/
+	"malva": {},
+
+	// https://dprint.dev/plugins/pretty_yaml/
+	"yaml": {
+		"formatComments": true,
+	},
+
+	// JSON / JSONC
+	// https://dprint.dev/plugins/json/
+	"json": {},
+
+	// Format via user configured CLI commands.
+	// https://dprint.dev/plugins/exec/
+	"exec": {
+		"cwd": "${configDir}",
+		"commands": [
+			{
+				"command": "gofmt",
+				"exts": ["go"],
+			},
+		],
+	},
+
+	"plugins": [
+		"https://plugins.dprint.dev/g-plane/malva-v0.11.2.wasm",
+		"https://plugins.dprint.dev/g-plane/pretty_yaml-v0.5.0.wasm",
+		"https://plugins.dprint.dev/json-0.20.0.wasm",
+		"https://plugins.dprint.dev/exec-0.5.1.json@492414e39dea4dccc07b4af796d2f4efdb89e84bae2bd4e1e924c0cc050855bf",
+	],
+}
