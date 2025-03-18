@@ -15,7 +15,7 @@ import (
 	"github.com/alecthomas/chroma/v2/lexers"
 	"github.com/alecthomas/chroma/v2/styles"
 
-	"git.icyphox.sh/legit/git"
+	"github.com/pocka/legit/git"
 )
 
 func isGoModule(gr *git.GitRepo) bool {

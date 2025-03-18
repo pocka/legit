@@ -52,7 +52,7 @@ Example config.yaml:
       description: i think it's a skill issue
       syntaxHighlight: monokailight
     server:
-      name: git.icyphox.sh
+      name: github.com/pocka
       host: 127.0.0.1
       port: 5555
 

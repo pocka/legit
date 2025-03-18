@@ -1,4 +1,4 @@
-module git.icyphox.sh/legit
+module github.com/pocka/legit
 
 go 1.22.0
 

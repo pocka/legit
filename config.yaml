@@ -15,6 +15,6 @@ meta:
   title: icy does git
   description: come get your free software
 server:
-  name: git.icyphox.sh
+  name: github.com/pocka
   host: 0.0.0.0
   port: 5555

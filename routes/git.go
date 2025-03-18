@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"git.icyphox.sh/legit/git/service"
 	securejoin "github.com/cyphar/filepath-securejoin"
+	"github.com/pocka/legit/git/service"
 )
 
 func (d *deps) InfoRefs(w http.ResponseWriter, r *http.Request) {

@@ -12,11 +12,11 @@ import (
 	"strconv"
 	"strings"
 
-	"git.icyphox.sh/legit/config"
-	"git.icyphox.sh/legit/git"
 	securejoin "github.com/cyphar/filepath-securejoin"
 	"github.com/dustin/go-humanize"
 	"github.com/microcosm-cc/bluemonday"
+	"github.com/pocka/legit/config"
+	"github.com/pocka/legit/git"
 	"github.com/russross/blackfriday/v2"
 )
 

@@ -8,10 +8,10 @@ package routes
 import (
 	"html/template"
 
-	"git.icyphox.sh/legit/config"
-	"git.icyphox.sh/legit/git"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/object"
+	"github.com/pocka/legit/config"
+	"github.com/pocka/legit/git"
 )
 
 // repositorySummary contains overview of a git repository.

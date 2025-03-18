@@ -6,8 +6,8 @@ import (
 	"log"
 	"net/http"
 
-	"git.icyphox.sh/legit/config"
-	"git.icyphox.sh/legit/routes"
+	"github.com/pocka/legit/config"
+	"github.com/pocka/legit/routes"
 )
 
 func main() {
