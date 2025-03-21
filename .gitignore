@@ -1,2 +1,6 @@
 legit
 result
+
+# demo/ directory acts as a playground/sandbox, and real git repositories sits there.
+demo/*
+!demo/config.yaml

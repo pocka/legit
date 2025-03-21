@@ -1,0 +1,46 @@
+# Copyright 2025 Shota FUJI <pockawoooh@gmail.com>
+# SPDX-License-Identifier: MIT
+#
+# This is a demo config for developing or trying legit.
+#
+#   go run . -config ./demo/config.yaml
+#
+# You can test legit locally by cloning any git repositories into this directory.
+#
+#   cd demo && git clone https://your-git-repo
+#
+# To test bare repository, add "--bare" option to clone command:
+#
+#   cd demo && git clone --bare https://your-git-repo
+
+repo:
+  # TODO: Change to relative path once path resolution is fixed
+  scanPath: ./demo
+  readme:
+    - readme
+    - README
+    - readme.txt
+    - readme.md
+    - README.md
+    - readme.adoc
+    - README.adoc
+  mainBranch:
+    - master
+    - main
+    - trunk
+
+dirs:
+  # TODO: Change to relative path once path resolution is fixed
+  templates: ./templates
+  # TODO: Change to relative path once path resolution is fixed
+  static: ./static
+
+meta:
+  title: legit Demo
+  description: Test legit features with real repositories.
+  syntaxHighlight: monokailight
+
+server:
+  name: example.com
+  host: localhost
+  port: 5555
