@@ -1,20 +1,59 @@
 repo:
+  # Directory containing git repositories to serve.
+  # Relative path is resolved from *current working directory* not from
+  # path to the config file.
   scanPath: /var/www/git
+
+  # Which filename will be treated as README file?
+  # If a repository contains a file with exact matching filename to one from
+  # this list, legit displays that file contents in repository top page.
+  # When multiple files match (e.g. a repository having both `readme` and
+  # `README.md`), the earlier one in the list will be shown.
   readme:
     - readme
+    # Filenames are case-sensitive.
     - README
+    # You have to provide file extensions.
     - readme.md
     - README.md
+
+  # What branch will be considered default branch?
+  # legit use default branch as a default ref for navigations.
   mainBranch:
     - master
     - main
+
+# Runtime directories.
 dirs:
+  # Path to a directory containing HTML templates.
+  # Templates are written in Go's html/template syntax.
+  # <https://pkg.go.dev/html/template>
+  # Relative path is resolved from *current working directory* not from
+  # path to the config file.
   templates: ./templates
+
+  # Path to a directory containing static assets.
+  # User can access files in this directory by accessing "/static/*".
+  # Relative path is resolved from *current working directory* not from
+  # path to the config file.
   static: ./static
+
 meta:
-  title: icy does git
-  description: come get your free software
+  # Website's name.
+  title: legit
+
+  # Website's description.
+  description: "web frontend for git repositories, written in Go"
+
 server:
+  # legit uses this strings for clone URL.
+  # `https://<name>/<directory>`
+  # In addition to hostname, you can include paths as well.
+  # This will NOT affect how web server behaves.
   name: github.com/pocka
+
+  # A host/hostname to bind web server to.
   host: 0.0.0.0
+
+  # TCP port legit's web server listens to.
   port: 5555
