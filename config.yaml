@@ -1,7 +1,5 @@
 repo:
   # Directory containing git repositories to serve.
-  # Relative path is resolved from *current working directory* not from
-  # path to the config file.
   scanPath: /var/www/git
 
   # Which filename will be treated as README file?
@@ -28,14 +26,10 @@ dirs:
   # Path to a directory containing HTML templates.
   # Templates are written in Go's html/template syntax.
   # <https://pkg.go.dev/html/template>
-  # Relative path is resolved from *current working directory* not from
-  # path to the config file.
   templates: ./templates
 
   # Path to a directory containing static assets.
   # User can access files in this directory by accessing "/static/*".
-  # Relative path is resolved from *current working directory* not from
-  # path to the config file.
   static: ./static
 
 meta:

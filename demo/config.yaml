@@ -14,8 +14,7 @@
 #   cd demo && git clone --bare https://your-git-repo
 
 repo:
-  # TODO: Change to relative path once path resolution is fixed
-  scanPath: ./demo
+  scanPath: .
   readme:
     - readme
     - README
@@ -30,10 +29,8 @@ repo:
     - trunk
 
 dirs:
-  # TODO: Change to relative path once path resolution is fixed
-  templates: ./templates
-  # TODO: Change to relative path once path resolution is fixed
-  static: ./static
+  templates: ../templates
+  static: ../static
 
 meta:
   title: legit Demo

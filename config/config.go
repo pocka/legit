@@ -43,15 +43,25 @@ func Read(f string) (*Config, error) {
 		return nil, fmt.Errorf("parsing config: %w", err)
 	}
 
-	if c.Repo.ScanPath, err = filepath.Abs(c.Repo.ScanPath); err != nil {
+	if c.Repo.ScanPath, err = resolvePath(c.Repo.ScanPath, f); err != nil {
 		return nil, err
 	}
-	if c.Dirs.Templates, err = filepath.Abs(c.Dirs.Templates); err != nil {
+	if c.Dirs.Templates, err = resolvePath(c.Dirs.Templates, f); err != nil {
 		return nil, err
 	}
-	if c.Dirs.Static, err = filepath.Abs(c.Dirs.Static); err != nil {
+	if c.Dirs.Static, err = resolvePath(c.Dirs.Static, f); err != nil {
 		return nil, err
 	}
 
 	return &c, nil
+}
+
+func resolvePath(target string, configPath string) (string, error) {
+	if filepath.IsAbs(target) {
+		return target, nil
+	}
+
+	dir := filepath.Dir(configPath)
+
+	return filepath.Abs(filepath.Join(dir, target))
 }
