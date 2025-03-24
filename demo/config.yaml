@@ -38,7 +38,7 @@ dirs:
 meta:
   title: legit Demo
   description: Test legit features with real repositories.
-  syntaxHighlight: monokailight
+  syntaxHighlight: true
 
 server:
   name: example.com

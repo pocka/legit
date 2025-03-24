@@ -23,7 +23,7 @@ type Config struct {
 	Meta struct {
 		Title           string `yaml:"title"`
 		Description     string `yaml:"description"`
-		SyntaxHighlight string `yaml:"syntaxHighlight"`
+		SyntaxHighlight bool   `yaml:"syntaxHighlight"`
 	} `yaml:"meta"`
 	Server struct {
 		Name string `yaml:"name,omitempty"`

@@ -45,6 +45,10 @@ meta:
   # Website's description.
   description: "web frontend for git repositories, written in Go"
 
+  # Whether highlight repository's text file.
+  # NOTE: This applies only to blob page. Code blocks inside README will be untouched.
+  syntaxHighlight: true
+
 server:
   # legit uses this strings for clone URL.
   # `https://<name>/<directory>`

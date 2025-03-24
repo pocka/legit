@@ -309,8 +309,8 @@ func (d *deps) FileContent(w http.ResponseWriter, r *http.Request) {
 		LineNumbers: lines,
 	}
 
-	if d.c.Meta.SyntaxHighlight != "" {
-		highlighted, err := highlightCode(treePath, contents, d.c.Meta.SyntaxHighlight)
+	if d.c.Meta.SyntaxHighlight {
+		highlighted, err := highlightCode(treePath, contents)
 		if err != nil {
 			log.Println(err)
 		} else {

@@ -90,17 +90,12 @@ func countLines(r io.Reader) (int, error) {
 	}
 }
 
-func highlightCode(fileName string, code string, styleQuery string) (template.HTML, error) {
+func highlightCode(fileName string, code string) (template.HTML, error) {
 	lexer := lexers.Get(fileName)
 
 	// Do not process if no appropriate highlighter was found.
 	if lexer == nil {
 		return "", nil
-	}
-
-	style := styles.Get(styleQuery)
-	if style == nil {
-		return "", fmt.Errorf("No chroma style found for '%s'", styleQuery)
 	}
 
 	formatter := html.New(html.WithClasses(true), html.ClassPrefix("chroma-"))
@@ -111,7 +106,7 @@ func highlightCode(fileName string, code string, styleQuery string) (template.HT
 	}
 
 	var output bytes.Buffer
-	err = formatter.Format(&output, style, iter)
+	err = formatter.Format(&output, styles.Fallback, iter)
 	if err != nil {
 		return "", fmt.Errorf("Failed to highlight code: %s", err)
 	}
