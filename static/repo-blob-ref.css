@@ -24,6 +24,10 @@
 	text-align: end;
 }
 
+.blob-preview--line-number-list > li {
+	display: block;
+}
+
 .blob-preview--line-number {
 	padding: 0;
 	margin: 0;
