@@ -12,6 +12,7 @@ SPDX-License-Identifier: MIT
 			Commit history at {{ .Meta.Ref }} - {{ .Meta.DisplayName }}
 		</title>
 		<meta name="description" content='Commit history on {{ .Meta.DisplayName }} at {{ .Meta.Ref }}' />
+		<script type="module" src="/static/convert-to-local-datetime.js"></script>
 	</head>
 	<body>
 		<header class="header">
@@ -48,7 +49,10 @@ SPDX-License-Identifier: MIT
 							{{- .Author.Name -}}
 						</a>
 						authored at
-						<time datetime='{{ .Author.When.Format "2006-01-02T15:04:05-0700" }}'>
+						<time
+							datetime='{{ .Author.When.Format "2006-01-02T15:04:05-0700" }}'
+							data-local-format=""
+						>
 							{{ .Author.When.Format "2006-01-02 15:04:05 -0700" }}
 						</time>
 					</span>
@@ -57,7 +61,10 @@ SPDX-License-Identifier: MIT
 							{{- .Committer.Name -}}
 						</a>
 						comitted at
-						<time datetime='{{ .Committer.When.Format "2006-01-02T15:04:05-0700" }}'>
+						<time
+							datetime='{{ .Committer.When.Format "2006-01-02T15:04:05-0700" }}'
+							data-local-format=""
+						>
 							{{ .Committer.When.Format "2006-01-02 15:04:05 -0700" }}
 						</time>
 					</span>

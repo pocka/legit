@@ -13,6 +13,7 @@ SPDX-License-Identifier: MIT
 			{{ $shorthash }} - {{ .Meta.DisplayName }}
 		</title>
 		<meta name="description" content='{{ $shorthash }} in {{ .Meta.DisplayName }}' />
+		<script type="module" src="/static/convert-to-local-datetime.js"></script>
 	</head>
 	<body>
 		<header class="header">
@@ -108,7 +109,10 @@ SPDX-License-Identifier: MIT
 					</dd>
 					<dt class="metadata--key">Authored at</dt>
 					<dd class="metadata--value">
-						<time datetime='{{ .Commit.Author.When.Format "2006-01-02T15:04:05-0700" }}'>
+						<time
+							datetime='{{ .Commit.Author.When.Format "2006-01-02T15:04:05-0700" }}'
+							data-local-format=""
+						>
 							{{ .Commit.Author.When.Format "2006-01-02 15:04:05 -0700" }}
 						</time>
 					</dd>
@@ -120,7 +124,10 @@ SPDX-License-Identifier: MIT
 					</dd>
 					<dt class="metadata--key">Committed at</dt>
 					<dd class="metadata--value">
-						<time datetime='{{ .Commit.Committer.When.Format "2006-01-02T15:04:05-0700" }}'>
+						<time
+							datetime='{{ .Commit.Committer.When.Format "2006-01-02T15:04:05-0700" }}'
+							data-local-format=""
+						>
 							{{ .Commit.Committer.When.Format "2006-01-02 15:04:05 -0700" }}
 						</time>
 					</dd>
