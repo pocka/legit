@@ -32,21 +32,21 @@
 .readme h1 {
 	font-size: var(--font-xl);
 	font-weight: var(--font-chonk);
-	margin: var(--space-xxl) 0;
+	margin: var(--space-xxxl) 0;
 	line-height: 1.2;
 }
 
 .readme h2 {
 	font-size: var(--font-lg);
 	font-weight: var(--font-chonk);
-	margin: var(--space-xxl) 0;
+	margin: var(--space-xxxl) 0;
 	line-height: 1.2;
 }
 
 .readme h3 {
 	font-size: var(--font-md);
 	font-weight: var(--font-chonk);
-	margin: var(--space-xxl) 0;
+	margin: var(--space-xxxl) 0;
 	margin-block-end: var(--space-xl);
 	line-height: 1.2;
 }
@@ -54,21 +54,21 @@
 .readme h4 {
 	font-size: var(--font-md);
 	font-weight: var(--font-thick);
-	margin: var(--space-xl) 0;
+	margin: var(--space-xxl) 0;
 	line-height: 1.2;
 }
 
 .readme h5 {
 	font-size: var(--font-sm);
 	font-weight: var(--font-chonk);
-	margin: var(--space-xl) 0;
+	margin: var(--space-xxl) 0;
 	line-height: 1.2;
 }
 
 .readme h6 {
 	font-size: var(--font-sm);
 	font-weight: var(--font-thick);
-	margin: var(--space-lg) 0;
+	margin: var(--space-xl) 0;
 	line-height: 1.2;
 }
 

@@ -38,6 +38,7 @@
 	--space-lg: calc(var(--space-md) * var(--space-scale));
 	--space-xl: calc(var(--space-lg) * var(--space-scale));
 	--space-xxl: calc(var(--space-xl) * var(--space-scale));
+	--space-xxxl: calc(var(--space-xxl) * var(--space-scale));
 
 	--radii-sm: 3px;
 	--radii-md: 6px;
