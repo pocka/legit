@@ -388,4 +388,8 @@ body {
 	.aside {
 		top: 0;
 	}
+
+	.header, .main, .aside {
+		padding-block-start: var(--space-xxxl);
+	}
 }
