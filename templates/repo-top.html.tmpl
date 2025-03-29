@@ -8,6 +8,7 @@ SPDX-License-Identifier: MIT
 	<head>
 		{{ template "head" }}
 		<link rel="stylesheet" href="/static/repo-top.css" />
+		<link rel="stylesheet" href="/static/html-content.css" />
 		<title>{{ .Meta.DisplayName }} | {{ .Config.Meta.Title }}</title>
 		{{- if .Meta.Description }}
 		<meta name="description" content="{{ .Meta.Description }}" />
@@ -28,7 +29,7 @@ SPDX-License-Identifier: MIT
 			{{ template "repo-nav" . }}
 		</header>
 		<main class="main">
-			<article class="readme">
+			<article class="html-content">
 				{{- .Readme -}}
 			</article>
 		</main>

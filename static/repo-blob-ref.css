@@ -48,6 +48,10 @@
 	overflow-x: auto;
 }
 
+.preview-type {
+	text-transform: uppercase;
+}
+
 /*
  * https://github.com/alecthomas/chroma/blob/e0c774731c6f55889d36c4cbf18e7480e24c1020/types.go#L211
  */

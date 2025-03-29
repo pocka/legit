@@ -121,6 +121,23 @@ type repoBlobRefData struct {
 
 	// LineNumbers holds sequential numbers starting from 1 up to line count of the blob.
 	LineNumbers []uint
+
+	// A list of preview output types.
+	PreviewTypes []string
+}
+
+// repoBlobRefHTMLPreviewData is a data object passed to "repo-blob-ref-html-preview" template.
+type repoBlobRefHTMLPreviewData struct {
+	// Config represents a resolved config based on "config.yaml".
+	Config *config.Config
+
+	Meta repositoryMeta
+
+	// Path to the blob.
+	Path []string
+
+	// Rendered HTML
+	Content template.HTML
 }
 
 // repoLogRefData is a data object passed to "repo-log-ref" template.

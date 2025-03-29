@@ -17,6 +17,7 @@ import (
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/pocka/legit/config"
 	"github.com/pocka/legit/git"
+	"github.com/pocka/legit/routes/preview"
 	"github.com/russross/blackfriday/v2"
 )
 
@@ -275,6 +276,61 @@ func (d *deps) FileContent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	meta := repositoryMeta{
+		DisplayName: getDisplayName(name),
+		DirName:     name,
+		Description: getDescription(path),
+		Ref:         ref,
+	}
+
+	relpath := []string{}
+	if len(treePath) > 0 {
+		relpath = strings.Split(treePath, "/")
+	}
+
+	tpath := filepath.Join(d.c.Dirs.Templates, "*")
+	t := template.Must(template.ParseGlob(tpath))
+
+	if r.URL.Query().Has("preview") {
+		previewType := r.URL.Query().Get("preview")
+
+		for _, renderer := range preview.GetPreviewRenderers(treePath) {
+			resolvedPreviewType := renderer.GetPreviewType()
+
+			if previewType != "" && resolvedPreviewType != previewType {
+				continue
+			}
+
+			switch resolvedPreviewType {
+			case "html":
+				html, err := renderer.Render([]byte(contents))
+				if err != nil {
+					log.Printf("Failed to render HTML preview: %s", err)
+					d.Write500(w)
+					return
+				}
+
+				data := repoBlobRefHTMLPreviewData{
+					Config:  d.c,
+					Meta:    meta,
+					Path:    relpath,
+					Content: template.HTML(html),
+				}
+
+				if err := t.ExecuteTemplate(w, "repo-blob-ref-html-preview", data); err != nil {
+					log.Println(err)
+					return
+				}
+
+				return
+			}
+		}
+
+		log.Printf("Got ?preview=%s, but not preview renderer is available for the type", previewType)
+		d.Write404(w)
+		return
+	}
+
 	lc, err := countLines(strings.NewReader(contents))
 	if err != nil {
 		log.Printf("Failed to count lines for %s: %s", r.URL.Path, err)
@@ -291,22 +347,19 @@ func (d *deps) FileContent(w http.ResponseWriter, r *http.Request) {
 		lines[i] = uint(i + 1)
 	}
 
-	relpath := []string{}
-	if len(treePath) > 0 {
-		relpath = strings.Split(treePath, "/")
+	renderers := preview.GetPreviewRenderers(treePath)
+	previewTypes := make([]string, len(renderers))
+	for i, renderer := range renderers {
+		previewTypes[i] = renderer.GetPreviewType()
 	}
 
 	data := repoBlobRefData{
-		Config: d.c,
-		Meta: repositoryMeta{
-			DisplayName: getDisplayName(name),
-			DirName:     name,
-			Description: getDescription(path),
-			Ref:         ref,
-		},
-		Path:        relpath,
-		Content:     contents,
-		LineNumbers: lines,
+		Config:       d.c,
+		Meta:         meta,
+		Path:         relpath,
+		Content:      contents,
+		LineNumbers:  lines,
+		PreviewTypes: previewTypes,
 	}
 
 	if d.c.Meta.SyntaxHighlight {
@@ -317,9 +370,6 @@ func (d *deps) FileContent(w http.ResponseWriter, r *http.Request) {
 			data.SyntaxHighlightedContent = highlighted
 		}
 	}
-
-	tpath := filepath.Join(d.c.Dirs.Templates, "*")
-	t := template.Must(template.ParseGlob(tpath))
 
 	if err := t.ExecuteTemplate(w, "repo-blob-ref", data); err != nil {
 		log.Println(err)

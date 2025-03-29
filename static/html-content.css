@@ -1,0 +1,147 @@
+/* Copyright 2025 Shota FUJI <pockawoooh@gmail.com>
+ * SPDX-License-Identifier: MIT
+ */
+
+.html-content {
+	line-height: 1.3;
+}
+
+.html-content > :first-child {
+	margin-block-start: 0;
+}
+
+.html-content h1 {
+	font-size: var(--font-xl);
+	font-weight: var(--font-chonk);
+	margin: var(--space-xxxl) 0;
+	line-height: 1.2;
+}
+
+.html-content h2 {
+	font-size: var(--font-lg);
+	font-weight: var(--font-chonk);
+	margin: var(--space-xxxl) 0;
+	line-height: 1.2;
+}
+
+.html-content h3 {
+	font-size: var(--font-md);
+	font-weight: var(--font-chonk);
+	margin: var(--space-xxxl) 0;
+	margin-block-end: var(--space-xl);
+	line-height: 1.2;
+}
+
+.html-content h4 {
+	font-size: var(--font-md);
+	font-weight: var(--font-thick);
+	margin: var(--space-xxl) 0;
+	line-height: 1.2;
+}
+
+.html-content h5 {
+	font-size: var(--font-sm);
+	font-weight: var(--font-chonk);
+	margin: var(--space-xxl) 0;
+	line-height: 1.2;
+}
+
+.html-content h6 {
+	font-size: var(--font-sm);
+	font-weight: var(--font-thick);
+	margin: var(--space-xl) 0;
+	line-height: 1.2;
+}
+
+.html-content p {
+	font-size: var(--font-md);
+	font-weight: var(--font-regular);
+	margin: var(--space-lg) 0;
+}
+
+.html-content ul, .html-content ol {
+	margin: var(--space-lg) 0;
+	padding: 0;
+	padding-inline-start: 1.2em;
+	line-height: 1.2;
+}
+
+.html-content li + li {
+	margin-block-start: var(--space-xxs);
+}
+
+.html-content pre {
+	margin: var(--space-xl) 0;
+	padding: var(--space-xxl) var(--space-xl);
+	font-family: var(--font-mono);
+	font-size: var(--font-sm);
+	border: 1px solid var(--color-border-subtle);
+	line-height: 1.2;
+
+	border-radius: var(--radii-md);
+	box-shadow: 1px 1px 4px var(--color-shadow);
+	overflow-x: auto;
+	overflow-y: hidden;
+}
+
+.html-content table {
+	margin: 0;
+	margin-block-end: var(--space-xxl);
+	min-width: 100%;
+	border-collapse: collapse;
+}
+
+.html-content thead > tr {
+	border-block-end: 1px solid var(--color-border-subtle);
+}
+
+.html-content tbody > tr:first-of-type > td {
+	padding-block-start: var(--space-md);
+}
+
+.html-content th {
+	font-weight: var(--font-regular);
+	color: var(--color-fg-weak);
+}
+
+.html-content th, td {
+	font-size: var(--font-sm);
+	padding: var(--space-xs) var(--space-md);
+}
+
+.html-content code:not(:where(pre > code)) {
+	font-size: var(--font-sm);
+	font-family: var(--font-mono);
+	font-style: italic;
+
+	color: var(--color-fg-weak);
+}
+
+.html-content a {
+	text-decoration: underline;
+}
+
+.html-content a > code {
+	color: inherit;
+}
+
+.html-content img[src^="./"] {
+	display: inline-flex;
+	flex-direction: column;
+	padding: var(--space-lg) var(--space-xl);
+	font-size: var(--font-sm);
+	border: 1px solid var(--color-border-subtle);
+	line-height: 1.2;
+	gap: var(--space-xs);
+
+	border-radius: var(--radii-md);
+	box-shadow: 1px 1px 4px var(--color-shadow);
+}
+.html-content img[src^="./"]::after {
+	display: block;
+	content: "Rendering of local image is not supported.";
+	font-size: var(--font-xs);
+	font-style: italic;
+
+	color: var(--color-fg-weak);
+}

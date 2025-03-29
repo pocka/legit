@@ -2,12 +2,12 @@
 Copyright 2025 Shota FUJI <pockawoooh@gmail.com>
 SPDX-License-Identifier: MIT
 -->
-{{ define "repo-blob-ref" -}}
+{{ define "repo-blob-ref-html-preview" -}}
 <!DOCTYPE html>
 <html lang="en">
 	<head>
+		<link rel="stylesheet" href="/static/html-content.css" />
 		{{ template "head" }}
-		<link rel="stylesheet" href="/static/repo-blob-ref.css" />
 		{{- $path := "" -}}
 		{{- $name := "" -}}
 		{{- range .Path -}}
@@ -42,43 +42,33 @@ SPDX-License-Identifier: MIT
 					{{- end -}}
 					{{- end -}}
 					{{- if eq $segment $name -}}
-						<a href="/{{ $meta.DirName }}/blob/{{ $meta.Ref }}{{ $trail }}" aria-current="page">{{ $segment }}</a>
+						<a href="/{{ $meta.DirName }}/blob/{{ $meta.Ref }}{{ $trail }}">{{ $segment }}</a>
 					{{- else -}}
 						<a href="/{{ $meta.DirName }}/tree/{{ $meta.Ref }}{{ $trail }}">{{ $segment }}</a>
 					{{- end -}}
 				</li>
 				{{- end }}
+				<li>
+					<a href="/{{ .Meta.DirName }}/blob/{{ .Meta.Ref }}{{ $path }}?preview=html" aria-current="page">
+						Preview
+					</a>
+				</li>
 			</ol>
 			{{ template "repo-header" . }}
 			{{ template "repo-nav" . }}
 		</header>
 		<main class="main">
-			<div class="blob-preview">
-				<ol class="blob-preview--line-number-list">
-					{{- range .LineNumbers -}}
-					<li>
-						<a id="L{{ . }}" class="blob-preview--line-number" href="#L{{ . }}">{{ . }}</a>
-					</li>
-					{{- end -}}
-				</ol>
-				{{ if .SyntaxHighlightedContent -}}
-				{{ .SyntaxHighlightedContent }}
-				{{- else -}}
-				<pre><code>
-					{{- .Content -}}
-				</code></pre>
-				{{- end }}
-			</div>
+			<article class="html-content">
+				{{- .Content -}}
+			</article>
 		</main>
 		<aside class="aside">
 			<dl class="metadata">
 				{{- template "tab-selector" -}}
-				{{- range .PreviewTypes -}}
-				<dt class="metadata--key">Preview (<span class="preview-type">{{ . }}</span>)</dt>
+				<dt class="metadata--key">Preview</dt>
 				<dd class="metadata--value">
-					<a href="?preview={{ . }}">View in <span class="preview-type">{{ . }}</span></a>
+					<a href="/{{ .Meta.DirName }}/blob/{{ .Meta.Ref }}{{ $path }}">View code</a>
 				</dd>
-				{{- end -}}
 			</dl>
 		</aside>
 	</body>
