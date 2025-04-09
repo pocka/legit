@@ -46,6 +46,7 @@
 	padding: 0;
 	padding-inline-start: var(--space-sm);
 	overflow-x: auto;
+	overflow-y: hidden;
 }
 
 .preview-type {
