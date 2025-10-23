@@ -1,11 +1,13 @@
 package routes
 
 import (
+	"bytes"
 	"compress/gzip"
 	"fmt"
 	"html/template"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"sort"
@@ -115,6 +117,13 @@ func (d *deps) RepoIndex(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	mainBranch, err := gr.FindMainBranch(d.c.Repo.MainBranch)
+	if err != nil {
+		d.Write500(w)
+		log.Println(err)
+		return
+	}
+
 	var readmeContent template.HTML
 	for _, readme := range d.c.Repo.Readme {
 		ext := filepath.Ext(readme)
@@ -122,8 +131,48 @@ func (d *deps) RepoIndex(w http.ResponseWriter, r *http.Request) {
 		if len(content) > 0 {
 			switch ext {
 			case ".md", ".mkd", ".markdown":
+				parser := blackfriday.New(blackfriday.WithExtensions(blackfriday.CommonExtensions))
+				tree := parser.Parse([]byte(content))
+				tree.Walk(func(node *blackfriday.Node, entering bool) blackfriday.WalkStatus {
+					if !entering {
+						return blackfriday.GoToNext
+					}
+
+					if node.Type == blackfriday.Link {
+						href := string(node.LinkData.Destination)
+						parsedURL, err := url.Parse(href)
+						if err == nil && parsedURL.Host != "" {
+							// Full URL, skip.
+							return blackfriday.GoToNext
+						}
+
+						if strings.IndexByte(href, '/') == 0 {
+							// Repository index page is the "root" for repository's README file.
+							href = "." + href
+						}
+
+						if strings.LastIndexByte(href, '/') == len(href)-1 {
+							node.LinkData.Destination = fmt.Appendf([]byte{}, "/%s/tree/%s/%s", name, mainBranch, href)
+							node.LinkData.Destination = node.LinkData.Destination[:len(node.LinkData.Destination)-1]
+						} else {
+							node.LinkData.Destination = fmt.Appendf([]byte{}, "/%s/blob/%s/%s", name, mainBranch, href)
+						}
+
+					}
+
+					return blackfriday.GoToNext
+				})
+
+				var writer bytes.Buffer
+				renderer := blackfriday.NewHTMLRenderer(blackfriday.HTMLRendererParameters{})
+				renderer.RenderHeader(&writer, tree)
+				tree.Walk(func(node *blackfriday.Node, entering bool) blackfriday.WalkStatus {
+					return renderer.RenderNode(&writer, node, entering)
+				})
+				renderer.RenderFooter(&writer, tree)
+
 				unsafe := blackfriday.Run(
-					[]byte(content),
+					writer.Bytes(),
 					blackfriday.WithExtensions(blackfriday.CommonExtensions),
 				)
 				html := bluemonday.UGCPolicy().SanitizeBytes(unsafe)
@@ -140,13 +189,6 @@ func (d *deps) RepoIndex(w http.ResponseWriter, r *http.Request) {
 
 	if readmeContent == "" {
 		log.Printf("no readme found for %s", name)
-	}
-
-	mainBranch, err := gr.FindMainBranch(d.c.Repo.MainBranch)
-	if err != nil {
-		d.Write500(w)
-		log.Println(err)
-		return
 	}
 
 	tpath := filepath.Join(d.c.Dirs.Templates, "*")
