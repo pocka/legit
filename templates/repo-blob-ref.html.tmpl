@@ -73,6 +73,10 @@ SPDX-License-Identifier: MIT
 		<aside class="aside">
 			<dl class="metadata">
 				{{- template "tab-selector" -}}
+				<dt class="metadata--key">Raw</dt>
+				<dd class="metadata--value">
+					<a href="?raw=true">View raw</a>
+				</dd>
 				{{- range .PreviewTypes -}}
 				<dt class="metadata--key">Preview (<span class="preview-type">{{ . }}</span>)</dt>
 				<dd class="metadata--value">
