@@ -46,6 +46,24 @@
           };
         });
 
+      formatter = forAllSystems (system:
+      let
+        pkgs = nixpkgsFor.${system};
+      in
+      pkgs.buildFHSEnv {
+        name = "fhs-dprint";
+        targetPkgs =
+          pkgs: with pkgs; [
+            # Formatter frontend.
+            # https://dprint.dev/
+            dprint
+
+            # For "gofmt" command.
+            go
+          ];
+        runScript = "dprint fmt";
+      });
+
       defaultPackage = forAllSystems (system: self.packages.${system}.legit);
       devShells = forAllSystems (system:
         let
