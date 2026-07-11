@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"math"
 	"net/http"
 
 	"github.com/pocka/legit/config"
@@ -12,12 +13,28 @@ import (
 
 func main() {
 	var cfg string
+	var host string
+	var port uint
 	flag.StringVar(&cfg, "config", "./config.yaml", "path to config file")
+	flag.StringVar(&host, "server.host", "", "override server.host config")
+	flag.UintVar(&port, "server.port", 0, "override server.port config")
 	flag.Parse()
 
 	c, err := config.Read(cfg)
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	if port > 0 {
+		if port > math.MaxUint16 {
+			log.Fatalf("server.port should be in 0 < x <= %d range", math.MaxUint16)
+		}
+
+		c.Server.Port = int(port)
+	}
+
+	if host != "" {
+		c.Server.Host = host
 	}
 
 	if err := UnveilPaths([]string{
