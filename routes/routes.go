@@ -221,8 +221,6 @@ func (d *deps) RepoIndex(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
-
-	return
 }
 
 func (d *deps) RepoTree(w http.ResponseWriter, r *http.Request) {
@@ -278,8 +276,6 @@ func (d *deps) RepoTree(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
-
-	return
 }
 
 func (d *deps) FileContent(w http.ResponseWriter, r *http.Request) {
@@ -423,8 +419,6 @@ func (d *deps) FileContent(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
-
-	return
 }
 
 func (d *deps) Archive(w http.ResponseWriter, r *http.Request) {
