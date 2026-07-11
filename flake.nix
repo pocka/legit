@@ -73,6 +73,7 @@
           default = pkgs.mkShell {
             nativeBuildInputs = with pkgs; [
               go
+              gopls
             ];
           };
         });
