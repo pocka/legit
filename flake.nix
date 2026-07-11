@@ -4,17 +4,20 @@
   inputs.nixpkgs.url = "github:nixos/nixpkgs";
 
   outputs =
-    { self
-    , nixpkgs
-    ,
-    }:
+    { self, nixpkgs }:
     let
-      supportedSystems = [ "x86_64-linux" "x86_64-darwin" "aarch64-linux" "aarch64-darwin" ];
+      supportedSystems = [
+        "x86_64-linux"
+        "x86_64-darwin"
+        "aarch64-linux"
+        "aarch64-darwin"
+      ];
       forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
       nixpkgsFor = forAllSystems (system: import nixpkgs { inherit system; });
     in
     {
-      packages = forAllSystems (system:
+      packages = forAllSystems (
+        system:
         let
           pkgs = nixpkgsFor.${system};
           legit = self.packages.${system}.legit;
@@ -38,34 +41,48 @@
           docker = pkgs.dockerTools.buildLayeredImage {
             name = "sini:5000/legit";
             tag = "latest";
-            contents = [ files legit pkgs.git ];
+            contents = [
+              files
+              legit
+              pkgs.git
+            ];
             config = {
               Entrypoint = [ "${legit}/bin/legit" ];
-              ExposedPorts = { "5555/tcp" = { }; };
+              ExposedPorts = {
+                "5555/tcp" = { };
+              };
             };
           };
-        });
+        }
+      );
 
-      formatter = forAllSystems (system:
-      let
-        pkgs = nixpkgsFor.${system};
-      in
-      pkgs.buildFHSEnv {
-        name = "fhs-dprint";
-        targetPkgs =
-          pkgs: with pkgs; [
-            # Formatter frontend.
-            # https://dprint.dev/
-            dprint
+      formatter = forAllSystems (
+        system:
+        let
+          pkgs = nixpkgsFor.${system};
+        in
+        pkgs.buildFHSEnv {
+          name = "fhs-dprint";
+          targetPkgs =
+            pkgs: with pkgs; [
+              # Formatter frontend.
+              # https://dprint.dev/
+              dprint
 
-            # For "gofmt" command.
-            go
-          ];
-        runScript = "dprint fmt";
-      });
+              # > Official formatter for Nix code
+              # https://github.com/NixOS/nixfmt
+              nixfmt
+
+              # For "gofmt" command.
+              go
+            ];
+          runScript = "dprint fmt";
+        }
+      );
 
       defaultPackage = forAllSystems (system: self.packages.${system}.legit);
-      devShells = forAllSystems (system:
+      devShells = forAllSystems (
+        system:
         let
           pkgs = nixpkgsFor.${system};
         in
@@ -76,6 +93,7 @@
               gopls
             ];
           };
-        });
+        }
+      );
     };
 }

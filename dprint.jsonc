@@ -28,6 +28,10 @@
 				"command": "gofmt",
 				"exts": ["go"],
 			},
+			{
+				"command": "nixfmt --strict --width={{line_width}} --indent={{indent_width}}",
+				"exts": ["nix"],
+			},
 		],
 	},
 
