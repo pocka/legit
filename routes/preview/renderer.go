@@ -6,6 +6,8 @@
 package preview
 
 import (
+	"bytes"
+	"net/url"
 	"path/filepath"
 
 	"github.com/microcosm-cc/bluemonday"
@@ -26,7 +28,41 @@ func (r MarkdownToHtmlRenderer) GetPreviewType() string {
 
 func (r MarkdownToHtmlRenderer) Render(code []byte) ([]byte, error) {
 	sanitizer := bluemonday.UGCPolicy()
-	unsafe := blackfriday.Run(code, blackfriday.WithExtensions(blackfriday.CommonExtensions))
+	parser := blackfriday.New(blackfriday.WithExtensions(blackfriday.CommonExtensions))
+
+	tree := parser.Parse(code)
+	tree.Walk(func(node *blackfriday.Node, entering bool) blackfriday.WalkStatus {
+		if !entering {
+			return blackfriday.GoToNext
+		}
+
+		if node.Type == blackfriday.Image {
+			src := string(node.LinkData.Destination)
+			parsedURL, err := url.Parse(src)
+			if err == nil && parsedURL.Host != "" {
+				// External URL, skip.
+				return blackfriday.GoToNext
+			}
+
+			queries := parsedURL.Query()
+			queries.Add("raw", "1")
+			parsedURL.RawQuery = queries.Encode()
+
+			node.LinkData.Destination = []byte(parsedURL.String())
+		}
+
+		return blackfriday.GoToNext
+	})
+
+	var writer bytes.Buffer
+	renderer := blackfriday.NewHTMLRenderer(blackfriday.HTMLRendererParameters{})
+	renderer.RenderHeader(&writer, tree)
+	tree.Walk(func(node *blackfriday.Node, entering bool) blackfriday.WalkStatus {
+		return renderer.RenderNode(&writer, node, entering)
+	})
+	renderer.RenderFooter(&writer, tree)
+
+	unsafe := blackfriday.Run(writer.Bytes(), blackfriday.WithExtensions(blackfriday.CommonExtensions))
 	return sanitizer.SanitizeBytes(unsafe), nil
 }
 

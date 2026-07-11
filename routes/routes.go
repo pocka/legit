@@ -142,7 +142,7 @@ func (d *deps) RepoIndex(w http.ResponseWriter, r *http.Request) {
 						return blackfriday.GoToNext
 					}
 
-					if node.Type == blackfriday.Link {
+					if node.Type == blackfriday.Link || node.Type == blackfriday.Image {
 						href := string(node.LinkData.Destination)
 						parsedURL, err := url.Parse(href)
 						if err == nil && parsedURL.Host != "" {
@@ -155,7 +155,9 @@ func (d *deps) RepoIndex(w http.ResponseWriter, r *http.Request) {
 							href = "." + href
 						}
 
-						if strings.LastIndexByte(href, '/') == len(href)-1 {
+						if node.Type == blackfriday.Image {
+							node.LinkData.Destination = fmt.Appendf([]byte{}, "/%s/blob/%s/%s?raw=true", name, mainBranch, href)
+						} else if strings.LastIndexByte(href, '/') == len(href)-1 {
 							node.LinkData.Destination = fmt.Appendf([]byte{}, "/%s/tree/%s/%s", name, mainBranch, href)
 							node.LinkData.Destination = node.LinkData.Destination[:len(node.LinkData.Destination)-1]
 						} else {
