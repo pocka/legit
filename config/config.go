@@ -25,6 +25,15 @@ type Config struct {
 		Description     string `yaml:"description"`
 		SyntaxHighlight bool   `yaml:"syntaxHighlight"`
 	} `yaml:"meta"`
+	UI struct {
+		Footer struct {
+			Links []struct {
+				Text string `yaml:"text"`
+				Href string `yaml:"href"`
+			} `yaml:"links"`
+			PoweredBy bool `yaml:"poweredBy"`
+		} `yaml:"footer"`
+	} `yaml:"ui"`
 	Server struct {
 		Name string `yaml:"name,omitempty"`
 		Host string `yaml:"host"`

@@ -83,10 +83,12 @@ body {
 	font-weight: var(--font-regular);
 	display: grid;
 	grid-template-columns: 100%;
+	grid-template-rows: min-content minmax(0, 1fr) min-content min-content;
 	grid-template-areas:
 		"header"
 		"main"
-		"aside";
+		"aside"
+		"footer";
 	align-content: start;
 	gap: var(--space-lg) 0;
 	padding: 0;
@@ -130,7 +132,7 @@ body {
 	}
 }
 
-.main, .aside {
+.main, .aside, .footer {
 	width: 100%;
 	max-width: 60rem;
 	margin: 0 auto;
@@ -147,6 +149,29 @@ body {
 .aside {
 	grid-area: aside;
 	font-size: var(--font-sm);
+}
+
+.footer {
+	grid-area: footer;
+	align-self: end;
+	font-size: var(--font-xs);
+	border-block-start: 1px solid var(--color-border-subtle);
+	margin: 0;
+	margin-block-start: var(--space-xxxl);
+	max-width: unset;
+
+	background-color: var(--color-bg);
+	text-align: end;
+	z-index: 15;
+}
+
+.footer--links {
+	padding: 0;
+	padding-inline-start: 1em;
+	margin: 0;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5em 2em;
 }
 
 .breadcrumbs {
@@ -327,13 +352,15 @@ body {
 		grid-template-columns: 60rem minmax(0, 1fr);
 		grid-template-areas:
 			"header header"
-			"main aside";
+			"main aside"
+			"footer footer";
 	}
 
 	body:where(:not(:has(.aside))) {
 		grid-template-areas:
 			"header header"
-			"main main";
+			"main main"
+			"footer footer";
 	}
 
 	.aside {
@@ -351,18 +378,30 @@ body {
 @media (min-width: 100rem) {
 	body {
 		grid-template-columns: minmax(0, 40rem) minmax(60rem, 1fr) minmax(0, 40rem);
-		grid-template-areas: "header main aside";
-		gap: var(--space-xxl);
+		grid-template-rows: minmax(0, 1fr) min-content;
+		grid-template-areas:
+			"header main aside"
+			"footer main aside";
+		gap: 0 var(--space-xxl);
 	}
 
 	.header {
 		position: sticky;
-		height: 100dvh;
 		top: 0;
 		border-block-end: none;
 		border-inline-end: 1px solid var(--color-border-subtle);
+		align-self: stretch;
 
 		box-shadow: 1px 0px 3px var(--color-shadow) inset;
+	}
+
+	.footer {
+		margin: 0;
+		border-inline-end: 1px solid var(--color-border-subtle);
+	}
+
+	.footer--links {
+		display: inline-flex;
 	}
 
 	.breadcrumbs {

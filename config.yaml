@@ -43,6 +43,20 @@ meta:
   # NOTE: This applies only to blob page. Code blocks inside README will be untouched.
   syntaxHighlight: true
 
+ui:
+  # Footer won't appear if `links` is empty and `poweredBy` is `false`.
+  footer:
+    # Links to display in the footer.
+    links:
+      - text: Contact
+        # legit simply use this value as `<a>` tag's `href` attribute value.
+        href: mailto:johndoe@example.com
+      - text: Author Profile
+        href: https://example.com
+
+      # Display "Powered by ..." text.
+    poweredBy: true
+
 server:
   # legit uses this strings for clone URL.
   # `https://<name>/<directory>`

@@ -37,6 +37,17 @@ meta:
   description: Test legit features with real repositories.
   syntaxHighlight: true
 
+ui:
+  footer:
+    links:
+      - text: Hosted
+        href: https://git.pocka.jp/legit.git
+      - text: GitHub Mirror
+        href: https://github.com/pocka/legit
+      - text: Original
+        href: https://github.com/icyphox/legit
+    poweredBy: true
+
 server:
   name: example.com
   host: localhost

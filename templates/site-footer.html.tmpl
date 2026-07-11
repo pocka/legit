@@ -1,0 +1,22 @@
+<!--
+Copyright 2026 Shota FUJI <pockawoooh@gmail.com>
+SPDX-License-Identifier: MIT
+-->
+{{ define "site-footer" -}}
+{{- if or (gt (len .Config.UI.Footer.Links) 0) .Config.UI.Footer.PoweredBy -}}
+<footer class="footer">
+	{{- if gt (len .Config.UI.Footer.Links) 0 }}
+		<ul class="footer--links">
+		{{- range .Config.UI.Footer.Links }}
+			<li>
+				<a href="{{ .Href }}">{{ .Text }}</a>
+			</li>
+		{{- end }}
+		</ul>
+	{{- end }}
+	{{- if .Config.UI.Footer.PoweredBy }}
+		<p>Powered by <a href="https://git.pocka.jp/legit.git">legit</a></p>
+	{{- end }}
+</footer>
+{{- end -}}
+{{- end -}}
