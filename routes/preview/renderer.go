@@ -45,7 +45,7 @@ func (r MarkdownToHtmlRenderer) Render(code []byte) ([]byte, error) {
 			}
 
 			queries := parsedURL.Query()
-			queries.Add("raw", "1")
+			queries.Add("raw", "")
 			parsedURL.RawQuery = queries.Encode()
 
 			node.LinkData.Destination = []byte(parsedURL.String())

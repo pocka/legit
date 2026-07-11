@@ -11,7 +11,6 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
-	"strconv"
 	"strings"
 
 	securejoin "github.com/cyphar/filepath-securejoin"
@@ -156,7 +155,7 @@ func (d *deps) RepoIndex(w http.ResponseWriter, r *http.Request) {
 						}
 
 						if node.Type == blackfriday.Image {
-							node.LinkData.Destination = fmt.Appendf([]byte{}, "/%s/blob/%s/%s?raw=true", name, mainBranch, href)
+							node.LinkData.Destination = fmt.Appendf([]byte{}, "/%s/blob/%s/%s?raw", name, mainBranch, href)
 						} else if strings.LastIndexByte(href, '/') == len(href)-1 {
 							node.LinkData.Destination = fmt.Appendf([]byte{}, "/%s/tree/%s/%s", name, mainBranch, href)
 							node.LinkData.Destination = node.LinkData.Destination[:len(node.LinkData.Destination)-1]
@@ -284,10 +283,7 @@ func (d *deps) RepoTree(w http.ResponseWriter, r *http.Request) {
 }
 
 func (d *deps) FileContent(w http.ResponseWriter, r *http.Request) {
-	var raw bool
-	if rawParam, err := strconv.ParseBool(r.URL.Query().Get("raw")); err == nil {
-		raw = rawParam
-	}
+	raw := r.URL.Query().Has("raw")
 
 	name := r.PathValue("name")
 	if d.isIgnored(name) {
