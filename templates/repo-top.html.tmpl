@@ -29,9 +29,13 @@ SPDX-License-Identifier: MIT
 			{{ template "repo-nav" . }}
 		</header>
 		<main class="main">
-			<article class="html-content">
-				{{- .Readme -}}
-			</article>
+			{{- if eq .Readme "" -}}
+				<p class="no-readme-placeholder">[ This repository has no README file. ]</p>
+			{{- else -}}
+				<article class="html-content">
+					{{- .Readme -}}
+				</article>
+			{{- end -}}
 		</main>
 		<div class="aside">
 			<aside>

@@ -192,10 +192,6 @@ func (d *deps) RepoIndex(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if readmeContent == "" {
-		log.Printf("no readme found for %s", name)
-	}
-
 	tpath := filepath.Join(d.c.Dirs.Templates, "*")
 	t := template.Must(template.ParseGlob(tpath))
 

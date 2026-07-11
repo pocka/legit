@@ -2,6 +2,11 @@
  * SPDX-License-Identifier: MIT
  */
 
+.no-readme-placeholder {
+	font-style: italic;
+	color: var(--color-fg-weak);
+}
+
 .recent-commits {
 	margin-block-start: var(--space-xl);
 }
