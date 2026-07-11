@@ -127,7 +127,11 @@ func (d *deps) RepoIndex(w http.ResponseWriter, r *http.Request) {
 	var readmeContent template.HTML
 	for _, readme := range d.c.Repo.Readme {
 		ext := filepath.Ext(readme)
-		content, _ := gr.FileContent(readme)
+
+		// Getting a binary here is unlikely and we can't guess the repo owner's
+		// intention in that case. So we process the file with Markdown processor
+		// anyway, even if that produces nonsential garbage.
+		content, _, _ := gr.FileContent(readme)
 		if len(content) > 0 {
 			switch ext {
 			case ".md", ".mkd", ".markdown":
@@ -305,7 +309,7 @@ func (d *deps) FileContent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	contents, err := gr.FileContent(treePath)
+	contents, isBinary, err := gr.FileContent(treePath)
 	if err != nil {
 		d.Write500(w)
 		return
@@ -316,6 +320,10 @@ func (d *deps) FileContent(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/plain")
 		w.Write([]byte(contents))
 		return
+	}
+
+	if isBinary {
+		contents = "Not displaying binary file"
 	}
 
 	meta := repositoryMeta{

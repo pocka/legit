@@ -127,29 +127,28 @@ func (g *GitRepo) LastCommit() (*object.Commit, error) {
 	return c, nil
 }
 
-func (g *GitRepo) FileContent(path string) (string, error) {
+// FileContent returns the content of a file at the "path" and
+// whether the file is binary or not.
+func (g *GitRepo) FileContent(path string) (string, bool, error) {
 	c, err := g.r.CommitObject(g.h)
 	if err != nil {
-		return "", fmt.Errorf("commit object: %w", err)
+		return "", false, fmt.Errorf("commit object: %w", err)
 	}
 
 	tree, err := c.Tree()
 	if err != nil {
-		return "", fmt.Errorf("file tree: %w", err)
+		return "", false, fmt.Errorf("file tree: %w", err)
 	}
 
 	file, err := tree.File(path)
 	if err != nil {
-		return "", err
+		return "", false, err
 	}
 
 	isbin, _ := file.IsBinary()
+	contents, err := file.Contents()
 
-	if !isbin {
-		return file.Contents()
-	} else {
-		return "Not displaying binary file", nil
-	}
+	return contents, isbin, err
 }
 
 func (g *GitRepo) Tags() ([]*TagReference, error) {
