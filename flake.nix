@@ -38,6 +38,9 @@
 
             vendorHash = "sha256-GR+ddG6058s9NDGwbk2z86vcOIa11DUQqP6tS0ruUdo=";
           };
+
+          default = legit;
+
           docker = pkgs.dockerTools.buildLayeredImage {
             name = "sini:5000/legit";
             tag = "latest";
@@ -80,7 +83,6 @@
         }
       );
 
-      defaultPackage = forAllSystems (system: self.packages.${system}.legit);
       devShells = forAllSystems (
         system:
         let
