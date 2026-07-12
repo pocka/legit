@@ -47,6 +47,25 @@
 
           default = legit;
 
+          testing =
+            let
+              repos = pkgs.callPackage ./tests/k6/repos.nix { };
+            in
+            pkgs.writeShellApplication {
+              name = "legit-testing";
+
+              text = ''
+                ${pkgs.lib.getExe legit} -config ${repos}/tests/k6/config.yaml
+              '';
+
+              runtimeInputs = with pkgs; [
+                git
+                legit
+
+                repos
+              ];
+            };
+
           docker = pkgs.dockerTools.buildLayeredImage {
             name = "sini:5000/legit";
             tag = "latest";
@@ -61,6 +80,15 @@
                 "5555/tcp" = { };
               };
             };
+          };
+        }
+      );
+
+      apps = forAllSystems (
+        { system, pkgs }: {
+          k6 = {
+            type = "app";
+            program = pkgs.lib.getExe pkgs.k6;
           };
         }
       );

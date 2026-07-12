@@ -1,0 +1,10 @@
+# Copyright 2026 Shota FUJI <pockawoooh@gmail.com>
+# SPDX-License-Identifier: MIT
+
+# Test repositories. To manually run test server, run below:
+#     mkdir repos
+#     cd repos
+#     bash ../create_repos.bash
+#     cd ..
+#     ../../legit -config config.yaml
+/repos
