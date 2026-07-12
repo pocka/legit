@@ -43,6 +43,8 @@
             src = ./.;
 
             vendorHash = "sha256-GR+ddG6058s9NDGwbk2z86vcOIa11DUQqP6tS0ruUdo=";
+
+            meta.mainProgram = "legit";
           };
 
           default = legit;
