@@ -12,14 +12,20 @@
         "aarch64-linux"
         "aarch64-darwin"
       ];
-      forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
-      nixpkgsFor = forAllSystems (system: import nixpkgs { inherit system; });
+      forAllSystems =
+        f:
+        nixpkgs.lib.genAttrs supportedSystems (
+          system:
+          f {
+            inherit system;
+            pkgs = import nixpkgs { inherit system; };
+          }
+        );
     in
     {
       packages = forAllSystems (
-        system:
+        { system, pkgs }:
         let
-          pkgs = nixpkgsFor.${system};
           legit = self.packages.${system}.legit;
           files = pkgs.lib.fileset.toSource {
             root = ./.;
@@ -60,10 +66,7 @@
       );
 
       formatter = forAllSystems (
-        system:
-        let
-          pkgs = nixpkgsFor.${system};
-        in
+        { system, pkgs }:
         pkgs.buildFHSEnv {
           name = "fhs-dprint";
           targetPkgs =
@@ -84,11 +87,7 @@
       );
 
       devShells = forAllSystems (
-        system:
-        let
-          pkgs = nixpkgsFor.${system};
-        in
-        {
+        { system, pkgs }: {
           default = pkgs.mkShell {
             nativeBuildInputs = with pkgs; [
               go
