@@ -36,7 +36,7 @@
             rev = "master";
             src = ./.;
 
-            vendorHash = "sha256-ynv0pBdVPIhTz7RvCwVWr0vUWwfw+PEjFXs9PdQMqm8=";
+            vendorHash = "sha256-GR+ddG6058s9NDGwbk2z86vcOIa11DUQqP6tS0ruUdo=";
           };
           docker = pkgs.dockerTools.buildLayeredImage {
             name = "sini:5000/legit";
