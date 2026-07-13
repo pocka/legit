@@ -30,7 +30,7 @@ dirs:
   #
   # If you omit this, legit will use its default templates directory
   # ("templates" directory next to this file) embedded in the binary.
-  templates: ./templates
+  templates: ./embed/templates
 
   # [optional]
   # Path to a directory containing custom static assets.
@@ -38,7 +38,7 @@ dirs:
   # ("static" directory next to this file) embedded in the binary.
   #
   # Visitors can access files in this directory by accessing "/static/*".
-  static: ./static
+  static: ./embed/static
 
 meta:
   # Website's name.

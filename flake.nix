@@ -43,8 +43,7 @@
                 fileset = unions [
                   ./go.mod
                   ./go.sum
-                  ./static
-                  ./templates
+                  ./embed
                   (fileFilter (file: file.hasExt "go") ./.)
                 ];
               };

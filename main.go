@@ -1,7 +1,6 @@
 package main
 
 import (
-	"embed"
 	"flag"
 	"fmt"
 	"io/fs"
@@ -11,14 +10,9 @@ import (
 	"os"
 
 	"github.com/pocka/legit/config"
+	"github.com/pocka/legit/embed"
 	"github.com/pocka/legit/routes"
 )
-
-//go:embed static/*
-var defaultStaticDir embed.FS
-
-//go:embed templates/*
-var defaultTemplatesDir embed.FS
 
 func main() {
 	var cfg string
@@ -65,20 +59,14 @@ func main() {
 
 		staticDir = root.FS()
 	} else {
-		staticDir, err = fs.Sub(defaultStaticDir, "static")
-		if err != nil {
-			log.Fatalf("Unable to open default static dir: %s", err)
-		}
+		staticDir = embed.StaticDir()
 	}
 
 	var templatesDir fs.FS
 	if c.Dirs.Templates != "" {
 		templatesDir = os.DirFS(c.Dirs.Templates)
 	} else {
-		templatesDir, err = fs.Sub(defaultTemplatesDir, "templates")
-		if err != nil {
-			log.Fatalf("Unable to open default templates dir: %s", err)
-		}
+		templatesDir = embed.TemplatesDir()
 	}
 
 	mux := routes.Handlers(c, staticDir, templatesDir)
