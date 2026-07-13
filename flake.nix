@@ -29,10 +29,7 @@
           legit = self.packages.${system}.legit;
           files = pkgs.lib.fileset.toSource {
             root = ./.;
-            fileset = pkgs.lib.fileset.unions [
-              ./config.yaml
-              ./templates
-            ];
+            fileset = pkgs.lib.fileset.unions [ ./config.yaml ];
           };
         in
         {
@@ -47,6 +44,7 @@
                   ./go.mod
                   ./go.sum
                   ./static
+                  ./templates
                   (fileFilter (file: file.hasExt "go") ./.)
                 ];
               };

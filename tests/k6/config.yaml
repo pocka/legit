@@ -8,9 +8,6 @@ repo:
   mainBranch:
     - trunk
 
-dirs:
-  templates: ../../templates
-
 meta:
   title: Legit Load Testing
   syntaxHighlight: true

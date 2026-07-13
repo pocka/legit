@@ -55,8 +55,12 @@ func Read(f string) (*Config, error) {
 	if c.Repo.ScanPath, err = resolvePath(c.Repo.ScanPath, f); err != nil {
 		return nil, err
 	}
-	if c.Dirs.Templates, err = resolvePath(c.Dirs.Templates, f); err != nil {
-		return nil, err
+
+	// Override templates dir
+	if c.Dirs.Templates != "" {
+		if c.Dirs.Templates, err = resolvePath(c.Dirs.Templates, f); err != nil {
+			return nil, err
+		}
 	}
 
 	// Override static dir

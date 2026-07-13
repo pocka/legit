@@ -30,12 +30,13 @@ func (d *deps) Multiplex(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func Handlers(c *config.Config, staticDir fs.FS) *http.ServeMux {
+func Handlers(c *config.Config, staticDir fs.FS, templatesDir fs.FS) *http.ServeMux {
 	mux := http.NewServeMux()
 	d := deps{
-		c:         c,
-		staticDir: staticDir,
-		ugcPolicy: bluemonday.UGCPolicy(),
+		c:            c,
+		staticDir:    staticDir,
+		templatesDir: templatesDir,
+		ugcPolicy:    bluemonday.UGCPolicy(),
 	}
 
 	mux.HandleFunc("GET /", d.Index)

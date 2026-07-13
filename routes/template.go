@@ -4,12 +4,10 @@ import (
 	"html/template"
 	"log"
 	"net/http"
-	"path/filepath"
 )
 
 func (d *deps) Write404(w http.ResponseWriter) {
-	tpath := filepath.Join(d.c.Dirs.Templates, "*")
-	t := template.Must(template.ParseGlob(tpath))
+	t := template.Must(template.ParseFS(d.templatesDir, "*"))
 
 	data := error404Data{
 		Config: d.c,
@@ -22,8 +20,7 @@ func (d *deps) Write404(w http.ResponseWriter) {
 }
 
 func (d *deps) Write500(w http.ResponseWriter) {
-	tpath := filepath.Join(d.c.Dirs.Templates, "*")
-	t := template.Must(template.ParseGlob(tpath))
+	t := template.Must(template.ParseFS(d.templatesDir, "*"))
 
 	data := error500Data{
 		Config: d.c,

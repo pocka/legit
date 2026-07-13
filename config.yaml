@@ -23,9 +23,13 @@ repo:
 
 # Runtime directories.
 dirs:
-  # Path to a directory containing HTML templates.
+  # [optional]
+  # Path to a directory containing custom HTML templates.
   # Templates are written in Go's html/template syntax.
   # <https://pkg.go.dev/html/template>
+  #
+  # If you omit this, legit will use its default templates directory
+  # ("templates" directory next to this file) embedded in the binary.
   templates: ./templates
 
   # [optional]

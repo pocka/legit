@@ -15,7 +15,6 @@ stdenv.mkDerivation {
     fileset = lib.fileset.unions [
       ./create_repos.bash
       ./config.yaml
-      ../../templates
     ];
   };
 
@@ -24,7 +23,6 @@ stdenv.mkDerivation {
     cd $out/tests/k6/repos
     bash $src/tests/k6/create_repos.bash
     ln -s $src/tests/k6/config.yaml $out/tests/k6/config.yaml
-    ln -s $src/templates $out/templates
   '';
 
   nativeBuildInputs = [

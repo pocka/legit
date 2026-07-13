@@ -17,6 +17,9 @@ import (
 //go:embed static/*
 var defaultStaticDir embed.FS
 
+//go:embed templates/*
+var defaultTemplatesDir embed.FS
+
 func main() {
 	var cfg string
 	var host string
@@ -68,7 +71,17 @@ func main() {
 		}
 	}
 
-	mux := routes.Handlers(c, staticDir)
+	var templatesDir fs.FS
+	if c.Dirs.Templates != "" {
+		templatesDir = os.DirFS(c.Dirs.Templates)
+	} else {
+		templatesDir, err = fs.Sub(defaultTemplatesDir, "templates")
+		if err != nil {
+			log.Fatalf("Unable to open default templates dir: %s", err)
+		}
+	}
+
+	mux := routes.Handlers(c, staticDir, templatesDir)
 	addr := fmt.Sprintf("%s:%d", c.Server.Host, c.Server.Port)
 	log.Println("starting server on", addr)
 	log.Fatal(http.ListenAndServe(addr, mux))

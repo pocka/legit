@@ -30,6 +30,8 @@ type deps struct {
 	// returned by "os.Root.FS".
 	staticDir fs.FS
 
+	templatesDir fs.FS
+
 	// ugcPolicy is a bluemonday policy for user generated content.
 	ugcPolicy *bluemonday.Policy
 }
@@ -83,8 +85,7 @@ func (d *deps) Index(w http.ResponseWriter, r *http.Request) {
 		return summaries[j].LastCommit.Committer.When.Before(summaries[i].LastCommit.Committer.When)
 	})
 
-	tpath := filepath.Join(d.c.Dirs.Templates, "*")
-	t := template.Must(template.ParseGlob(tpath))
+	t := template.Must(template.ParseFS(d.templatesDir, "*"))
 
 	data := repoListData{
 		Config:       d.c,
@@ -200,8 +201,7 @@ func (d *deps) RepoIndex(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	tpath := filepath.Join(d.c.Dirs.Templates, "*")
-	t := template.Must(template.ParseGlob(tpath))
+	t := template.Must(template.ParseFS(d.templatesDir, "*"))
 
 	if len(commits) >= 3 {
 		commits = commits[:3]
@@ -273,8 +273,7 @@ func (d *deps) RepoTree(w http.ResponseWriter, r *http.Request) {
 		Files: files,
 	}
 
-	tpath := filepath.Join(d.c.Dirs.Templates, "*")
-	t := template.Must(template.ParseGlob(tpath))
+	t := template.Must(template.ParseFS(d.templatesDir, "*"))
 
 	if err := t.ExecuteTemplate(w, "repo-tree-ref", data); err != nil {
 		log.Println(err)
@@ -336,8 +335,7 @@ func (d *deps) FileContent(w http.ResponseWriter, r *http.Request) {
 		relpath = strings.Split(treePath, "/")
 	}
 
-	tpath := filepath.Join(d.c.Dirs.Templates, "*")
-	t := template.Must(template.ParseGlob(tpath))
+	t := template.Must(template.ParseFS(d.templatesDir, "*"))
 
 	if r.URL.Query().Has("preview") {
 		previewType := r.URL.Query().Get("preview")
@@ -510,8 +508,7 @@ func (d *deps) Log(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tpath := filepath.Join(d.c.Dirs.Templates, "*")
-	t := template.Must(template.ParseGlob(tpath))
+	t := template.Must(template.ParseFS(d.templatesDir, "*"))
 
 	data := repoLogRefData{
 		Config: d.c,
@@ -557,8 +554,7 @@ func (d *deps) Diff(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tpath := filepath.Join(d.c.Dirs.Templates, "*")
-	t := template.Must(template.ParseGlob(tpath))
+	t := template.Must(template.ParseFS(d.templatesDir, "*"))
 
 	data := repoCommitData{
 		Config: d.c,
@@ -619,8 +615,7 @@ func (d *deps) Refs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tpath := filepath.Join(d.c.Dirs.Templates, "*")
-	t := template.Must(template.ParseGlob(tpath))
+	t := template.Must(template.ParseFS(d.templatesDir, "*"))
 
 	data := repoRefsData{
 		Config: d.c,

@@ -28,9 +28,6 @@ repo:
     - main
     - trunk
 
-dirs:
-  templates: ../templates
-
 meta:
   title: legit Demo
   description: Test legit features with real repositories.
