@@ -5,6 +5,7 @@ import (
 	"compress/gzip"
 	"fmt"
 	"html/template"
+	"io/fs"
 	"log"
 	"net/http"
 	"net/url"
@@ -24,6 +25,10 @@ import (
 
 type deps struct {
 	c *config.Config
+
+	// staticDir should be path traversal attack resilient FS, such as the one
+	// returned by "os.Root.FS".
+	staticDir fs.FS
 
 	// ugcPolicy is a bluemonday policy for user generated content.
 	ugcPolicy *bluemonday.Policy
@@ -636,13 +641,12 @@ func (d *deps) Refs(w http.ResponseWriter, r *http.Request) {
 }
 
 func (d *deps) ServeStatic(w http.ResponseWriter, r *http.Request) {
-	f := r.PathValue("file")
-	f = filepath.Clean(f)
-	f, err := securejoin.SecureJoin(d.c.Dirs.Static, f)
-	if err != nil {
+	name := r.PathValue("file")
+	name = filepath.Clean(name)
+	if !filepath.IsLocal(name) {
 		d.Write404(w)
 		return
 	}
 
-	http.ServeFile(w, r, f)
+	http.ServeFileFS(w, r, d.staticDir, name)
 }

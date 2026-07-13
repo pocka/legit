@@ -58,8 +58,12 @@ func Read(f string) (*Config, error) {
 	if c.Dirs.Templates, err = resolvePath(c.Dirs.Templates, f); err != nil {
 		return nil, err
 	}
-	if c.Dirs.Static, err = resolvePath(c.Dirs.Static, f); err != nil {
-		return nil, err
+
+	// Override static dir
+	if c.Dirs.Static != "" {
+		if c.Dirs.Static, err = resolvePath(c.Dirs.Static, f); err != nil {
+			return nil, err
+		}
 	}
 
 	return &c, nil

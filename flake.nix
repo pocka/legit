@@ -31,7 +31,6 @@
             root = ./.;
             fileset = pkgs.lib.fileset.unions [
               ./config.yaml
-              ./static
               ./templates
             ];
           };
@@ -47,6 +46,7 @@
                 fileset = unions [
                   ./go.mod
                   ./go.sum
+                  ./static
                   (fileFilter (file: file.hasExt "go") ./.)
                 ];
               };

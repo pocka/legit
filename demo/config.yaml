@@ -30,7 +30,6 @@ repo:
 
 dirs:
   templates: ../templates
-  static: ../static
 
 meta:
   title: legit Demo

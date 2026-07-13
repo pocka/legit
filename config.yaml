@@ -28,8 +28,12 @@ dirs:
   # <https://pkg.go.dev/html/template>
   templates: ./templates
 
-  # Path to a directory containing static assets.
-  # User can access files in this directory by accessing "/static/*".
+  # [optional]
+  # Path to a directory containing custom static assets.
+  # If you omit this, legit will use its default static asset directory
+  # ("static" directory next to this file) embedded in the binary.
+  #
+  # Visitors can access files in this directory by accessing "/static/*".
   static: ./static
 
 meta:

@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"io/fs"
 	"net/http"
 
 	"github.com/microcosm-cc/bluemonday"
@@ -29,10 +30,11 @@ func (d *deps) Multiplex(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func Handlers(c *config.Config) *http.ServeMux {
+func Handlers(c *config.Config, staticDir fs.FS) *http.ServeMux {
 	mux := http.NewServeMux()
 	d := deps{
 		c:         c,
+		staticDir: staticDir,
 		ugcPolicy: bluemonday.UGCPolicy(),
 	}
 

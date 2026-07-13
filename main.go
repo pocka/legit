@@ -1,15 +1,21 @@
 package main
 
 import (
+	"embed"
 	"flag"
 	"fmt"
+	"io/fs"
 	"log"
 	"math"
 	"net/http"
+	"os"
 
 	"github.com/pocka/legit/config"
 	"github.com/pocka/legit/routes"
 )
+
+//go:embed static/*
+var defaultStaticDir embed.FS
 
 func main() {
 	var cfg string
@@ -46,7 +52,23 @@ func main() {
 		log.Fatalf("unveil: %s", err)
 	}
 
-	mux := routes.Handlers(c)
+	var staticDir fs.FS
+	if c.Dirs.Static != "" {
+		root, err := os.OpenRoot(c.Dirs.Static)
+		if err != nil {
+			log.Fatalf("Unable to open static dir: %s", err)
+		}
+		defer root.Close()
+
+		staticDir = root.FS()
+	} else {
+		staticDir, err = fs.Sub(defaultStaticDir, "static")
+		if err != nil {
+			log.Fatalf("Unable to open default static dir: %s", err)
+		}
+	}
+
+	mux := routes.Handlers(c, staticDir)
 	addr := fmt.Sprintf("%s:%d", c.Server.Host, c.Server.Port)
 	log.Println("starting server on", addr)
 	log.Fatal(http.ListenAndServe(addr, mux))

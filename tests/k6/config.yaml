@@ -10,7 +10,6 @@ repo:
 
 dirs:
   templates: ../../templates
-  static: ../../static
 
 meta:
   title: Legit Load Testing
