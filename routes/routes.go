@@ -24,6 +24,9 @@ import (
 
 type deps struct {
 	c *config.Config
+
+	// ugcPolicy is a bluemonday policy for user generated content.
+	ugcPolicy *bluemonday.Policy
 }
 
 func (d *deps) Index(w http.ResponseWriter, r *http.Request) {
@@ -180,10 +183,10 @@ func (d *deps) RepoIndex(w http.ResponseWriter, r *http.Request) {
 					writer.Bytes(),
 					blackfriday.WithExtensions(blackfriday.CommonExtensions),
 				)
-				html := bluemonday.UGCPolicy().SanitizeBytes(unsafe)
+				html := d.ugcPolicy.SanitizeBytes(unsafe)
 				readmeContent = template.HTML(html)
 			default:
-				safe := bluemonday.UGCPolicy().SanitizeBytes([]byte(content))
+				safe := d.ugcPolicy.SanitizeBytes([]byte(content))
 				readmeContent = template.HTML(
 					fmt.Sprintf(`<pre>%s</pre>`, safe),
 				)
@@ -334,7 +337,7 @@ func (d *deps) FileContent(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Query().Has("preview") {
 		previewType := r.URL.Query().Get("preview")
 
-		for _, renderer := range preview.GetPreviewRenderers(treePath) {
+		for _, renderer := range preview.GetPreviewRenderers(treePath, d.ugcPolicy) {
 			resolvedPreviewType := renderer.GetPreviewType()
 
 			if previewType != "" && resolvedPreviewType != previewType {
@@ -387,7 +390,7 @@ func (d *deps) FileContent(w http.ResponseWriter, r *http.Request) {
 		lines[i] = uint(i + 1)
 	}
 
-	renderers := preview.GetPreviewRenderers(treePath)
+	renderers := preview.GetPreviewRenderers(treePath, d.ugcPolicy)
 	previewTypes := make([]string, len(renderers))
 	for i, renderer := range renderers {
 		previewTypes[i] = renderer.GetPreviewType()

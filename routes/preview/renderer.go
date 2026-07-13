@@ -20,14 +20,15 @@ type Renderer interface {
 	Render(code []byte) ([]byte, error)
 }
 
-type MarkdownToHtmlRenderer struct{}
+type MarkdownToHtmlRenderer struct {
+	policy *bluemonday.Policy
+}
 
 func (r MarkdownToHtmlRenderer) GetPreviewType() string {
 	return "html"
 }
 
 func (r MarkdownToHtmlRenderer) Render(code []byte) ([]byte, error) {
-	sanitizer := bluemonday.UGCPolicy()
 	parser := blackfriday.New(blackfriday.WithExtensions(blackfriday.CommonExtensions))
 
 	tree := parser.Parse(code)
@@ -63,15 +64,15 @@ func (r MarkdownToHtmlRenderer) Render(code []byte) ([]byte, error) {
 	renderer.RenderFooter(&writer, tree)
 
 	unsafe := blackfriday.Run(writer.Bytes(), blackfriday.WithExtensions(blackfriday.CommonExtensions))
-	return sanitizer.SanitizeBytes(unsafe), nil
+	return r.policy.SanitizeBytes(unsafe), nil
 }
 
-func GetPreviewRenderers(fileName string) []Renderer {
+func GetPreviewRenderers(fileName string, bmPolicy *bluemonday.Policy) []Renderer {
 	ext := filepath.Ext(fileName)
 
 	switch ext {
 	case ".md", ".mkd", ".markdown":
-		return []Renderer{MarkdownToHtmlRenderer{}}
+		return []Renderer{MarkdownToHtmlRenderer{bmPolicy}}
 	default:
 		return []Renderer{}
 	}

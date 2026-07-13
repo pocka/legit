@@ -3,6 +3,7 @@ package routes
 import (
 	"net/http"
 
+	"github.com/microcosm-cc/bluemonday"
 	"github.com/pocka/legit/config"
 )
 
@@ -30,7 +31,10 @@ func (d *deps) Multiplex(w http.ResponseWriter, r *http.Request) {
 
 func Handlers(c *config.Config) *http.ServeMux {
 	mux := http.NewServeMux()
-	d := deps{c}
+	d := deps{
+		c:         c,
+		ugcPolicy: bluemonday.UGCPolicy(),
+	}
 
 	mux.HandleFunc("GET /", d.Index)
 	mux.HandleFunc("GET /static/{file}", d.ServeStatic)
