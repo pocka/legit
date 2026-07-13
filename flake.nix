@@ -50,6 +50,8 @@
 
             vendorHash = "sha256-qSnRQIuHnUQit21232SsMY0LQVvcy0PqBPQVPjsNJWA=";
 
+            nativeBuildInputs = with pkgs; [ git ];
+
             meta.mainProgram = "legit";
           };
 
