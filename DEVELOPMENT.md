@@ -7,6 +7,10 @@ SPDX-License-Identifier: MIT
 
 Commands and tips for developing legit.
 
+## Issues / Tickets
+
+See <https://tangled.org/pocka.jp/legit/issues> for active issues.
+
 ## Load Testing
 
 `tests/k6` directory contains `*.js` for [k6](https://grafana.com/oss/k6/), an OSS load testing tool.
