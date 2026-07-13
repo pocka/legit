@@ -48,7 +48,7 @@
                 ];
               };
 
-            vendorHash = "sha256-GR+ddG6058s9NDGwbk2z86vcOIa11DUQqP6tS0ruUdo=";
+            vendorHash = "sha256-qSnRQIuHnUQit21232SsMY0LQVvcy0PqBPQVPjsNJWA=";
 
             meta.mainProgram = "legit";
           };
