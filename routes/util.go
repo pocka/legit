@@ -45,12 +45,6 @@ func (d *deps) isIgnored(name string) bool {
 	return slices.Contains(d.c.Repo.Ignore, name)
 }
 
-type repoInfo struct {
-	Git      *git.GitRepo
-	Path     string
-	Category string
-}
-
 func setContentDisposition(w http.ResponseWriter, name string) {
 	h := "inline; filename=\"" + name + "\""
 	w.Header().Add("Content-Disposition", h)
