@@ -11,6 +11,12 @@ import (
 // Checks for gitprotocol-http(5) specific smells; if found, passes
 // the request on to the git http service, else render the web frontend.
 func (d *deps) Multiplex(w http.ResponseWriter, r *http.Request) {
+	name := r.PathValue("name")
+	if d.isIgnored(name) {
+		d.Write404(w)
+		return
+	}
+
 	path := r.PathValue("rest")
 
 	if r.URL.RawQuery == "service=git-receive-pack" {

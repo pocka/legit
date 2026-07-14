@@ -154,3 +154,95 @@ I'm [Markdown](https://commonmark.org/) file for *load* **testing**.
 		t.Fatalf("Unexpected commit message (%s)", commit.Message)
 	}
 }
+
+// https://github.com/icyphox/legit/issues/56
+// https://tangled.org/pocka.jp/legit/issues/2
+func TestCloneRespectVisibilityConfig(t *testing.T) {
+	repos := t.TempDir()
+
+	for _, name := range []string{"public", "ignored", "unlisted"} {
+		_, worktree, err := tests.CreateRepository(repos, name)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		readme, err := worktree.Filesystem.Create("README.md")
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if _, err := readme.Write([]byte(name)); err != nil {
+			t.Fatal(err)
+		}
+
+		_ = readme.Close()
+
+		if _, err := worktree.Add("README.md"); err != nil {
+			t.Fatal(err)
+		}
+
+		_, err = worktree.Commit("Add README", &git.CommitOptions{
+			Author: tests.SignatureAlice(),
+		})
+		if err != nil {
+			t.Fatalf("Unable to commit: %s", err)
+		}
+
+		if err := tests.CreateBare(repos, name); err != nil {
+			t.Fatalf("Unable to create bare repository: %s", err)
+		}
+
+		if err := os.RemoveAll(filepath.Join(repos, name)); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	var c config.Config
+	c.Repo.ScanPath = repos
+	c.Repo.Readme = []string{"README.md"}
+	c.Repo.MainBranch = []string{"trunk"}
+	c.Repo.Ignore = []string{"ignored.git"}
+	c.Repo.Unlisted = []string{"unlisted.git"}
+
+	server := httptest.NewServer(Handlers(&c, embed.StaticDir(), embed.TemplatesDir()))
+	defer server.Close()
+
+	publicUrl, err := url.JoinPath(server.URL, "/public.git")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = git.Clone(memory.NewStorage(), nil, &git.CloneOptions{
+		URL:           publicUrl,
+		ReferenceName: "refs/heads/trunk",
+	})
+	if err != nil {
+		t.Error(err)
+	}
+
+	ignoredUrl, err := url.JoinPath(server.URL, "/ignored.git")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = git.Clone(memory.NewStorage(), nil, &git.CloneOptions{
+		URL:           ignoredUrl,
+		ReferenceName: "refs/heads/trunk",
+	})
+	if err == nil {
+		t.Error("Cloning ignored repository succeeded (expected an error.)")
+	}
+
+	unlistedUrl, err := url.JoinPath(server.URL, "/unlisted.git")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = git.Clone(memory.NewStorage(), nil, &git.CloneOptions{
+		URL:           unlistedUrl,
+		ReferenceName: "refs/heads/trunk",
+	})
+	if err != nil {
+		t.Error(err)
+	}
+}
