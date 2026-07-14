@@ -62,7 +62,7 @@ func (d *deps) UploadPack(w http.ResponseWriter, r *http.Request) {
 	reader = r.Body
 
 	if r.Header.Get("Content-Encoding") == "gzip" {
-		reader, err := gzip.NewReader(r.Body)
+		reader, err = gzip.NewReader(r.Body)
 		if err != nil {
 			http.Error(w, err.Error(), 500)
 			log.Printf("git: failed to create gzip reader: %s", err)
