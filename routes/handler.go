@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"html/template"
 	"io/fs"
 	"net/http"
 
@@ -43,6 +44,10 @@ func Handlers(c *config.Config, staticDir fs.FS, templatesDir fs.FS) *http.Serve
 		staticDir:    staticDir,
 		templatesDir: templatesDir,
 		ugcPolicy:    bluemonday.UGCPolicy(),
+	}
+
+	if !c.CompileTemplatesOnRequest {
+		d.t = template.Must(template.ParseFS(d.templatesDir, "*"))
 	}
 
 	mux.HandleFunc("GET /", d.Index)

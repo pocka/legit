@@ -65,6 +65,20 @@ ui:
       # Display "Powered by ..." text.
     poweredBy: true
 
+# Read and compile HTML templates on every request.
+#
+# By default, legit compiles HTML templates on server startup for performance
+# reasons. This is great for most usecases but if you're customizing HTML
+# templates, this can be tedious.
+# 1) edit HTML template file
+# 2) restart legit server
+# 3) reload browser page
+# You can skip step 2 by setting this option to `true`.
+#
+# Remember to turning off after customizing HTML templates. HTML templates
+# compilation slows your pages response time.
+compileTemplatesOnRequest: false
+
 server:
   # legit uses this strings for clone URL.
   # `https://<name>/<directory>`

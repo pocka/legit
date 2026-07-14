@@ -44,6 +44,8 @@ ui:
         href: https://github.com/icyphox/legit
     poweredBy: true
 
+compileTemplatesOnRequest: false
+
 server:
   name: example.com
   host: localhost

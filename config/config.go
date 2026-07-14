@@ -34,7 +34,8 @@ type Config struct {
 			PoweredBy bool `yaml:"poweredBy"`
 		} `yaml:"footer"`
 	} `yaml:"ui"`
-	Server struct {
+	CompileTemplatesOnRequest bool `yaml:"compileTemplatesOnRequest"`
+	Server                    struct {
 		Name string `yaml:"name,omitempty"`
 		Host string `yaml:"host"`
 		Port int    `yaml:"port"`

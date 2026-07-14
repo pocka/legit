@@ -32,6 +32,10 @@ type deps struct {
 
 	templatesDir fs.FS
 
+	// t is a compiled templates used by deps.Template().
+	// Do not use this; use deps.Template() instead.
+	t *template.Template
+
 	// ugcPolicy is a bluemonday policy for user generated content.
 	ugcPolicy *bluemonday.Policy
 }
@@ -85,14 +89,12 @@ func (d *deps) Index(w http.ResponseWriter, r *http.Request) {
 		return summaries[j].LastCommit.Committer.When.Before(summaries[i].LastCommit.Committer.When)
 	})
 
-	t := template.Must(template.ParseFS(d.templatesDir, "*"))
-
 	data := repoListData{
 		Config:       d.c,
 		Repositories: summaries,
 	}
 
-	if err := t.ExecuteTemplate(w, "repo-list", data); err != nil {
+	if err := d.Template().ExecuteTemplate(w, "repo-list", data); err != nil {
 		log.Println(err)
 		return
 	}
@@ -201,8 +203,6 @@ func (d *deps) RepoIndex(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	t := template.Must(template.ParseFS(d.templatesDir, "*"))
-
 	if len(commits) >= 3 {
 		commits = commits[:3]
 	}
@@ -221,7 +221,7 @@ func (d *deps) RepoIndex(w http.ResponseWriter, r *http.Request) {
 		IsGoModule:    isGoModule(gr),
 	}
 
-	if err := t.ExecuteTemplate(w, "repo-top", data); err != nil {
+	if err := d.Template().ExecuteTemplate(w, "repo-top", data); err != nil {
 		log.Println(err)
 		return
 	}
@@ -273,9 +273,7 @@ func (d *deps) RepoTree(w http.ResponseWriter, r *http.Request) {
 		Files: files,
 	}
 
-	t := template.Must(template.ParseFS(d.templatesDir, "*"))
-
-	if err := t.ExecuteTemplate(w, "repo-tree-ref", data); err != nil {
+	if err := d.Template().ExecuteTemplate(w, "repo-tree-ref", data); err != nil {
 		log.Println(err)
 		return
 	}
@@ -335,8 +333,6 @@ func (d *deps) FileContent(w http.ResponseWriter, r *http.Request) {
 		relpath = strings.Split(treePath, "/")
 	}
 
-	t := template.Must(template.ParseFS(d.templatesDir, "*"))
-
 	if r.URL.Query().Has("preview") {
 		previewType := r.URL.Query().Get("preview")
 
@@ -363,7 +359,7 @@ func (d *deps) FileContent(w http.ResponseWriter, r *http.Request) {
 					Content: template.HTML(html),
 				}
 
-				if err := t.ExecuteTemplate(w, "repo-blob-ref-html-preview", data); err != nil {
+				if err := d.Template().ExecuteTemplate(w, "repo-blob-ref-html-preview", data); err != nil {
 					log.Println(err)
 					return
 				}
@@ -417,7 +413,7 @@ func (d *deps) FileContent(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if err := t.ExecuteTemplate(w, "repo-blob-ref", data); err != nil {
+	if err := d.Template().ExecuteTemplate(w, "repo-blob-ref", data); err != nil {
 		log.Println(err)
 		return
 	}
@@ -508,8 +504,6 @@ func (d *deps) Log(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	t := template.Must(template.ParseFS(d.templatesDir, "*"))
-
 	data := repoLogRefData{
 		Config: d.c,
 		Meta: repositoryMeta{
@@ -521,7 +515,7 @@ func (d *deps) Log(w http.ResponseWriter, r *http.Request) {
 		Commits: commits,
 	}
 
-	if err := t.ExecuteTemplate(w, "repo-log-ref", data); err != nil {
+	if err := d.Template().ExecuteTemplate(w, "repo-log-ref", data); err != nil {
 		log.Println(err)
 		return
 	}
@@ -554,8 +548,6 @@ func (d *deps) Diff(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	t := template.Must(template.ParseFS(d.templatesDir, "*"))
-
 	data := repoCommitData{
 		Config: d.c,
 		Meta: repositoryMeta{
@@ -569,7 +561,7 @@ func (d *deps) Diff(w http.ResponseWriter, r *http.Request) {
 		Diff:   diff,
 	}
 
-	if err := t.ExecuteTemplate(w, "repo-commit", data); err != nil {
+	if err := d.Template().ExecuteTemplate(w, "repo-commit", data); err != nil {
 		log.Println(err)
 		return
 	}
@@ -615,8 +607,6 @@ func (d *deps) Refs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	t := template.Must(template.ParseFS(d.templatesDir, "*"))
-
 	data := repoRefsData{
 		Config: d.c,
 		Meta: repositoryMeta{
@@ -629,7 +619,7 @@ func (d *deps) Refs(w http.ResponseWriter, r *http.Request) {
 		Branches: branches,
 	}
 
-	if err := t.ExecuteTemplate(w, "repo-refs", data); err != nil {
+	if err := d.Template().ExecuteTemplate(w, "repo-refs", data); err != nil {
 		log.Println(err)
 		return
 	}
