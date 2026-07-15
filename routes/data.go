@@ -149,6 +149,25 @@ type repoLogRefData struct {
 
 	// Commits made to the ref.
 	Commits []*object.Commit
+
+	PrevPageHref string
+	NextPageHref string
+}
+
+func (r repoLogRefData) TopCommitForRange() *object.Commit {
+	if len(r.Commits) == 0 {
+		return nil
+	}
+
+	return r.Commits[0]
+}
+
+func (r repoLogRefData) BottomCommitForRange() *object.Commit {
+	if len(r.Commits) == 0 {
+		return nil
+	}
+
+	return r.Commits[len(r.Commits)-1]
 }
 
 // repoCommitData is a data object passed to "repo-commit" template.

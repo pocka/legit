@@ -26,7 +26,8 @@ type Config struct {
 		SyntaxHighlight bool   `yaml:"syntaxHighlight"`
 	} `yaml:"meta"`
 	UI struct {
-		Footer struct {
+		CommitsPageSize uint32 `yaml:"commitsPageSize"`
+		Footer          struct {
 			Links []struct {
 				Text string `yaml:"text"`
 				Href string `yaml:"href"`

@@ -14,6 +14,7 @@ import (
 
 	securejoin "github.com/cyphar/filepath-securejoin"
 	"github.com/dustin/go-humanize"
+	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/pocka/legit/config"
 	"github.com/pocka/legit/git"
 	"github.com/pocka/legit/renderer/html"
@@ -116,7 +117,7 @@ func (d *deps) RepoIndex(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	commits, err := gr.Commits(git.CommitsOptions{Limit: 3})
+	commits, _, err := gr.Commits(git.CommitsOptions{Limit: 3})
 	if err != nil {
 		d.Write500(w)
 		log.Println(err)
@@ -453,11 +454,36 @@ func (d *deps) Log(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	commits, err := gr.Commits(git.CommitsOptions{})
+	limit := d.c.UI.CommitsPageSize
+
+	opts := git.CommitsOptions{Limit: limit}
+	query := r.URL.Query()
+
+	if after := query.Get("before"); plumbing.IsHash(after) {
+		opts.Before = plumbing.NewHash(after)
+	}
+	if before := query.Get("after"); plumbing.IsHash(before) {
+		opts.After = plumbing.NewHash(before)
+	}
+
+	commits, page, err := gr.Commits(opts)
 	if err != nil {
 		d.Write500(w)
 		log.Println(err)
 		return
+	}
+
+	prevPageHref := ""
+	nextPageHref := ""
+
+	if len(commits) > 0 {
+		if page.HasPrevPage {
+			prevPageHref = fmt.Sprintf("/%s/log/%s?after=%s", name, ref, commits[0].Hash.String())
+		}
+
+		if page.HasNextPage {
+			nextPageHref = fmt.Sprintf("/%s/log/%s?before=%s", name, ref, commits[len(commits)-1].Hash.String())
+		}
 	}
 
 	data := repoLogRefData{
@@ -468,7 +494,9 @@ func (d *deps) Log(w http.ResponseWriter, r *http.Request) {
 			Description: getDescription(path),
 			Ref:         ref,
 		},
-		Commits: commits,
+		Commits:      commits,
+		PrevPageHref: prevPageHref,
+		NextPageHref: nextPageHref,
 	}
 
 	if err := d.Template().ExecuteTemplate(w, "repo-log-ref", data); err != nil {

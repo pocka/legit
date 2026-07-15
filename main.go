@@ -40,6 +40,10 @@ func main() {
 		c.Server.Host = host
 	}
 
+	if c.UI.CommitsPageSize == 0 {
+		c.UI.CommitsPageSize = 30
+	}
+
 	if err := UnveilPaths([]string{
 		c.Dirs.Static,
 		c.Repo.ScanPath,

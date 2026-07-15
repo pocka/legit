@@ -104,50 +104,18 @@ func Open(path string, ref string) (*GitRepo, error) {
 	return &g, nil
 }
 
-type CommitsOptions struct {
-	// Limit is maximum number of commits to retrieve.
-	// 0 means no limit.
-	Limit uint32
-}
-
-func (g *GitRepo) Commits(opts CommitsOptions) ([]*object.Commit, error) {
-	ci, err := g.r.Log(&git.LogOptions{From: g.h})
-	if err != nil {
-		return nil, fmt.Errorf("commits from ref: %w", err)
-	}
-
-	if opts.Limit > 0 {
-		commits := make([]*object.Commit, 0, opts.Limit)
-
-		for range opts.Limit {
-			if next, err := ci.Next(); err != nil {
-				if err != io.EOF {
-					return nil, fmt.Errorf("log failure: %w", err)
-				}
-			} else {
-				commits = append(commits, next)
-			}
-		}
-
-		return commits, nil
-	} else {
-		commits := []*object.Commit{}
-
-		ci.ForEach(func(c *object.Commit) error {
-			commits = append(commits, c)
-			return nil
-		})
-
-		return commits, nil
-	}
-}
-
 func (g *GitRepo) LastCommit() (*object.Commit, error) {
 	c, err := g.r.CommitObject(g.h)
 	if err != nil {
 		return nil, fmt.Errorf("last commit: %w", err)
 	}
 	return c, nil
+}
+
+// Head returns hash of the tip. This is same to the hash of a commit object
+// returned by LastCommit() method.
+func (g *GitRepo) Head() plumbing.Hash {
+	return g.h
 }
 
 func (g *GitRepo) File(path string) (*object.File, error) {

@@ -52,6 +52,9 @@ meta:
   syntaxHighlight: true
 
 ui:
+  # Number of commits to display in a single "Commits" (log) page.
+  commitsPageSize: 30
+
   # Footer won't appear if `links` is empty and `poweredBy` is `false`.
   footer:
     # Links to display in the footer.
