@@ -116,7 +116,7 @@ func (d *deps) RepoIndex(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	commits, err := gr.Commits()
+	commits, err := gr.Commits(git.CommitsOptions{Limit: 3})
 	if err != nil {
 		d.Write500(w)
 		log.Println(err)
@@ -157,10 +157,6 @@ func (d *deps) RepoIndex(w http.ResponseWriter, r *http.Request) {
 			readmeContent = template.HTML(result)
 			break
 		}
-	}
-
-	if len(commits) >= 3 {
-		commits = commits[:3]
 	}
 
 	data := repoTopData{
@@ -457,7 +453,7 @@ func (d *deps) Log(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	commits, err := gr.Commits()
+	commits, err := gr.Commits(git.CommitsOptions{})
 	if err != nil {
 		d.Write500(w)
 		log.Println(err)
