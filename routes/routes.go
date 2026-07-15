@@ -1,14 +1,12 @@
 package routes
 
 import (
-	"bytes"
 	"compress/gzip"
 	"fmt"
 	"html/template"
 	"io/fs"
 	"log"
 	"net/http"
-	"net/url"
 	"os"
 	"path/filepath"
 	"sort"
@@ -16,11 +14,9 @@ import (
 
 	securejoin "github.com/cyphar/filepath-securejoin"
 	"github.com/dustin/go-humanize"
-	"github.com/microcosm-cc/bluemonday"
 	"github.com/pocka/legit/config"
 	"github.com/pocka/legit/git"
-	"github.com/pocka/legit/routes/preview"
-	"github.com/russross/blackfriday/v2"
+	"github.com/pocka/legit/renderer/html"
 )
 
 type deps struct {
@@ -36,8 +32,8 @@ type deps struct {
 	// Do not use this; use deps.Template() instead.
 	t *template.Template
 
-	// ugcPolicy is a bluemonday policy for user generated content.
-	ugcPolicy *bluemonday.Policy
+	markdown  html.MarkdownRenderer
+	plaintext html.PlaintextRenderer
 }
 
 func (d *deps) Index(w http.ResponseWriter, r *http.Request) {
@@ -134,71 +130,31 @@ func (d *deps) RepoIndex(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	transformer := NewRepoLinkTransformer(name, mainBranch)
+
 	var readmeContent template.HTML
 	for _, readme := range d.c.Repo.Readme {
-		ext := filepath.Ext(readme)
+		file, _ := gr.File(readme)
+		if file == nil {
+			continue
+		}
 
-		// Getting a binary here is unlikely and we can't guess the repo owner's
-		// intention in that case. So we process the file with Markdown processor
-		// anyway, even if that produces nonsential garbage.
-		content, _, _ := gr.FileContent(readme)
+		content, _ := file.Contents()
+
+		// Skip empty files.
 		if len(content) > 0 {
-			switch ext {
-			case ".md", ".mkd", ".markdown":
-				parser := blackfriday.New(blackfriday.WithExtensions(blackfriday.CommonExtensions))
-				tree := parser.Parse([]byte(content))
-				tree.Walk(func(node *blackfriday.Node, entering bool) blackfriday.WalkStatus {
-					if !entering {
-						return blackfriday.GoToNext
-					}
-
-					if node.Type == blackfriday.Link || node.Type == blackfriday.Image {
-						href := string(node.LinkData.Destination)
-						parsedURL, err := url.Parse(href)
-						if err == nil && parsedURL.Host != "" {
-							// Full URL, skip.
-							return blackfriday.GoToNext
-						}
-
-						if strings.IndexByte(href, '/') == 0 {
-							// Repository index page is the "root" for repository's README file.
-							href = "." + href
-						}
-
-						if node.Type == blackfriday.Image {
-							node.LinkData.Destination = fmt.Appendf([]byte{}, "/%s/blob/%s/%s?raw", name, mainBranch, href)
-						} else if strings.LastIndexByte(href, '/') == len(href)-1 {
-							node.LinkData.Destination = fmt.Appendf([]byte{}, "/%s/tree/%s/%s", name, mainBranch, href)
-							node.LinkData.Destination = node.LinkData.Destination[:len(node.LinkData.Destination)-1]
-						} else {
-							node.LinkData.Destination = fmt.Appendf([]byte{}, "/%s/blob/%s/%s", name, mainBranch, href)
-						}
-
-					}
-
-					return blackfriday.GoToNext
-				})
-
-				var writer bytes.Buffer
-				renderer := blackfriday.NewHTMLRenderer(blackfriday.HTMLRendererParameters{})
-				renderer.RenderHeader(&writer, tree)
-				tree.Walk(func(node *blackfriday.Node, entering bool) blackfriday.WalkStatus {
-					return renderer.RenderNode(&writer, node, entering)
-				})
-				renderer.RenderFooter(&writer, tree)
-
-				unsafe := blackfriday.Run(
-					writer.Bytes(),
-					blackfriday.WithExtensions(blackfriday.CommonExtensions),
-				)
-				html := d.ugcPolicy.SanitizeBytes(unsafe)
-				readmeContent = template.HTML(html)
-			default:
-				safe := d.ugcPolicy.SanitizeBytes([]byte(content))
-				readmeContent = template.HTML(
-					fmt.Sprintf(`<pre>%s</pre>`, safe),
-				)
+			renderer := d.htmlRenderer(file)
+			if renderer == nil {
+				renderer = &d.plaintext
 			}
+
+			result, err := renderer.Render([]byte(content), transformer)
+			if err != nil {
+				log.Printf("Unable to render %s/%s, skipping.", name, readme)
+				continue
+			}
+
+			readmeContent = template.HTML(result)
 			break
 		}
 	}
@@ -304,7 +260,13 @@ func (d *deps) FileContent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	contents, isBinary, err := gr.FileContent(treePath)
+	file, err := gr.File(treePath)
+	if err != nil {
+		d.Write500(w)
+		return
+	}
+
+	contents, err := file.Contents()
 	if err != nil {
 		d.Write500(w)
 		return
@@ -317,7 +279,7 @@ func (d *deps) FileContent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if isBinary {
+	if isBin, _ := file.IsBinary(); isBin {
 		contents = "Not displaying binary file"
 	}
 
@@ -336,41 +298,40 @@ func (d *deps) FileContent(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Query().Has("preview") {
 		previewType := r.URL.Query().Get("preview")
 
-		for _, renderer := range preview.GetPreviewRenderers(treePath, d.ugcPolicy) {
-			resolvedPreviewType := renderer.GetPreviewType()
-
-			if previewType != "" && resolvedPreviewType != previewType {
-				continue
-			}
-
-			switch resolvedPreviewType {
-			case "html":
-				html, err := renderer.Render([]byte(contents))
-				if err != nil {
-					log.Printf("Failed to render HTML preview: %s", err)
-					d.Write500(w)
-					return
-				}
-
-				data := repoBlobRefHTMLPreviewData{
-					Config:  d.c,
-					Meta:    meta,
-					Path:    relpath,
-					Content: template.HTML(html),
-				}
-
-				if err := d.Template().ExecuteTemplate(w, "repo-blob-ref-html-preview", data); err != nil {
-					log.Println(err)
-					return
-				}
-
+		switch previewType {
+		case "html":
+			renderer := d.htmlRenderer(file)
+			if renderer == nil {
+				log.Printf("Requested HTML preview for %s/%s, but the filetype has no HTML renderer", name, treePath)
+				d.Write404(w)
 				return
 			}
-		}
 
-		log.Printf("Got ?preview=%s, but not preview renderer is available for the type", previewType)
-		d.Write404(w)
-		return
+			html, err := renderer.Render([]byte(contents), NewRepoLinkTransformer(name, ref))
+			if err != nil {
+				log.Printf("Failed to render HTML preview: %s", err)
+				d.Write500(w)
+				return
+			}
+
+			data := repoBlobRefHTMLPreviewData{
+				Config:  d.c,
+				Meta:    meta,
+				Path:    relpath,
+				Content: template.HTML(html),
+			}
+
+			if err := d.Template().ExecuteTemplate(w, "repo-blob-ref-html-preview", data); err != nil {
+				log.Println(err)
+				return
+			}
+
+			return
+		default:
+			log.Printf("Got ?preview=%s, but not preview renderer is available for the type", previewType)
+			d.Write404(w)
+			return
+		}
 	}
 
 	lc, err := countLines(strings.NewReader(contents))
@@ -389,10 +350,9 @@ func (d *deps) FileContent(w http.ResponseWriter, r *http.Request) {
 		lines[i] = uint(i + 1)
 	}
 
-	renderers := preview.GetPreviewRenderers(treePath, d.ugcPolicy)
-	previewTypes := make([]string, len(renderers))
-	for i, renderer := range renderers {
-		previewTypes[i] = renderer.GetPreviewType()
+	previewTypes := make([]string, 0, 1)
+	if d.htmlRenderer(file) != nil {
+		previewTypes = append(previewTypes, "html")
 	}
 
 	data := repoBlobRefData{

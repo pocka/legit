@@ -7,6 +7,7 @@ import (
 
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/pocka/legit/config"
+	"github.com/pocka/legit/renderer/html"
 )
 
 // Checks for gitprotocol-http(5) specific smells; if found, passes
@@ -39,11 +40,14 @@ func (d *deps) Multiplex(w http.ResponseWriter, r *http.Request) {
 
 func Handlers(c *config.Config, staticDir fs.FS, templatesDir fs.FS) *http.ServeMux {
 	mux := http.NewServeMux()
+	ugcPolicy := bluemonday.UGCPolicy()
+
 	d := deps{
 		c:            c,
 		staticDir:    staticDir,
 		templatesDir: templatesDir,
-		ugcPolicy:    bluemonday.UGCPolicy(),
+		markdown:     html.NewMarkdownRenderer(ugcPolicy),
+		plaintext:    html.NewPlaintextRenderer(ugcPolicy),
 	}
 
 	if !c.CompileTemplatesOnRequest {

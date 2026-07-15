@@ -19,7 +19,7 @@ import (
 )
 
 func isGoModule(gr *git.GitRepo) bool {
-	_, _, err := gr.FileContent("go.mod")
+	_, err := gr.File("go.mod")
 	return err == nil
 }
 
