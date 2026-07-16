@@ -38,48 +38,50 @@ SPDX-License-Identifier: MIT
 			{{- end -}}
 		</main>
 		<div class="aside">
-			<aside>
-				<dl class="metadata">
-					<dt class="metadata--key">Default branch</dt>
-					<dd class="metadata--value">
-						<a href="/{{ .Meta.DirName }}/refs">{{ .DefaultBranch }}</a>
-					</dd>
-					<dt class="metadata--key">Clone URL</dt>
-					<dd class="metadata--value">https://{{ .Config.Server.Name }}/{{ .Meta.DirName }}</dd>
-					{{- template "tab-selector" -}}
-				</dl>
-			</aside>
-			<aside class="recent-commits">
-				<h2 class="recent-commits--title">Recent commits</h2>
-				<ol class="recent-commits--list">
-					{{ $meta := .Meta }}
-					{{- range .RecentCommits }}
-						<li class="recent-commits--item commit-summary">
-							<a class="commit-summary--hash" href="/{{ $meta.DirName }}/commit/{{ .Hash.String }}">
-								{{- slice .Hash.String 0 8 -}}
-							</a>
-							<span class="commit-summary--message" title="{{- .Message -}}">
-								{{- .Message -}}
-							</span>
-							<span class="commit-summary--committer">
-								<a href="mailto:{{ .Committer.Email }}">
-									{{- .Committer.Name -}}
+			<div class="aside-contents">
+				<aside>
+					<dl class="metadata">
+						<dt class="metadata--key">Default branch</dt>
+						<dd class="metadata--value">
+							<a href="/{{ .Meta.DirName }}/refs">{{ .DefaultBranch }}</a>
+						</dd>
+						<dt class="metadata--key">Clone URL</dt>
+						<dd class="metadata--value">https://{{ .Config.Server.Name }}/{{ .Meta.DirName }}</dd>
+						{{- template "tab-selector" -}}
+					</dl>
+				</aside>
+				<aside class="recent-commits">
+					<h2 class="recent-commits--title">Recent commits</h2>
+					<ol class="recent-commits--list">
+						{{ $meta := .Meta }}
+						{{- range .RecentCommits }}
+							<li class="recent-commits--item commit-summary">
+								<a class="commit-summary--hash" href="/{{ $meta.DirName }}/commit/{{ .Hash.String }}">
+									{{- slice .Hash.String 0 8 -}}
 								</a>
-								comitted at
-								<time
-									datetime='{{ .Committer.When.Format "2006-01-02T15:04:05-0700" }}'
-									data-local-format=""
-								>
-									{{ .Committer.When.Format "2006-01-02 15:04:05 -0700" }}
-								</time>
-							</span>
-						</li>
-					{{- end -}}
-				</ol>
-				<div>
-					<a href="/{{ .Meta.DirName }}/log/{{ .Meta.Ref }}">View more &gt;</a>
-				</div>
-			</aside>
+								<span class="commit-summary--message" title="{{- .Message -}}">
+									{{- .Message -}}
+								</span>
+								<span class="commit-summary--committer">
+									<a href="mailto:{{ .Committer.Email }}">
+										{{- .Committer.Name -}}
+									</a>
+									comitted at
+									<time
+										datetime='{{ .Committer.When.Format "2006-01-02T15:04:05-0700" }}'
+										data-local-format=""
+									>
+										{{ .Committer.When.Format "2006-01-02 15:04:05 -0700" }}
+									</time>
+								</span>
+							</li>
+						{{- end -}}
+					</ol>
+					<div>
+						<a href="/{{ .Meta.DirName }}/log/{{ .Meta.Ref }}">View more &gt;</a>
+					</div>
+				</aside>
+			</div>
 		</div>
 		{{ template "site-footer" . }}
 	</body>

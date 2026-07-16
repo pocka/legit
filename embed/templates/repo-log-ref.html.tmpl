@@ -73,28 +73,30 @@ SPDX-License-Identifier: MIT
 			</ol>
 		</main>
 		<aside class="aside">
-			<dl class="metadata">
-				<dt class="metadata--key">Commits for</dt>
-				<dd class="metadata--value">{{ .Meta.Ref }}</dd>
-				<dt class="metadata--key">Viewing range</dt>
-				<dd class="metadata--value">
-					{{- $top := .TopCommitForRange -}}
-					{{- $bottom := .BottomCommitForRange -}}
-					{{- if ne $top nil }}
-						<a href="#commit-{{ $top.Hash }}">{{ slice $top.Hash.String 0 8 }}</a>
+			<div class="aside-contents">
+				<dl class="metadata">
+					<dt class="metadata--key">Commits for</dt>
+					<dd class="metadata--value">{{ .Meta.Ref }}</dd>
+					<dt class="metadata--key">Viewing range</dt>
+					<dd class="metadata--value">
+						{{- $top := .TopCommitForRange -}}
+						{{- $bottom := .BottomCommitForRange -}}
+						{{- if ne $top nil }}
+							<a href="#commit-{{ $top.Hash }}">{{ slice $top.Hash.String 0 8 }}</a>
+						{{- end -}}
+						{{- if ne $bottom nil }}
+							~ <a href="#commit-{{ $bottom.Hash }}">{{ slice $bottom.Hash.String 0 8 }}</a>
+						{{- end -}}
+					</dd>
+				</dl>
+				<div class="log-pagenav">
+					{{- if ne .PrevPageHref "" }}
+						<a href="{{ .PrevPageHref }}">&lt; Previous</a>
 					{{- end -}}
-					{{- if ne $bottom nil }}
-						~ <a href="#commit-{{ $bottom.Hash }}">{{ slice $bottom.Hash.String 0 8 }}</a>
+					{{- if ne .NextPageHref "" }}
+						<a href="{{ .NextPageHref }}">Next &gt;</a>
 					{{- end -}}
-				</dd>
-			</dl>
-			<div class="log-pagenav">
-				{{- if ne .PrevPageHref "" }}
-					<a href="{{ .PrevPageHref }}">&lt; Previous</a>
-				{{- end -}}
-				{{- if ne .NextPageHref "" }}
-					<a href="{{ .NextPageHref }}">Next &gt;</a>
-				{{- end -}}
+				</div>
 			</div>
 		</aside>
 		{{ template "site-footer" . }}

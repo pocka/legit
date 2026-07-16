@@ -137,13 +137,13 @@ body {
 	max-width: 60rem;
 	margin: 0 auto;
 	padding: var(--space-lg);
-
-	overflow-x: auto;
 }
 
 .main {
 	grid-area: main;
 	font-size: var(--font-md);
+
+	overflow-x: auto;
 }
 
 .aside {
@@ -161,6 +161,7 @@ body {
 	max-width: unset;
 
 	background-color: var(--color-bg);
+	overflow-x: auto;
 	text-align: end;
 	z-index: 15;
 }
@@ -365,14 +366,9 @@ body {
 			"footer footer";
 	}
 
-	.aside {
-		overflow-x: hidden;
-	}
-
-	.aside {
+	.aside-contents {
 		position: sticky;
 		top: var(--_top, var(--space-lg));
-		align-self: start;
 	}
 }
 
@@ -427,7 +423,7 @@ body {
 	}
 
 	.aside {
-		top: 0;
+		--_top: var(--space-xxxl);
 	}
 
 	.header, .main, .aside {

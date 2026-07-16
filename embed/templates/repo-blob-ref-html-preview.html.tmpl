@@ -63,13 +63,15 @@ SPDX-License-Identifier: MIT
 			</article>
 		</main>
 		<aside class="aside">
-			<dl class="metadata">
-				{{- template "tab-selector" -}}
-				<dt class="metadata--key">Preview</dt>
-				<dd class="metadata--value">
-					<a href="/{{ .Meta.DirName }}/blob/{{ .Meta.Ref }}{{ $path }}">View code</a>
-				</dd>
-			</dl>
+			<div class="aside-contents">
+				<dl class="metadata">
+					{{- template "tab-selector" -}}
+					<dt class="metadata--key">Preview</dt>
+					<dd class="metadata--value">
+						<a href="/{{ .Meta.DirName }}/blob/{{ .Meta.Ref }}{{ $path }}">View code</a>
+					</dd>
+				</dl>
+			</div>
 		</aside>
 		{{ template "site-footer" . }}
 	</body>

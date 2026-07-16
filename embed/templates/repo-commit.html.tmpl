@@ -100,62 +100,64 @@ SPDX-License-Identifier: MIT
 				</ul>
 			</div>
 			<div class="aside">
-				<dl class="metadata">
-					<dt class="metadata--key">Authored by</dt>
-					<dd class="metadata--value">
-						<a href="mailto:{{ .Commit.Author.Email }}">
-							{{- .Commit.Author.Name -}}
-						</a>
-					</dd>
-					<dt class="metadata--key">Authored at</dt>
-					<dd class="metadata--value">
-						<time
-							datetime='{{ .Commit.Author.When.Format "2006-01-02T15:04:05-0700" }}'
-							data-local-format=""
-						>
-							{{ .Commit.Author.When.Format "2006-01-02 15:04:05 -0700" }}
-						</time>
-					</dd>
-					<dt class="metadata--key">Committed by</dt>
-					<dd class="metadata--value">
-						<a href="mailto:{{ .Commit.Committer.Email }}">
-							{{- .Commit.Committer.Name -}}
-						</a>
-					</dd>
-					<dt class="metadata--key">Committed at</dt>
-					<dd class="metadata--value">
-						<time
-							datetime='{{ .Commit.Committer.When.Format "2006-01-02T15:04:05-0700" }}'
-							data-local-format=""
-						>
-							{{ .Commit.Committer.When.Format "2006-01-02 15:04:05 -0700" }}
-						</time>
-					</dd>
-					{{- if .Commit.PGPSignature }}
-					<dt class="metadata--key">Signature</dt>
-					<dd class="metadata--value">
-						<details>
-							<summary>View</summary>
-							<textarea class="repo-commit--signature" readonly>
-								{{- .Commit.PGPSignature -}}
-							</textarea>
-						</details>
-					</dd>
-					{{ end -}}
-					<dt class="metadata--key">Object name</dt>
-					<dd class="metadata--value">
-						{{- .Commit.Hash.String -}}
-					</dd>
-					{{- if not .Parent.Hash.IsZero }}
-					<dt class="metadata--key">Parent</dt>
-					<dd class="metadata--value">
-						<a href="/{{ .Meta.DirName }}/commit/{{ .Parent.Hash.String }}">
-							{{- slice .Parent.Hash.String 0 8 -}}
-						</a>
-					</dd>
-					{{ end -}}
-					{{- template "tab-selector" -}}
-				</dl>
+				<div class="aside-contents">
+					<dl class="metadata">
+						<dt class="metadata--key">Authored by</dt>
+						<dd class="metadata--value">
+							<a href="mailto:{{ .Commit.Author.Email }}">
+								{{- .Commit.Author.Name -}}
+							</a>
+						</dd>
+						<dt class="metadata--key">Authored at</dt>
+						<dd class="metadata--value">
+							<time
+								datetime='{{ .Commit.Author.When.Format "2006-01-02T15:04:05-0700" }}'
+								data-local-format=""
+							>
+								{{ .Commit.Author.When.Format "2006-01-02 15:04:05 -0700" }}
+							</time>
+						</dd>
+						<dt class="metadata--key">Committed by</dt>
+						<dd class="metadata--value">
+							<a href="mailto:{{ .Commit.Committer.Email }}">
+								{{- .Commit.Committer.Name -}}
+							</a>
+						</dd>
+						<dt class="metadata--key">Committed at</dt>
+						<dd class="metadata--value">
+							<time
+								datetime='{{ .Commit.Committer.When.Format "2006-01-02T15:04:05-0700" }}'
+								data-local-format=""
+							>
+								{{ .Commit.Committer.When.Format "2006-01-02 15:04:05 -0700" }}
+							</time>
+						</dd>
+						{{- if .Commit.PGPSignature }}
+						<dt class="metadata--key">Signature</dt>
+						<dd class="metadata--value">
+							<details>
+								<summary>View</summary>
+								<textarea class="repo-commit--signature" readonly>
+									{{- .Commit.PGPSignature -}}
+								</textarea>
+							</details>
+						</dd>
+						{{ end -}}
+						<dt class="metadata--key">Object name</dt>
+						<dd class="metadata--value">
+							{{- .Commit.Hash.String -}}
+						</dd>
+						{{- if not .Parent.Hash.IsZero }}
+						<dt class="metadata--key">Parent</dt>
+						<dd class="metadata--value">
+							<a href="/{{ .Meta.DirName }}/commit/{{ .Parent.Hash.String }}">
+								{{- slice .Parent.Hash.String 0 8 -}}
+							</a>
+						</dd>
+						{{ end -}}
+						{{- template "tab-selector" -}}
+					</dl>
+				</div>
 			</div>
 		</main>
 		{{ template "site-footer" . }}
