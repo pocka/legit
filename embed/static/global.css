@@ -281,6 +281,7 @@ body {
 .commit-summary--hash {
 	display: inline-flex;
 	align-self: flex-start;
+	font-family: var(--font-mono);
 }
 
 .commit-summary--message {
@@ -301,6 +302,10 @@ body {
 	font-size: var(--font-xs);
 
 	color: var(--color-fg-weak);
+}
+
+.object-hash {
+	font-family: var(--font-mono);
 }
 
 .metadata {
