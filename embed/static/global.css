@@ -314,6 +314,8 @@ body {
 	margin: 0;
 	font-size: var(--font-md);
 	margin-block-end: var(--space-xl);
+
+	overflow-x: auto;
 }
 
 .tab-selector {
