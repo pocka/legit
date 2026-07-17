@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"math"
 	"os"
 	"path/filepath"
 
@@ -39,48 +40,90 @@ type Config struct {
 	Server                    struct {
 		Name string `yaml:"name,omitempty"`
 		Host string `yaml:"host"`
-		Port int    `yaml:"port"`
+		Port uint   `yaml:"port"`
 	} `yaml:"server"`
+
+	filepath string
 }
 
-func Read(f string) (*Config, error) {
-	b, err := os.ReadFile(f)
-	if err != nil {
-		return nil, fmt.Errorf("reading config: %w", err)
-	}
-
+func NewWithDefaults() *Config {
 	c := Config{}
-	if err := yaml.Unmarshal(b, &c); err != nil {
-		return nil, fmt.Errorf("parsing config: %w", err)
+
+	c.Repo.MainBranch = []string{"trunk", "master", "main"}
+	c.Repo.Readme = []string{
+		"README", "README.txt", "README.md", "README.adoc",
+		"readme", "readme.txt", "readme.md", "readme.adoc",
 	}
 
-	if c.Repo.ScanPath, err = resolvePath(c.Repo.ScanPath, f); err != nil {
-		return nil, err
+	c.Meta.Title = "Repositories"
+
+	return &c
+}
+
+func (c *Config) ReadFromFile(path string) error {
+	b, err := os.ReadFile(path)
+	if err != nil {
+		return fmt.Errorf("Read error (%s): %w", path, err)
+	}
+
+	if err := yaml.Unmarshal(b, &c); err != nil {
+		return fmt.Errorf("Parsing error: %w", err)
+	}
+
+	c.filepath = path
+
+	return nil
+}
+
+func (c *Config) Resolve(cwd string) error {
+	var err error
+
+	basePath := cwd
+	if c.filepath != "" {
+		basePath = filepath.Dir(c.filepath)
+	}
+
+	if c.Repo.ScanPath == "" {
+		c.Repo.ScanPath = cwd
+	} else if c.Repo.ScanPath, err = resolvePath(c.Repo.ScanPath, basePath); err != nil {
+		return err
 	}
 
 	// Override templates dir
 	if c.Dirs.Templates != "" {
-		if c.Dirs.Templates, err = resolvePath(c.Dirs.Templates, f); err != nil {
-			return nil, err
+		if c.Dirs.Templates, err = resolvePath(c.Dirs.Templates, basePath); err != nil {
+			return err
 		}
 	}
 
 	// Override static dir
 	if c.Dirs.Static != "" {
-		if c.Dirs.Static, err = resolvePath(c.Dirs.Static, f); err != nil {
-			return nil, err
+		if c.Dirs.Static, err = resolvePath(c.Dirs.Static, basePath); err != nil {
+			return err
 		}
 	}
 
-	return &c, nil
+	if c.UI.CommitsPageSize == 0 {
+		c.UI.CommitsPageSize = 30
+	}
+
+	if c.Server.Host == "" {
+		c.Server.Host = "localhost"
+	}
+
+	if c.Server.Port == 0 {
+		c.Server.Port = 5555
+	} else if c.Server.Port > math.MaxUint16 {
+		return fmt.Errorf("server.port should be in 0 < x <= %d range", math.MaxUint16)
+	}
+
+	return nil
 }
 
-func resolvePath(target string, configPath string) (string, error) {
+func resolvePath(target string, basePath string) (string, error) {
 	if filepath.IsAbs(target) {
 		return target, nil
 	}
 
-	dir := filepath.Dir(configPath)
-
-	return filepath.Abs(filepath.Join(dir, target))
+	return filepath.Abs(filepath.Join(basePath, target))
 }

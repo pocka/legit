@@ -42,6 +42,7 @@ dirs:
 
 meta:
   # Website's name.
+  # Default: "Repositories"
   title: legit
 
   # Website's description.
@@ -91,7 +92,9 @@ server:
   name: github.com/pocka
 
   # A host/hostname to bind web server to.
+  # Default: "localhost"
   host: 0.0.0.0
 
   # TCP port legit's web server listens to.
+  # Default: 5555
   port: 5555

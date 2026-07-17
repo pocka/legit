@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/fs"
 	"log"
-	"math"
 	"net/http"
 	"os"
 
@@ -18,30 +17,40 @@ func main() {
 	var cfg string
 	var host string
 	var port uint
-	flag.StringVar(&cfg, "config", "./config.yaml", "path to config file")
+	var scanPath string
+	flag.StringVar(&cfg, "config", "", "path to config file")
 	flag.StringVar(&host, "server.host", "", "override server.host config")
 	flag.UintVar(&port, "server.port", 0, "override server.port config")
+	flag.StringVar(&scanPath, "repo.scanPath", "", "override repo.scanPath config")
 	flag.Parse()
 
-	c, err := config.Read(cfg)
+	cwd, err := os.Getwd()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if port > 0 {
-		if port > math.MaxUint16 {
-			log.Fatalf("server.port should be in 0 < x <= %d range", math.MaxUint16)
-		}
+	c := config.NewWithDefaults()
 
-		c.Server.Port = int(port)
+	if cfg != "" {
+		if err := c.ReadFromFile(cfg); err != nil {
+			log.Fatalf("Unable to read config file: %s", err)
+		}
+	}
+
+	if port > 0 {
+		c.Server.Port = port
 	}
 
 	if host != "" {
 		c.Server.Host = host
 	}
 
-	if c.UI.CommitsPageSize == 0 {
-		c.UI.CommitsPageSize = 30
+	if scanPath != "" {
+		c.Repo.ScanPath = scanPath
+	}
+
+	if err := c.Resolve(cwd); err != nil {
+		log.Fatal(err)
 	}
 
 	allowedDirs := make([]string, 1, 3)
