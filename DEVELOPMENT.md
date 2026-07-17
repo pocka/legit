@@ -27,3 +27,24 @@ This project use [dprint](https://dprint.dev/).
 You have to install [`nixfmt`](https://github.com/NixOS/nixfmt) and Go toolchain as well.
 
 Nix user can run `nix fmt` without installing or configuring anything.
+
+## Build an OCI Image
+
+You can build an [OCI](https://opencontainers.org/) image easily with [podman](https://podman.io/).
+legit works perfectly fine in an unprivilege (rootless) container.
+
+On the project root directory run the following command:
+
+```sh
+podman build . -t pocka/legit
+```
+
+That would create and register `pocka/legit` image on your local registry.
+To test the image works, run the following command:
+
+```sh
+podman run --volume ./demo:/var/www/legit --publish 5555:5555 pocka/legit:latest
+```
+
+If you don't have podman on your NixOS system and quickly test these steps, use `nix develop .#podman` devShell.
+It has podman and configures minimum podman environment.

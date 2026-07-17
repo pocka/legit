@@ -54,6 +54,29 @@ final: prev:
 
 Runtime error will happen if Go toolchain in your nixpkgs is older than v1.24.1.
 
+### OCI (Docker, Podman)
+
+Build the image on the project root.
+The image exposes TCP port 5555 for HTTP server.
+
+Generated image expectes two volume mounts:
+
+- `/var/www/legit` ... a directory containing git repositories to host.
+- `/etc/legit/config.yaml` ... config file for UI and metadata customization.
+
+Example commands using podman:
+
+```sh
+podman build . -t pocka/legit
+podman run -v ./demo:/var/www/legit -v ./config.yaml:/etc/legit/config.yaml --publish 5555:5555 pocka/legit:latest
+```
+
+OCI image entrypoint overwrites these config options, so values inside your `config.yaml` will be ignored:
+
+- `server.host`
+- `server.port`
+- `repo.scanPath`
+
 ## Configuration
 
 legit reads YAML config file. Create YAML file somewhere (e.g. `$XDG_CONFIG_HOME/legit/config.yaml`) and pass the path to legit via `--config` flag.

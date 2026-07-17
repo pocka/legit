@@ -75,22 +75,6 @@
                 repos
               ];
             };
-
-          docker = pkgs.dockerTools.buildLayeredImage {
-            name = "sini:5000/legit";
-            tag = "latest";
-            contents = [
-              files
-              legit
-              pkgs.git
-            ];
-            config = {
-              Entrypoint = [ "${legit}/bin/legit" ];
-              ExposedPorts = {
-                "5555/tcp" = { };
-              };
-            };
-          };
         }
       );
 
@@ -137,6 +121,55 @@
               gopls
             ];
           };
+
+          # For those who don't have podman on system.
+          podman =
+            let
+              conf = pkgs.stdenv.mkDerivation {
+                name = "podman-config-files";
+
+                # No source.
+                unpackPhase = "true";
+
+                postInstall = ''
+                  mkdir $out
+                  cat > $out/registries.conf <<EOF
+                  unqualified-search-registries = ["docker.io"]
+                  EOF
+
+                  # This is meant to be copied under ~/.config/containers/
+                  cat > $out/policy.json <<EOF
+                  {
+                    "default": [{ "type": "insecureAcceptAnything" }]
+                  }
+                  EOF
+
+                  cat > $out/containers.conf <<EOF
+                  [engine]
+                  cgroup_manager="cgroupfs"
+                  events_logger="file"
+                  EOF
+                '';
+              };
+            in
+            pkgs.mkShell {
+              packages = with pkgs; [
+                podman
+                conf
+              ];
+
+              shellHook = ''
+                if [[ ! -f ~/.config/containers/policy.json && ! -f /etc/containers/policy.json ]]; then
+                  echo "Create policy.json file for podman."
+                  echo "https://podman.io/docs/installation#policyjson"
+                  echo "If you are okay with insecureAcceptAnything for all, run:"
+                  echo "install -Dm555 ${conf}/policy.json ~/.config/containers/policy.json"
+                fi
+              '';
+
+              CONTAINERS_REGISTRIES_CONF = "${conf}/registries.conf";
+              CONTAINERS_CONF = "${conf}/containers.conf";
+            };
         }
       );
     };
