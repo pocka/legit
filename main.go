@@ -44,13 +44,19 @@ func main() {
 		c.UI.CommitsPageSize = 30
 	}
 
-	if err := UnveilPaths([]string{
-		c.Dirs.Static,
-		c.Repo.ScanPath,
-		c.Dirs.Templates,
-	},
-		"r"); err != nil {
-		log.Fatalf("unveil: %s", err)
+	allowedDirs := make([]string, 1, 3)
+	allowedDirs[0] = c.Repo.ScanPath
+
+	if c.Dirs.Static != "" {
+		allowedDirs = append(allowedDirs, c.Dirs.Static)
+	}
+
+	if c.Dirs.Templates != "" {
+		allowedDirs = append(allowedDirs, c.Dirs.Templates)
+	}
+
+	if err := restrictFileAccessTo(allowedDirs...); err != nil {
+		log.Fatalf("Unable to restrict filesystem access: %s", err)
 	}
 
 	var staticDir fs.FS

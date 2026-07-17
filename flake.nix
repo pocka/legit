@@ -48,7 +48,7 @@
                 ];
               };
 
-            vendorHash = "sha256-qSnRQIuHnUQit21232SsMY0LQVvcy0PqBPQVPjsNJWA=";
+            vendorHash = "sha256-SWMJVv7QQt4gHaPjb5Q5m20jzFMPHqa+McI26EYg6Ak=";
 
             nativeBuildInputs = with pkgs; [ git ];
 

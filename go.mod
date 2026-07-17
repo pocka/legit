@@ -9,9 +9,10 @@ require (
 	github.com/dustin/go-humanize v1.0.1
 	github.com/go-git/go-billy/v5 v5.6.2
 	github.com/go-git/go-git/v5 v5.13.2
+	github.com/landlock-lsm/go-landlock v0.9.0
 	github.com/microcosm-cc/bluemonday v1.0.27
 	github.com/russross/blackfriday/v2 v2.1.0
-	golang.org/x/sys v0.30.0
+	golang.org/x/sys v0.40.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
@@ -35,6 +36,7 @@ require (
 	golang.org/x/crypto v0.33.0 // indirect
 	golang.org/x/net v0.35.0 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
+	kernel.org/pub/linux/libs/security/libcap/psx v1.2.77 // indirect
 )
 
 replace github.com/sergi/go-diff => github.com/sergi/go-diff v1.1.0
