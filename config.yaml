@@ -83,6 +83,7 @@ ui:
 compileTemplatesOnRequest: false
 
 server:
+  # [optional]
   # legit uses this strings for clone URL.
   # `https://<name>/<directory>`
   # In addition to hostname, you can include paths as well.
