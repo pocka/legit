@@ -32,7 +32,12 @@ func (t *RepoLinkTransformer) RewriteInternalMediaSource(src string) string {
 		href = "." + href
 	}
 
-	return fmt.Sprintf("/%s/blob/%s/%s?raw", t.repoName, t.ref, href)
+	query := "?raw"
+	if strings.ContainsRune(href, '?') {
+		query = "&raw"
+	}
+
+	return filepath.Clean(fmt.Sprintf("/%s/blob/%s/%s%s", t.repoName, t.ref, href, query))
 }
 
 func (t *RepoLinkTransformer) RewriteInternalLink(link string) string {
