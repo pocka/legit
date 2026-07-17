@@ -46,3 +46,52 @@ func TestRewriteInternalMediaSource(t *testing.T) {
 		}
 	}
 }
+
+func TestRewriteInternalLink(t *testing.T) {
+	r := NewRepoLinkTransformer("foo", "trunk")
+
+	{
+		input := "CHANGELOG.md"
+		expected := "/foo/blob/trunk/CHANGELOG.md"
+
+		if out := r.RewriteInternalLink(input); out != expected {
+			t.Errorf("Expected %s, got %s", expected, out)
+		}
+	}
+
+	{
+		input := "docs/DEVELOPMENT.adoc"
+		expected := "/foo/blob/trunk/docs/DEVELOPMENT.adoc"
+
+		if out := r.RewriteInternalLink(input); out != expected {
+			t.Errorf("Expected %s, got %s", expected, out)
+		}
+	}
+
+	{
+		input := "vendor/libfoo/"
+		expected := "/foo/tree/trunk/vendor/libfoo"
+
+		if out := r.RewriteInternalLink(input); out != expected {
+			t.Errorf("Expected %s, got %s", expected, out)
+		}
+	}
+
+	{
+		input := "./vendor/libfoo/"
+		expected := "/foo/tree/trunk/vendor/libfoo"
+
+		if out := r.RewriteInternalLink(input); out != expected {
+			t.Errorf("Expected %s, got %s", expected, out)
+		}
+	}
+
+	{
+		input := "/vendor/"
+		expected := "/foo/tree/trunk/vendor"
+
+		if out := r.RewriteInternalLink(input); out != expected {
+			t.Errorf("Expected %s, got %s", expected, out)
+		}
+	}
+}
