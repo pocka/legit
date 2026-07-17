@@ -49,9 +49,9 @@ func (t *RepoLinkTransformer) RewriteInternalLink(link string) string {
 	}
 
 	if strings.LastIndexByte(href, '/') == len(href)-1 {
-		return fmt.Sprintf("/%s/tree/%s/%s", t.repoName, t.ref, href[:len(href)-1])
+		return filepath.Clean(fmt.Sprintf("/%s/tree/%s/%s", t.repoName, t.ref, href[:len(href)-1]))
 	} else {
-		return fmt.Sprintf("/%s/blob/%s/%s", t.repoName, t.ref, href)
+		return filepath.Clean(fmt.Sprintf("/%s/blob/%s/%s", t.repoName, t.ref, href))
 	}
 }
 
