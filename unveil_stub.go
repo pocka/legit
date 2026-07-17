@@ -1,5 +1,4 @@
 //go:build !openbsd
-// +build !openbsd
 
 // Stub functions for GOOS that don't support unix.Unveil()
 
