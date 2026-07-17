@@ -37,7 +37,14 @@ func (t *RepoLinkTransformer) RewriteInternalMediaSource(src string) string {
 		query = "&raw"
 	}
 
-	return filepath.Clean(fmt.Sprintf("/%s/blob/%s/%s%s", t.repoName, t.ref, href, query))
+	// Output path should not go beyond this.
+	basePath := fmt.Sprintf("/%s/blob/%s", t.repoName, t.ref)
+	path := filepath.Join(basePath, href)
+	if strings.Index(path, basePath) != 0 {
+		path = basePath + path
+	}
+
+	return path + query
 }
 
 func (t *RepoLinkTransformer) RewriteInternalLink(link string) string {
@@ -48,11 +55,19 @@ func (t *RepoLinkTransformer) RewriteInternalLink(link string) string {
 		href = "." + href
 	}
 
+	// Output path should not go beyond this.
+	var basePath string
 	if strings.LastIndexByte(href, '/') == len(href)-1 {
-		return filepath.Clean(fmt.Sprintf("/%s/tree/%s/%s", t.repoName, t.ref, href[:len(href)-1]))
+		basePath = fmt.Sprintf("/%s/tree/%s", t.repoName, t.ref)
 	} else {
-		return filepath.Clean(fmt.Sprintf("/%s/blob/%s/%s", t.repoName, t.ref, href))
+		basePath = fmt.Sprintf("/%s/blob/%s", t.repoName, t.ref)
 	}
+	path := filepath.Join(basePath, href)
+	if strings.Index(path, basePath) != 0 {
+		path = basePath + path
+	}
+
+	return path
 }
 
 func (d *deps) htmlRenderer(file *object.File) html.Renderer {

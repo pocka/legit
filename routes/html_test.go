@@ -45,6 +45,15 @@ func TestRewriteInternalMediaSource(t *testing.T) {
 			t.Errorf("Expected %s, got %s", expected, out)
 		}
 	}
+
+	{
+		input := "../../../../favicon.ico"
+		expected := "/foo/blob/trunk/favicon.ico?raw"
+
+		if out := r.RewriteInternalMediaSource(input); out != expected {
+			t.Errorf("Expected %s, got %s", expected, out)
+		}
+	}
 }
 
 func TestRewriteInternalLink(t *testing.T) {
@@ -89,6 +98,24 @@ func TestRewriteInternalLink(t *testing.T) {
 	{
 		input := "/vendor/"
 		expected := "/foo/tree/trunk/vendor"
+
+		if out := r.RewriteInternalLink(input); out != expected {
+			t.Errorf("Expected %s, got %s", expected, out)
+		}
+	}
+
+	{
+		input := ".././../././.././../foo/../.././"
+		expected := "/foo/tree/trunk/"
+
+		if out := r.RewriteInternalLink(input); out != expected {
+			t.Errorf("Expected %s, got %s", expected, out)
+		}
+	}
+
+	{
+		input := "../../../../legit/config.yaml"
+		expected := "/foo/blob/trunk/legit/config.yaml"
 
 		if out := r.RewriteInternalLink(input); out != expected {
 			t.Errorf("Expected %s, got %s", expected, out)
