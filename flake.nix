@@ -33,28 +33,7 @@
           };
         in
         {
-          legit = pkgs.buildGoModule {
-            name = "legit";
-            rev = "master";
-            src =
-              with pkgs.lib.fileset;
-              toSource {
-                root = ./.;
-                fileset = unions [
-                  ./go.mod
-                  ./go.sum
-                  ./embed
-                  (fileFilter (file: file.hasExt "go") ./.)
-                ];
-              };
-
-            vendorHash = "sha256-SWMJVv7QQt4gHaPjb5Q5m20jzFMPHqa+McI26EYg6Ak=";
-
-            nativeBuildInputs = with pkgs; [ git ];
-
-            meta.mainProgram = "legit";
-          };
-
+          legit = pkgs.callPackage ./. { };
           default = legit;
 
           testing =
