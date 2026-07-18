@@ -34,25 +34,34 @@ You can also run legit without installing by `go run .`.
 
 ### Nix
 
-As a quick and dirty way, you can use the original `legit-web` package and overlay to install this fork.
+Add this repository as a Flake input and use `nixosModules.default` or `homeManagerModules.default`.
 
 ```nix
-final: prev:
+# your/flake.nix
 {
-  legit-web = prev.legit-web.overrideAttrs (old: {
-    src = prev.fetchFromGitHub {
-      owner = "pocka";
-      repo = "legit";
-      rev = "bc147a9425e6265adca2672103c0d0b0dfcd735d";
-      hash = "sha256-We3ceKWo9viSfM9C/l7CvKiwfGf8bbKvH7M6M0xU1Cg=";
-    };
+	inputs = {
+		# --- snip ---
 
-    vendorHash = "sha256-QxkMxO8uzBCC3oMSWjdVsbR2cluYMx5OOKTgaNOLHxc=";
-  });
+		legit = {
+			url = "github:pocka/legit";
+			inputs.nixpkgs.follows = "nixpkgs"; # optional
+		};
+	};
+
+	outputs =
+		{ nixpkgs, legit, ... }:
+		{
+			nixosConfigurations.foo = nixpkgs.lib.nixosSystem {
+				# --- snip ---
+
+				modules = [
+					# --- snip ---
+					legit.nixosModules.default
+				];
+			};
+		};
 }
 ```
-
-Runtime error will happen if Go toolchain in your nixpkgs is older than v1.24.1.
 
 ### OCI (Docker, Podman)
 

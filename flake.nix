@@ -57,6 +57,9 @@
         }
       );
 
+      homeManagerModules.default = import ./nix/home-manager-module.nix self;
+      nixosModules.default = import ./nix/nixos-module.nix self;
+
       apps = forAllSystems (
         { system, pkgs }: {
           k6 = {
@@ -151,5 +154,33 @@
             };
         }
       );
+
+      nixosConfigurations =
+        let
+          system = "x86_64-linux";
+        in
+        {
+          soft-legit = nixpkgs.lib.nixosSystem {
+            inherit system;
+            pkgs = import nixpkgs { inherit system; };
+
+            modules = [
+              "${nixpkgs}/nixos/modules/virtualisation/qemu-vm.nix"
+              ./nix/nixos-configuration-soft-legit.nix
+              self.nixosModules.default
+            ];
+          };
+
+          soft-legit-hm = nixpkgs.lib.nixosSystem {
+            inherit system;
+            pkgs = import nixpkgs { inherit system; };
+
+            modules = [
+              "${nixpkgs}/nixos/modules/virtualisation/qemu-vm.nix"
+              ./nix/nixos-configuration-soft-legit-hm.nix
+              ({ ... }: { home-manager.extraSpecialArgs.legit = self; })
+            ];
+          };
+        };
     };
 }
