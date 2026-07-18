@@ -100,6 +100,11 @@
             type = "app";
             program = pkgs.lib.getExe pkgs.k6;
           };
+
+          dprint = {
+            type = "app";
+            program = pkgs.lib.getExe pkgs.dprint;
+          };
         }
       );
 
