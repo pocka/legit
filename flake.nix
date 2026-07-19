@@ -24,36 +24,11 @@
     in
     {
       packages = forAllSystems (
-        { system, pkgs }:
-        let
-          legit = self.packages.${system}.legit;
-          files = pkgs.lib.fileset.toSource {
-            root = ./.;
-            fileset = pkgs.lib.fileset.unions [ ./config.yaml ];
-          };
-        in
-        {
+        { system, pkgs }: {
           legit = pkgs.callPackage ./. { };
-          default = legit;
+          default = self.packages.${system}.legit;
 
-          testing =
-            let
-              repos = pkgs.callPackage ./tests/k6/repos.nix { };
-            in
-            pkgs.writeShellApplication {
-              name = "legit-testing";
-
-              text = ''
-                ${pkgs.lib.getExe legit} -config ${repos}/tests/k6/config.yaml
-              '';
-
-              runtimeInputs = with pkgs; [
-                git
-                legit
-
-                repos
-              ];
-            };
+          testing = pkgs.callPackage ./nix/test-server.nix { };
         }
       );
 
