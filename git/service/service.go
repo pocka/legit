@@ -9,6 +9,8 @@ import (
 	"os/exec"
 	"strings"
 	"syscall"
+
+	"github.com/pocka/legit/git/exe"
 )
 
 // Mostly from charmbracelet/soft-serve and sosedoff/gitkit.
@@ -20,7 +22,7 @@ type ServiceCommand struct {
 }
 
 func (c *ServiceCommand) InfoRefs() error {
-	cmd := exec.Command("git", []string{
+	cmd := exec.Command(exe.GitBin(), []string{
 		"upload-pack",
 		"--stateless-rpc",
 		"--advertise-refs",
@@ -68,7 +70,7 @@ func (c *ServiceCommand) InfoRefs() error {
 }
 
 func (c *ServiceCommand) UploadPack() error {
-	cmd := exec.Command("git", []string{
+	cmd := exec.Command(exe.GitBin(), []string{
 		"-c", "uploadpack.allowFilter=true",
 		"upload-pack",
 		"--stateless-rpc",

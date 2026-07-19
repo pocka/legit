@@ -12,6 +12,7 @@ import (
 
 	"github.com/pocka/legit/config"
 	"github.com/pocka/legit/embed"
+	"github.com/pocka/legit/git/exe"
 	"github.com/pocka/legit/routes"
 )
 
@@ -73,7 +74,7 @@ func main() {
 		write: true,
 	}
 
-	if path, err := exec.LookPath("git"); err != nil {
+	if path, err := exec.LookPath(exe.GitBin()); err != nil {
 		log.Printf("Unable to find git binary, git operations will fail: %s", err)
 	} else {
 		fsAllowList = append(fsAllowList, filesystemAccess{
