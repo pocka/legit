@@ -79,6 +79,15 @@
             ];
           };
 
+          debug = pkgs.mkShell {
+            # https://github.com/go-delve/delve/issues/3085
+            hardeningDisable = [ "fortify" ];
+            packages = with pkgs; [
+              go
+              delve
+            ];
+          };
+
           # For those who don't have podman on system.
           podman = pkgs.callPackage ./nix/devshell-podman.nix { };
         }
