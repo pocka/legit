@@ -32,6 +32,10 @@ Go compiler generates `legit` executable file at the repository root directory.
 
 You can also run legit without installing by `go run .`.
 
+legit uses unveil(2) on OpenBSD and Landlock LSM on Linux.
+If you find unexpected filesystem permission error, add the _directory_ to `main.additionalAccessDirs` ldflag.
+That flag takes comma-separated list of directories, and unveil/Landlock allows a readonly access to that paths.
+
 ### Nix
 
 Add this repository as a Flake input and use `nixosModules.default` or `homeManagerModules.default`.

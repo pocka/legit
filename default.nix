@@ -24,6 +24,11 @@ buildGoModule {
 
   vendorHash = "sha256-SWMJVv7QQt4gHaPjb5Q5m20jzFMPHqa+McI26EYg6Ak=";
 
+  ldflags = [
+    # git binary from nixpkgs links against libs under "/nix/store/.../lib"
+    "-X main.additionalAccessDirs=/nix/store"
+  ];
+
   # Test scripts invoke system "git" command.
   nativeBuildInputs = [ git ];
 

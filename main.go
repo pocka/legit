@@ -8,11 +8,14 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"strings"
 
 	"github.com/pocka/legit/config"
 	"github.com/pocka/legit/embed"
 	"github.com/pocka/legit/routes"
 )
+
+var additionalAccessDirs string
 
 func main() {
 	var cfg string
@@ -54,7 +57,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fsAllowList := make([]filesystemAccess, 2, 5)
+	fsAllowList := make([]filesystemAccess, 2, 10)
 	fsAllowList[0] = filesystemAccess{
 		path:  c.Repo.ScanPath,
 		isDir: true,
@@ -94,6 +97,18 @@ func main() {
 			isDir: true,
 			read:  true,
 		})
+	}
+
+	if additionalAccessDirs != "" {
+		for path := range strings.SplitSeq(additionalAccessDirs, ",") {
+			path := strings.Trim(path, " ")
+
+			fsAllowList = append(fsAllowList, filesystemAccess{
+				path:  path,
+				isDir: true,
+				read:  true,
+			})
+		}
 	}
 
 	if err := restrictFileAccessTo(fsAllowList...); err != nil {
