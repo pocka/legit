@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 
 	"github.com/pocka/legit/config"
 	"github.com/pocka/legit/embed"
@@ -53,18 +54,49 @@ func main() {
 		log.Fatal(err)
 	}
 
-	allowedDirs := make([]string, 1, 3)
-	allowedDirs[0] = c.Repo.ScanPath
+	fsAllowList := make([]filesystemAccess, 2, 5)
+	fsAllowList[0] = filesystemAccess{
+		path:  c.Repo.ScanPath,
+		isDir: true,
+		read:  true,
+	}
+
+	// os.exec.Cmd use /dev/null. Without this, git operations fail with
+	// "open /dev/null: permission denied".
+	// https://rohitpaulk.com/articles/cmd-run-dev-null
+	fsAllowList[1] = filesystemAccess{
+		path:  "/dev/null",
+		read:  true,
+		write: true,
+	}
+
+	if path, err := exec.LookPath("git"); err != nil {
+		log.Printf("Unable to find git binary, git operations will fail: %s", err)
+	} else {
+		fsAllowList = append(fsAllowList, filesystemAccess{
+			path:    path,
+			read:    true,
+			execute: true,
+		})
+	}
 
 	if c.Dirs.Static != "" {
-		allowedDirs = append(allowedDirs, c.Dirs.Static)
+		fsAllowList = append(fsAllowList, filesystemAccess{
+			path:  c.Dirs.Static,
+			isDir: true,
+			read:  true,
+		})
 	}
 
 	if c.Dirs.Templates != "" {
-		allowedDirs = append(allowedDirs, c.Dirs.Templates)
+		fsAllowList = append(fsAllowList, filesystemAccess{
+			path:  c.Dirs.Templates,
+			isDir: true,
+			read:  true,
+		})
 	}
 
-	if err := restrictFileAccessTo(allowedDirs...); err != nil {
+	if err := restrictFileAccessTo(fsAllowList...); err != nil {
 		log.Fatalf("Unable to restrict filesystem access: %s", err)
 	}
 

@@ -4,6 +4,6 @@
 
 package main
 
-func restrictFileAccessTo(_dirs ...string) error {
+func restrictFileAccessTo(_dirs ...filesystemAccess) error {
 	return nil
 }

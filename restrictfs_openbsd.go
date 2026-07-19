@@ -8,10 +8,28 @@ import (
 	"golang.org/x/sys/unix"
 )
 
-func restrictFileAccessTo(dirs ...string) error {
-	for _, dir := range dirs {
-		if err := unix.Unveil(dir, "r"); err != nil {
-			return fmt.Errorf("Unveil error (%s): %w", dir, err)
+func (a filesystemAccess) mode() string {
+	m := ""
+
+	if a.read {
+		m = m + "r"
+	}
+
+	if a.write {
+		m = m + "w"
+	}
+
+	if a.execute {
+		m = m + "x"
+	}
+
+	return m
+}
+
+func restrictFileAccessTo(allowList ...filesystemAccess) error {
+	for _, a := range allowList {
+		if err := unix.Unveil(a.path, a.mode()); err != nil {
+			return fmt.Errorf("Unveil error (%s:%s): %w", a.path, a.mode(), err)
 		}
 	}
 
