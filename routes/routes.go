@@ -13,7 +13,6 @@ import (
 	"strings"
 
 	securejoin "github.com/cyphar/filepath-securejoin"
-	"github.com/dustin/go-humanize"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/pocka/legit/config"
 	"github.com/pocka/legit/git"
@@ -74,11 +73,10 @@ func (d *deps) Index(w http.ResponseWriter, r *http.Request) {
 		}
 
 		summaries = append(summaries, repositorySummary{
-			DisplayName:          getDisplayName(name),
-			DirName:              name,
-			Description:          getDescription(path),
-			LastCommitAtRelative: humanize.Time(c.Committer.When),
-			LastCommit:           c,
+			DisplayName: getDisplayName(name),
+			DirName:     name,
+			Description: getDescription(path),
+			LastCommit:  c,
 		})
 	}
 

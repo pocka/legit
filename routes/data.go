@@ -25,10 +25,6 @@ type repositorySummary struct {
 	// Description is a contents of "description" text file in the repository root.
 	Description string
 
-	// LastCommitAtRelative is a relative datetime string of last commit.
-	// For example, "1 hour ago" or "2 years ago".
-	LastCommitAtRelative string
-
 	LastCommit *object.Commit
 }
 

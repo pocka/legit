@@ -6,7 +6,6 @@ require (
 	github.com/alecthomas/chroma/v2 v2.27.0
 	github.com/bluekeyes/go-gitdiff v0.8.0
 	github.com/cyphar/filepath-securejoin v0.4.1
-	github.com/dustin/go-humanize v1.0.1
 	github.com/go-git/go-billy/v5 v5.6.2
 	github.com/go-git/go-git/v5 v5.13.2
 	github.com/landlock-lsm/go-landlock v0.9.0

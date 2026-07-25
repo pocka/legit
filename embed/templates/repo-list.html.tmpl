@@ -12,6 +12,7 @@ SPDX-License-Identifier: MIT
 		{{- if .Config.Meta.Description }}
 		<meta name="description" content="{{ .Config.Meta.Description }}" />
 		{{- end }}
+		<script type="module" src="/static/convert-to-local-datetime.js"></script>
 	</head>
 	<body>
 		<header class="header">
@@ -35,9 +36,9 @@ SPDX-License-Identifier: MIT
 						Updated
 							<time
 								datetime='{{ .LastCommit.Committer.When.Format "2006-01-02T15:04:05-0700" }}'
-								title='{{ .LastCommit.Committer.When.Format "2006-01-02 15:04:05 -0700" }}'
+								data-local-format="relative"
 							>
-								{{- .LastCommitAtRelative -}}
+								at {{ .LastCommit.Committer.When.Format "2006-01-02 15:04:05 -0700" -}}
 							</time>
 						</span>
 					</a>
