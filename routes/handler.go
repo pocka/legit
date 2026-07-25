@@ -8,6 +8,7 @@ import (
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/pocka/legit/config"
 	"github.com/pocka/legit/renderer/html"
+	"github.com/pocka/legit/routes/debug"
 )
 
 // Checks for gitprotocol-http(5) specific smells; if found, passes
@@ -53,6 +54,8 @@ func Handlers(c *config.Config, staticDir fs.FS, templatesDir fs.FS) *http.Serve
 	if !c.CompileTemplatesOnRequest {
 		d.t = template.Must(template.ParseFS(d.templatesDir, "*"))
 	}
+
+	debug.Register(mux)
 
 	mux.HandleFunc("GET /", d.Index)
 	mux.HandleFunc("GET /static/{file}", d.ServeStatic)

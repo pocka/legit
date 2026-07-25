@@ -21,6 +21,20 @@ Run `nix run .#testing` (you need Nix Flakes) or follow steps described in `test
 Once the test server is ready, pass your desired test file to `k6 run` command.
 Nix user can use `nix run .#k6 -- run` without installing k6 manually.
 
+## Profiling
+
+Add `debug` build tag then access `/debug/pprof/` for profiling.
+The profiling feature uses [runtime/pprof](https://pkg.go.dev/runtime/pprof) in Go Standard library.
+
+### Example Usage
+
+1. Launch the server using `go run . -tags debug . --config ./demo/config.yaml`
+2. Start profiling for 10s using `curl -sL http://localhost:5555/debug/pprof/profile?seconds=10 > profile`
+3. Access a page / pages you want to profile
+4. Wait for the download command (`curl`) to finish
+5. Launch profiling viewer using `go tool pprof -http localhost:8082 profile`
+6. Access http://localhost:8082
+
 ## Code Formatting
 
 This project use [dprint](https://dprint.dev/).

@@ -85,6 +85,8 @@
             packages = with pkgs; [
               go
               delve
+              # pprof requires Graphviz for generating visualizations.
+              graphviz
             ];
           };
 
