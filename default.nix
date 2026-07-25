@@ -22,7 +22,7 @@ buildGoModule {
       ];
     };
 
-  vendorHash = "sha256-48A57dojm6J5ONfbA5N9AfLCIPV0T4v3U2RaCRKZsmY=";
+  vendorHash = "sha256-mSr8uddh7J9P0BhYH7D6riW3KGmr5Qf8caMhKwoUCO0=";
 
   ldflags = [
     # git binary from nixpkgs links against libs under "/nix/store/.../lib"

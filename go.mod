@@ -37,5 +37,3 @@ require (
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 	kernel.org/pub/linux/libs/security/libcap/psx v1.2.77 // indirect
 )
-
-replace github.com/sergi/go-diff => github.com/sergi/go-diff v1.1.0
