@@ -12,19 +12,19 @@ import (
 	"github.com/pocka/legit/renderer/html"
 )
 
-type RepoLinkTransformer struct {
+type repoLinkTransformer struct {
 	repoName string
 	ref      string
 }
 
-func NewRepoLinkTransformer(repoName string, ref string) *RepoLinkTransformer {
-	return &RepoLinkTransformer{
+func newRepoLinkTransformer(repoName string, ref string) *repoLinkTransformer {
+	return &repoLinkTransformer{
 		repoName: repoName,
 		ref:      ref,
 	}
 }
 
-func (t *RepoLinkTransformer) RewriteInternalMediaSource(src string) string {
+func (t *repoLinkTransformer) RewriteInternalMediaSource(src string) string {
 	href := src
 
 	if strings.IndexByte(href, '/') == 0 {
@@ -47,7 +47,7 @@ func (t *RepoLinkTransformer) RewriteInternalMediaSource(src string) string {
 	return path + query
 }
 
-func (t *RepoLinkTransformer) RewriteInternalLink(link string) string {
+func (t *repoLinkTransformer) RewriteInternalLink(link string) string {
 	href := link
 
 	if strings.IndexByte(href, '/') == 0 {

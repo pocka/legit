@@ -36,10 +36,10 @@ type deps struct {
 	plaintext html.PlaintextRenderer
 }
 
-func (d *deps) Index(w http.ResponseWriter, r *http.Request) {
+func (d *deps) index(w http.ResponseWriter, r *http.Request) {
 	dirs, err := os.ReadDir(d.c.Repo.ScanPath)
 	if err != nil {
-		d.Write500(w)
+		d.write500(w)
 		log.Printf("reading scan path: %s", err)
 		return
 	}
@@ -55,7 +55,7 @@ func (d *deps) Index(w http.ResponseWriter, r *http.Request) {
 		path, err := securejoin.SecureJoin(d.c.Repo.ScanPath, name)
 		if err != nil {
 			log.Printf("securejoin error: %v", err)
-			d.Write404(w)
+			d.write404(w)
 			return
 		}
 
@@ -67,7 +67,7 @@ func (d *deps) Index(w http.ResponseWriter, r *http.Request) {
 
 		c, err := gr.LastCommit()
 		if err != nil {
-			d.Write500(w)
+			d.write500(w)
 			log.Println(err)
 			return
 		}
@@ -89,47 +89,47 @@ func (d *deps) Index(w http.ResponseWriter, r *http.Request) {
 		Repositories: summaries,
 	}
 
-	if err := d.Template().ExecuteTemplate(w, "repo-list", data); err != nil {
+	if err := d.template().ExecuteTemplate(w, "repo-list", data); err != nil {
 		log.Println(err)
 		return
 	}
 }
 
-func (d *deps) RepoIndex(w http.ResponseWriter, r *http.Request) {
+func (d *deps) repoIndex(w http.ResponseWriter, r *http.Request) {
 	name := r.PathValue("name")
 	if d.isIgnored(name) {
-		d.Write404(w)
+		d.write404(w)
 		return
 	}
 	name = filepath.Clean(name)
 	path, err := securejoin.SecureJoin(d.c.Repo.ScanPath, name)
 	if err != nil {
 		log.Printf("securejoin error: %v", err)
-		d.Write404(w)
+		d.write404(w)
 		return
 	}
 
 	gr, err := git.Open(path, "")
 	if err != nil {
-		d.Write404(w)
+		d.write404(w)
 		return
 	}
 
 	commits, _, err := gr.Commits(git.CommitsOptions{Limit: 3})
 	if err != nil {
-		d.Write500(w)
+		d.write500(w)
 		log.Println(err)
 		return
 	}
 
 	mainBranch, err := gr.FindMainBranch(d.c.Repo.MainBranch)
 	if err != nil {
-		d.Write500(w)
+		d.write500(w)
 		log.Println(err)
 		return
 	}
 
-	transformer := NewRepoLinkTransformer(name, mainBranch)
+	transformer := newRepoLinkTransformer(name, mainBranch)
 
 	var readmeContent template.HTML
 	for _, readme := range d.c.Repo.Readme {
@@ -172,16 +172,16 @@ func (d *deps) RepoIndex(w http.ResponseWriter, r *http.Request) {
 		IsGoModule:    isGoModule(gr),
 	}
 
-	if err := d.Template().ExecuteTemplate(w, "repo-top", data); err != nil {
+	if err := d.template().ExecuteTemplate(w, "repo-top", data); err != nil {
 		log.Println(err)
 		return
 	}
 }
 
-func (d *deps) RepoTree(w http.ResponseWriter, r *http.Request) {
+func (d *deps) repoTree(w http.ResponseWriter, r *http.Request) {
 	name := r.PathValue("name")
 	if d.isIgnored(name) {
-		d.Write404(w)
+		d.write404(w)
 		return
 	}
 	treePath := r.PathValue("rest")
@@ -191,18 +191,18 @@ func (d *deps) RepoTree(w http.ResponseWriter, r *http.Request) {
 	path, err := securejoin.SecureJoin(d.c.Repo.ScanPath, name)
 	if err != nil {
 		log.Printf("securejoin error: %v", err)
-		d.Write404(w)
+		d.write404(w)
 		return
 	}
 	gr, err := git.Open(path, ref)
 	if err != nil {
-		d.Write404(w)
+		d.write404(w)
 		return
 	}
 
 	files, err := gr.FileTree(treePath)
 	if err != nil {
-		d.Write500(w)
+		d.write500(w)
 		log.Println(err)
 		return
 	}
@@ -224,18 +224,18 @@ func (d *deps) RepoTree(w http.ResponseWriter, r *http.Request) {
 		Files: files,
 	}
 
-	if err := d.Template().ExecuteTemplate(w, "repo-tree-ref", data); err != nil {
+	if err := d.template().ExecuteTemplate(w, "repo-tree-ref", data); err != nil {
 		log.Println(err)
 		return
 	}
 }
 
-func (d *deps) FileContent(w http.ResponseWriter, r *http.Request) {
+func (d *deps) fileContent(w http.ResponseWriter, r *http.Request) {
 	raw := r.URL.Query().Has("raw")
 
 	name := r.PathValue("name")
 	if d.isIgnored(name) {
-		d.Write404(w)
+		d.write404(w)
 		return
 	}
 	treePath := r.PathValue("rest")
@@ -245,25 +245,25 @@ func (d *deps) FileContent(w http.ResponseWriter, r *http.Request) {
 	path, err := securejoin.SecureJoin(d.c.Repo.ScanPath, name)
 	if err != nil {
 		log.Printf("securejoin error: %v", err)
-		d.Write404(w)
+		d.write404(w)
 		return
 	}
 
 	gr, err := git.Open(path, ref)
 	if err != nil {
-		d.Write404(w)
+		d.write404(w)
 		return
 	}
 
 	file, err := gr.File(treePath)
 	if err != nil {
-		d.Write500(w)
+		d.write500(w)
 		return
 	}
 
 	contents, err := file.Contents()
 	if err != nil {
-		d.Write500(w)
+		d.write500(w)
 		return
 	}
 
@@ -298,14 +298,14 @@ func (d *deps) FileContent(w http.ResponseWriter, r *http.Request) {
 			renderer := d.htmlRenderer(file)
 			if renderer == nil {
 				log.Printf("Requested HTML preview for %s/%s, but the filetype has no HTML renderer", name, treePath)
-				d.Write404(w)
+				d.write404(w)
 				return
 			}
 
-			html, err := renderer.Render([]byte(contents), NewRepoLinkTransformer(name, ref))
+			html, err := renderer.Render([]byte(contents), newRepoLinkTransformer(name, ref))
 			if err != nil {
 				log.Printf("Failed to render HTML preview: %s", err)
-				d.Write500(w)
+				d.write500(w)
 				return
 			}
 
@@ -316,7 +316,7 @@ func (d *deps) FileContent(w http.ResponseWriter, r *http.Request) {
 				Content: template.HTML(html),
 			}
 
-			if err := d.Template().ExecuteTemplate(w, "repo-blob-ref-html-preview", data); err != nil {
+			if err := d.template().ExecuteTemplate(w, "repo-blob-ref-html-preview", data); err != nil {
 				log.Println(err)
 				return
 			}
@@ -324,7 +324,7 @@ func (d *deps) FileContent(w http.ResponseWriter, r *http.Request) {
 			return
 		default:
 			log.Printf("Got ?preview=%s, but not preview renderer is available for the type", previewType)
-			d.Write404(w)
+			d.write404(w)
 			return
 		}
 	}
@@ -332,7 +332,7 @@ func (d *deps) FileContent(w http.ResponseWriter, r *http.Request) {
 	lc, err := countLines(strings.NewReader(contents))
 	if err != nil {
 		log.Printf("Failed to count lines for %s: %s", r.URL.Path, err)
-		d.Write500(w)
+		d.write500(w)
 		return
 	}
 
@@ -368,16 +368,16 @@ func (d *deps) FileContent(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if err := d.Template().ExecuteTemplate(w, "repo-blob-ref", data); err != nil {
+	if err := d.template().ExecuteTemplate(w, "repo-blob-ref", data); err != nil {
 		log.Println(err)
 		return
 	}
 }
 
-func (d *deps) Archive(w http.ResponseWriter, r *http.Request) {
+func (d *deps) archive(w http.ResponseWriter, r *http.Request) {
 	name := r.PathValue("name")
 	if d.isIgnored(name) {
-		d.Write404(w)
+		d.write404(w)
 		return
 	}
 
@@ -385,7 +385,7 @@ func (d *deps) Archive(w http.ResponseWriter, r *http.Request) {
 
 	// TODO: extend this to add more files compression (e.g.: xz)
 	if !strings.HasSuffix(file, ".tar.gz") {
-		d.Write404(w)
+		d.write404(w)
 		return
 	}
 
@@ -400,13 +400,13 @@ func (d *deps) Archive(w http.ResponseWriter, r *http.Request) {
 	path, err := securejoin.SecureJoin(d.c.Repo.ScanPath, name)
 	if err != nil {
 		log.Printf("securejoin error: %v", err)
-		d.Write404(w)
+		d.write404(w)
 		return
 	}
 
 	gr, err := git.Open(path, ref)
 	if err != nil {
-		d.Write404(w)
+		d.write404(w)
 		return
 	}
 
@@ -431,10 +431,10 @@ func (d *deps) Archive(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (d *deps) Log(w http.ResponseWriter, r *http.Request) {
+func (d *deps) log(w http.ResponseWriter, r *http.Request) {
 	name := r.PathValue("name")
 	if d.isIgnored(name) {
-		d.Write404(w)
+		d.write404(w)
 		return
 	}
 	ref := r.PathValue("ref")
@@ -442,13 +442,13 @@ func (d *deps) Log(w http.ResponseWriter, r *http.Request) {
 	path, err := securejoin.SecureJoin(d.c.Repo.ScanPath, name)
 	if err != nil {
 		log.Printf("securejoin error: %v", err)
-		d.Write404(w)
+		d.write404(w)
 		return
 	}
 
 	gr, err := git.Open(path, ref)
 	if err != nil {
-		d.Write404(w)
+		d.write404(w)
 		return
 	}
 
@@ -466,7 +466,7 @@ func (d *deps) Log(w http.ResponseWriter, r *http.Request) {
 
 	commits, page, err := gr.Commits(opts)
 	if err != nil {
-		d.Write500(w)
+		d.write500(w)
 		log.Println(err)
 		return
 	}
@@ -497,16 +497,16 @@ func (d *deps) Log(w http.ResponseWriter, r *http.Request) {
 		NextPageHref: nextPageHref,
 	}
 
-	if err := d.Template().ExecuteTemplate(w, "repo-log-ref", data); err != nil {
+	if err := d.template().ExecuteTemplate(w, "repo-log-ref", data); err != nil {
 		log.Println(err)
 		return
 	}
 }
 
-func (d *deps) Diff(w http.ResponseWriter, r *http.Request) {
+func (d *deps) diff(w http.ResponseWriter, r *http.Request) {
 	name := r.PathValue("name")
 	if d.isIgnored(name) {
-		d.Write404(w)
+		d.write404(w)
 		return
 	}
 	ref := r.PathValue("ref")
@@ -514,18 +514,18 @@ func (d *deps) Diff(w http.ResponseWriter, r *http.Request) {
 	path, err := securejoin.SecureJoin(d.c.Repo.ScanPath, name)
 	if err != nil {
 		log.Printf("securejoin error: %v", err)
-		d.Write404(w)
+		d.write404(w)
 		return
 	}
 	gr, err := git.Open(path, ref)
 	if err != nil {
-		d.Write404(w)
+		d.write404(w)
 		return
 	}
 
 	diff, err := gr.Diff()
 	if err != nil {
-		d.Write500(w)
+		d.write500(w)
 		log.Println(err)
 		return
 	}
@@ -543,29 +543,29 @@ func (d *deps) Diff(w http.ResponseWriter, r *http.Request) {
 		Diff:   diff,
 	}
 
-	if err := d.Template().ExecuteTemplate(w, "repo-commit", data); err != nil {
+	if err := d.template().ExecuteTemplate(w, "repo-commit", data); err != nil {
 		log.Println(err)
 		return
 	}
 }
 
-func (d *deps) Refs(w http.ResponseWriter, r *http.Request) {
+func (d *deps) refs(w http.ResponseWriter, r *http.Request) {
 	name := r.PathValue("name")
 	if d.isIgnored(name) {
-		d.Write404(w)
+		d.write404(w)
 		return
 	}
 
 	path, err := securejoin.SecureJoin(d.c.Repo.ScanPath, name)
 	if err != nil {
 		log.Printf("securejoin error: %v", err)
-		d.Write404(w)
+		d.write404(w)
 		return
 	}
 
 	gr, err := git.Open(path, "")
 	if err != nil {
-		d.Write404(w)
+		d.write404(w)
 		return
 	}
 
@@ -578,13 +578,13 @@ func (d *deps) Refs(w http.ResponseWriter, r *http.Request) {
 	branches, err := gr.Branches()
 	if err != nil {
 		log.Println(err)
-		d.Write500(w)
+		d.write500(w)
 		return
 	}
 
 	mainBranch, err := gr.FindMainBranch(d.c.Repo.MainBranch)
 	if err != nil {
-		d.Write500(w)
+		d.write500(w)
 		log.Println(err)
 		return
 	}
@@ -601,17 +601,17 @@ func (d *deps) Refs(w http.ResponseWriter, r *http.Request) {
 		Branches: branches,
 	}
 
-	if err := d.Template().ExecuteTemplate(w, "repo-refs", data); err != nil {
+	if err := d.template().ExecuteTemplate(w, "repo-refs", data); err != nil {
 		log.Println(err)
 		return
 	}
 }
 
-func (d *deps) ServeStatic(w http.ResponseWriter, r *http.Request) {
+func (d *deps) serveStatic(w http.ResponseWriter, r *http.Request) {
 	name := r.PathValue("file")
 	name = filepath.Clean(name)
 	if !filepath.IsLocal(name) {
-		d.Write404(w)
+		d.write404(w)
 		return
 	}
 

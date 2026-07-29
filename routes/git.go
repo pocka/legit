@@ -11,14 +11,14 @@ import (
 	"github.com/pocka/legit/git/service"
 )
 
-func (d *deps) InfoRefs(w http.ResponseWriter, r *http.Request) {
+func (d *deps) infoRefs(w http.ResponseWriter, r *http.Request) {
 	name := r.PathValue("name")
 	name = filepath.Clean(name)
 
 	repo, err := securejoin.SecureJoin(d.c.Repo.ScanPath, name)
 	if err != nil {
 		log.Printf("securejoin error: %v", err)
-		d.Write404(w)
+		d.write404(w)
 		return
 	}
 
@@ -37,14 +37,14 @@ func (d *deps) InfoRefs(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (d *deps) UploadPack(w http.ResponseWriter, r *http.Request) {
+func (d *deps) uploadPack(w http.ResponseWriter, r *http.Request) {
 	name := r.PathValue("name")
 	name = filepath.Clean(name)
 
 	repo, err := securejoin.SecureJoin(d.c.Repo.ScanPath, name)
 	if err != nil {
 		log.Printf("securejoin error: %v", err)
-		d.Write404(w)
+		d.write404(w)
 		return
 	}
 

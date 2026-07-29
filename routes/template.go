@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func (d *deps) Template() *template.Template {
+func (d *deps) template() *template.Template {
 	if d.t != nil {
 		return d.t
 	}
@@ -15,24 +15,24 @@ func (d *deps) Template() *template.Template {
 	return t
 }
 
-func (d *deps) Write404(w http.ResponseWriter) {
+func (d *deps) write404(w http.ResponseWriter) {
 	data := error404Data{
 		Config: d.c,
 	}
 
 	w.WriteHeader(404)
-	if err := d.Template().ExecuteTemplate(w, "404", data); err != nil {
+	if err := d.template().ExecuteTemplate(w, "404", data); err != nil {
 		log.Printf("404 template: %s", err)
 	}
 }
 
-func (d *deps) Write500(w http.ResponseWriter) {
+func (d *deps) write500(w http.ResponseWriter) {
 	data := error500Data{
 		Config: d.c,
 	}
 
 	w.WriteHeader(500)
-	if err := d.Template().ExecuteTemplate(w, "500", data); err != nil {
+	if err := d.template().ExecuteTemplate(w, "500", data); err != nil {
 		log.Printf("500 template: %s", err)
 	}
 }
