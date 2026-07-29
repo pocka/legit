@@ -31,11 +31,11 @@ func (d *deps) multiplex(w http.ResponseWriter, r *http.Request) {
 	if path == "info/refs" &&
 		r.URL.RawQuery == "service=git-upload-pack" &&
 		r.Method == "GET" {
-		d.infoRefs(w, r)
+		d.serveInfoRefs(w, r)
 	} else if path == "git-upload-pack" && r.Method == "POST" {
-		d.uploadPack(w, r)
+		d.serveUploadPack(w, r)
 	} else if r.Method == "GET" {
-		d.repoIndex(w, r)
+		d.serveRepoIndex(w, r)
 	}
 }
 
@@ -57,16 +57,16 @@ func Handler(c *config.Config, staticDir fs.FS, templatesDir fs.FS) *http.ServeM
 
 	debug.Register(mux)
 
-	mux.HandleFunc("GET /", d.index)
+	mux.HandleFunc("GET /", d.serveIndex)
 	mux.HandleFunc("GET /static/{file}", d.serveStatic)
 	mux.HandleFunc("GET /{name}", d.multiplex)
 	mux.HandleFunc("POST /{name}", d.multiplex)
-	mux.HandleFunc("GET /{name}/tree/{ref}/{rest...}", d.repoTree)
-	mux.HandleFunc("GET /{name}/blob/{ref}/{rest...}", d.fileContent)
-	mux.HandleFunc("GET /{name}/log/{ref}", d.log)
-	mux.HandleFunc("GET /{name}/archive/{file}", d.archive)
-	mux.HandleFunc("GET /{name}/commit/{ref}", d.diff)
-	mux.HandleFunc("GET /{name}/refs/{$}", d.refs)
+	mux.HandleFunc("GET /{name}/tree/{ref}/{rest...}", d.serveRepoTree)
+	mux.HandleFunc("GET /{name}/blob/{ref}/{rest...}", d.serveFileContent)
+	mux.HandleFunc("GET /{name}/log/{ref}", d.serveLog)
+	mux.HandleFunc("GET /{name}/archive/{file}", d.serveArchive)
+	mux.HandleFunc("GET /{name}/commit/{ref}", d.serveDiff)
+	mux.HandleFunc("GET /{name}/refs/{$}", d.serveRefs)
 	mux.HandleFunc("GET /{name}/{rest...}", d.multiplex)
 	mux.HandleFunc("POST /{name}/{rest...}", d.multiplex)
 

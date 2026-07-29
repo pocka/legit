@@ -3,8 +3,6 @@ package routes
 import (
 	"compress/gzip"
 	"fmt"
-	"html/template"
-	"io/fs"
 	"log"
 	"net/http"
 	"os"
@@ -13,30 +11,10 @@ import (
 	"strings"
 
 	securejoin "github.com/cyphar/filepath-securejoin"
-	"github.com/go-git/go-git/v5/plumbing"
-	"github.com/pocka/legit/config"
 	"github.com/pocka/legit/git"
-	"github.com/pocka/legit/renderer/html"
 )
 
-type deps struct {
-	c *config.Config
-
-	// staticDir should be path traversal attack resilient FS, such as the one
-	// returned by "os.Root.FS".
-	staticDir fs.FS
-
-	templatesDir fs.FS
-
-	// t is a compiled templates used by deps.Template().
-	// Do not use this; use deps.Template() instead.
-	t *template.Template
-
-	markdown  html.MarkdownRenderer
-	plaintext html.PlaintextRenderer
-}
-
-func (d *deps) index(w http.ResponseWriter, r *http.Request) {
+func (d *deps) serveIndex(w http.ResponseWriter, r *http.Request) {
 	dirs, err := os.ReadDir(d.c.Repo.ScanPath)
 	if err != nil {
 		d.write500(w)
@@ -95,90 +73,7 @@ func (d *deps) index(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (d *deps) repoIndex(w http.ResponseWriter, r *http.Request) {
-	name := r.PathValue("name")
-	if d.isIgnored(name) {
-		d.write404(w)
-		return
-	}
-	name = filepath.Clean(name)
-	path, err := securejoin.SecureJoin(d.c.Repo.ScanPath, name)
-	if err != nil {
-		log.Printf("securejoin error: %v", err)
-		d.write404(w)
-		return
-	}
-
-	gr, err := git.Open(path, "")
-	if err != nil {
-		d.write404(w)
-		return
-	}
-
-	commits, _, err := gr.Commits(git.CommitsOptions{Limit: 3})
-	if err != nil {
-		d.write500(w)
-		log.Println(err)
-		return
-	}
-
-	mainBranch, err := gr.FindMainBranch(d.c.Repo.MainBranch)
-	if err != nil {
-		d.write500(w)
-		log.Println(err)
-		return
-	}
-
-	transformer := newRepoLinkTransformer(name, mainBranch)
-
-	var readmeContent template.HTML
-	for _, readme := range d.c.Repo.Readme {
-		file, _ := gr.File(readme)
-		if file == nil {
-			continue
-		}
-
-		content, _ := file.Contents()
-
-		// Skip empty files.
-		if len(content) > 0 {
-			renderer := d.htmlRenderer(file)
-			if renderer == nil {
-				renderer = &d.plaintext
-			}
-
-			result, err := renderer.Render([]byte(content), transformer)
-			if err != nil {
-				log.Printf("Unable to render %s/%s, skipping.", name, readme)
-				continue
-			}
-
-			readmeContent = template.HTML(result)
-			break
-		}
-	}
-
-	data := repoTopData{
-		Config: d.c,
-		Meta: repositoryMeta{
-			DisplayName: getDisplayName(name),
-			DirName:     name,
-			Description: getDescription(path),
-			Ref:         mainBranch,
-		},
-		Readme:        readmeContent,
-		DefaultBranch: mainBranch,
-		RecentCommits: commits,
-		IsGoModule:    isGoModule(gr),
-	}
-
-	if err := d.template().ExecuteTemplate(w, "repo-top", data); err != nil {
-		log.Println(err)
-		return
-	}
-}
-
-func (d *deps) repoTree(w http.ResponseWriter, r *http.Request) {
+func (d *deps) serveRepoTree(w http.ResponseWriter, r *http.Request) {
 	name := r.PathValue("name")
 	if d.isIgnored(name) {
 		d.write404(w)
@@ -230,151 +125,7 @@ func (d *deps) repoTree(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (d *deps) fileContent(w http.ResponseWriter, r *http.Request) {
-	raw := r.URL.Query().Has("raw")
-
-	name := r.PathValue("name")
-	if d.isIgnored(name) {
-		d.write404(w)
-		return
-	}
-	treePath := r.PathValue("rest")
-	ref := r.PathValue("ref")
-
-	name = filepath.Clean(name)
-	path, err := securejoin.SecureJoin(d.c.Repo.ScanPath, name)
-	if err != nil {
-		log.Printf("securejoin error: %v", err)
-		d.write404(w)
-		return
-	}
-
-	gr, err := git.Open(path, ref)
-	if err != nil {
-		d.write404(w)
-		return
-	}
-
-	file, err := gr.File(treePath)
-	if err != nil {
-		d.write500(w)
-		return
-	}
-
-	contents, err := file.Contents()
-	if err != nil {
-		d.write500(w)
-		return
-	}
-
-	if raw {
-		w.WriteHeader(http.StatusOK)
-		w.Header().Set("Content-Type", "text/plain")
-		w.Write([]byte(contents))
-		return
-	}
-
-	if isBin, _ := file.IsBinary(); isBin {
-		contents = "Not displaying binary file"
-	}
-
-	meta := repositoryMeta{
-		DisplayName: getDisplayName(name),
-		DirName:     name,
-		Description: getDescription(path),
-		Ref:         ref,
-	}
-
-	relpath := []string{}
-	if len(treePath) > 0 {
-		relpath = strings.Split(treePath, "/")
-	}
-
-	if r.URL.Query().Has("preview") {
-		previewType := r.URL.Query().Get("preview")
-
-		switch previewType {
-		case "html":
-			renderer := d.htmlRenderer(file)
-			if renderer == nil {
-				log.Printf("Requested HTML preview for %s/%s, but the filetype has no HTML renderer", name, treePath)
-				d.write404(w)
-				return
-			}
-
-			html, err := renderer.Render([]byte(contents), newRepoLinkTransformer(name, ref))
-			if err != nil {
-				log.Printf("Failed to render HTML preview: %s", err)
-				d.write500(w)
-				return
-			}
-
-			data := repoBlobRefHTMLPreviewData{
-				Config:  d.c,
-				Meta:    meta,
-				Path:    relpath,
-				Content: template.HTML(html),
-			}
-
-			if err := d.template().ExecuteTemplate(w, "repo-blob-ref-html-preview", data); err != nil {
-				log.Println(err)
-				return
-			}
-
-			return
-		default:
-			log.Printf("Got ?preview=%s, but not preview renderer is available for the type", previewType)
-			d.write404(w)
-			return
-		}
-	}
-
-	lc, err := countLines(strings.NewReader(contents))
-	if err != nil {
-		log.Printf("Failed to count lines for %s: %s", r.URL.Path, err)
-		d.write500(w)
-		return
-	}
-
-	lines := make([]uint, lc)
-	for i := range lines {
-		if i < 0 {
-			continue
-		}
-
-		lines[i] = uint(i + 1)
-	}
-
-	previewTypes := make([]string, 0, 1)
-	if d.htmlRenderer(file) != nil {
-		previewTypes = append(previewTypes, "html")
-	}
-
-	data := repoBlobRefData{
-		Config:       d.c,
-		Meta:         meta,
-		Path:         relpath,
-		Content:      contents,
-		LineNumbers:  lines,
-		PreviewTypes: previewTypes,
-	}
-
-	if d.c.Meta.SyntaxHighlight {
-		highlighted, err := highlightCode(treePath, contents)
-		if err != nil {
-			log.Println(err)
-		} else {
-			data.SyntaxHighlightedContent = highlighted
-		}
-	}
-
-	if err := d.template().ExecuteTemplate(w, "repo-blob-ref", data); err != nil {
-		log.Println(err)
-		return
-	}
-}
-
-func (d *deps) archive(w http.ResponseWriter, r *http.Request) {
+func (d *deps) serveArchive(w http.ResponseWriter, r *http.Request) {
 	name := r.PathValue("name")
 	if d.isIgnored(name) {
 		d.write404(w)
@@ -431,79 +182,7 @@ func (d *deps) archive(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (d *deps) log(w http.ResponseWriter, r *http.Request) {
-	name := r.PathValue("name")
-	if d.isIgnored(name) {
-		d.write404(w)
-		return
-	}
-	ref := r.PathValue("ref")
-
-	path, err := securejoin.SecureJoin(d.c.Repo.ScanPath, name)
-	if err != nil {
-		log.Printf("securejoin error: %v", err)
-		d.write404(w)
-		return
-	}
-
-	gr, err := git.Open(path, ref)
-	if err != nil {
-		d.write404(w)
-		return
-	}
-
-	limit := d.c.UI.CommitsPageSize
-
-	opts := git.CommitsOptions{Limit: limit}
-	query := r.URL.Query()
-
-	if after := query.Get("before"); plumbing.IsHash(after) {
-		opts.Before = plumbing.NewHash(after)
-	}
-	if before := query.Get("after"); plumbing.IsHash(before) {
-		opts.After = plumbing.NewHash(before)
-	}
-
-	commits, page, err := gr.Commits(opts)
-	if err != nil {
-		d.write500(w)
-		log.Println(err)
-		return
-	}
-
-	prevPageHref := ""
-	nextPageHref := ""
-
-	if len(commits) > 0 {
-		if page.HasPrevPage {
-			prevPageHref = fmt.Sprintf("/%s/log/%s?after=%s", name, ref, commits[0].Hash.String())
-		}
-
-		if page.HasNextPage {
-			nextPageHref = fmt.Sprintf("/%s/log/%s?before=%s", name, ref, commits[len(commits)-1].Hash.String())
-		}
-	}
-
-	data := repoLogRefData{
-		Config: d.c,
-		Meta: repositoryMeta{
-			DisplayName: getDisplayName(name),
-			DirName:     name,
-			Description: getDescription(path),
-			Ref:         ref,
-		},
-		Commits:      commits,
-		PrevPageHref: prevPageHref,
-		NextPageHref: nextPageHref,
-	}
-
-	if err := d.template().ExecuteTemplate(w, "repo-log-ref", data); err != nil {
-		log.Println(err)
-		return
-	}
-}
-
-func (d *deps) diff(w http.ResponseWriter, r *http.Request) {
+func (d *deps) serveDiff(w http.ResponseWriter, r *http.Request) {
 	name := r.PathValue("name")
 	if d.isIgnored(name) {
 		d.write404(w)
@@ -549,7 +228,7 @@ func (d *deps) diff(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (d *deps) refs(w http.ResponseWriter, r *http.Request) {
+func (d *deps) serveRefs(w http.ResponseWriter, r *http.Request) {
 	name := r.PathValue("name")
 	if d.isIgnored(name) {
 		d.write404(w)

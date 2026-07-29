@@ -17,7 +17,7 @@ import (
 	"github.com/pocka/legit/tests"
 )
 
-func TestGetSummaryOK(t *testing.T) {
+func TestServeRepoIndexOK(t *testing.T) {
 	repos := t.TempDir()
 
 	_, worktree, err := tests.CreateRepository(repos, "foo")

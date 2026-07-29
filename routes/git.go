@@ -11,7 +11,7 @@ import (
 	"github.com/pocka/legit/git/service"
 )
 
-func (d *deps) infoRefs(w http.ResponseWriter, r *http.Request) {
+func (d *deps) serveInfoRefs(w http.ResponseWriter, r *http.Request) {
 	name := r.PathValue("name")
 	name = filepath.Clean(name)
 
@@ -37,7 +37,7 @@ func (d *deps) infoRefs(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (d *deps) uploadPack(w http.ResponseWriter, r *http.Request) {
+func (d *deps) serveUploadPack(w http.ResponseWriter, r *http.Request) {
 	name := r.PathValue("name")
 	name = filepath.Clean(name)
 
