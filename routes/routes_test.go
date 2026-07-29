@@ -52,7 +52,7 @@ func TestGetSummaryOK(t *testing.T) {
 	c.Repo.Readme = []string{"README.md"}
 	c.Repo.MainBranch = []string{"trunk"}
 
-	server := httptest.NewServer(Handlers(&c, embed.StaticDir(), embed.TemplatesDir()))
+	server := httptest.NewServer(Handler(&c, embed.StaticDir(), embed.TemplatesDir()))
 	defer server.Close()
 
 	target, err := url.JoinPath(server.URL, "/foo")

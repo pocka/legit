@@ -39,7 +39,7 @@ func (d *deps) Multiplex(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func Handlers(c *config.Config, staticDir fs.FS, templatesDir fs.FS) *http.ServeMux {
+func Handler(c *config.Config, staticDir fs.FS, templatesDir fs.FS) *http.ServeMux {
 	mux := http.NewServeMux()
 	ugcPolicy := bluemonday.UGCPolicy()
 

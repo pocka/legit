@@ -54,7 +54,7 @@ func TestGitCloneOK(t *testing.T) {
 	c.Repo.Readme = []string{"README.md"}
 	c.Repo.MainBranch = []string{"trunk"}
 
-	server := httptest.NewServer(Handlers(&c, embed.StaticDir(), embed.TemplatesDir()))
+	server := httptest.NewServer(Handler(&c, embed.StaticDir(), embed.TemplatesDir()))
 	defer server.Close()
 
 	cloneURL, err := url.JoinPath(server.URL, "/foo")
@@ -129,7 +129,7 @@ I'm [Markdown](https://commonmark.org/) file for *load* **testing**.
 	c.Repo.Readme = []string{"README.md"}
 	c.Repo.MainBranch = []string{"trunk"}
 
-	server := httptest.NewServer(Handlers(&c, embed.StaticDir(), embed.TemplatesDir()))
+	server := httptest.NewServer(Handler(&c, embed.StaticDir(), embed.TemplatesDir()))
 	defer server.Close()
 
 	cloneURL, err := url.JoinPath(server.URL, "/foo.git")
@@ -204,7 +204,7 @@ func TestCloneRespectVisibilityConfig(t *testing.T) {
 	c.Repo.Ignore = []string{"ignored.git"}
 	c.Repo.Unlisted = []string{"unlisted.git"}
 
-	server := httptest.NewServer(Handlers(&c, embed.StaticDir(), embed.TemplatesDir()))
+	server := httptest.NewServer(Handler(&c, embed.StaticDir(), embed.TemplatesDir()))
 	defer server.Close()
 
 	publicUrl, err := url.JoinPath(server.URL, "/public.git")
