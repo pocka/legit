@@ -11,10 +11,6 @@ insert_final_newline = true
 trim_trailing_whitespace = true
 indent_style = tab
 
-[readme]
-indent_style = space
-indent_size = 2
-
 # YAML does not support tab indentation
 [*.{yaml,yml}]
 indent_style = space
