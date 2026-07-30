@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 
 	"github.com/pocka/legit/config"
@@ -23,10 +24,16 @@ func main() {
 	var host string
 	var port uint
 	var scanPath string
+	var compileTemplatesOnRequest bool
+	var staticDirOverride string
+	var templatesDirOverride string
 	flag.StringVar(&cfg, "config", "", "path to config file")
 	flag.StringVar(&host, "server.host", "", "override server.host config")
 	flag.UintVar(&port, "server.port", 0, "override server.port config")
 	flag.StringVar(&scanPath, "repo.scanPath", "", "override repo.scanPath config")
+	flag.BoolVar(&compileTemplatesOnRequest, "compileTemplatesOnRequest", false, "override compileTemplatesOnRequest config")
+	flag.StringVar(&staticDirOverride, "dirs.static", "", "override dirs.static config")
+	flag.StringVar(&templatesDirOverride, "dirs.templates", "", "override dirs.templates config")
 	flag.Parse()
 
 	cwd, err := os.Getwd()
@@ -52,6 +59,28 @@ func main() {
 
 	if scanPath != "" {
 		c.Repo.ScanPath = scanPath
+	}
+
+	if compileTemplatesOnRequest {
+		c.CompileTemplatesOnRequest = true
+	}
+
+	if staticDirOverride != "" {
+		resolved, err := filepath.Abs(staticDirOverride)
+		if err != nil {
+			log.Fatalf("Cannot resolve -dirs.static")
+		}
+
+		c.Dirs.Static = resolved
+	}
+
+	if templatesDirOverride != "" {
+		resolved, err := filepath.Abs(templatesDirOverride)
+		if err != nil {
+			log.Fatalf("Cannot resolve -dirs.templates")
+		}
+
+		c.Dirs.Templates = resolved
 	}
 
 	if err := c.Resolve(cwd); err != nil {
