@@ -235,7 +235,15 @@ body {
 :where(select) {
 	font-size: var(--font-md);
 	margin: 0;
-	padding: var(--space-xxs) var(--space-sm);
+	padding: var(--space-xxs) calc(0.25em + var(--space-xs));
+	border: 1px solid var(--color-border-strong);
+
+	background: var(--color-bg);
+	border-radius: var(--radii-sm);
+	color: var(--color-fg);
+}
+:where(select:hover) {
+	background-color: var(--color-bg-hover);
 }
 
 :where(a) {
