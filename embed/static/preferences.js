@@ -1,10 +1,10 @@
 // Copyright 2026 Shota FUJI <pockawoooh@gmail.com>
 // SPDX-License-Identifier: MIT
 
-function setupTabWidthSelector() {
-	const LOCAL_STORAGE_KEY = "legit_tab_width";
+class TabWidthSelector {
+	static LOCAL_STORAGE_KEY = "legit_tab_width";
 
-	function isValidTabWidth(width) {
+	static #isValidWidth(width) {
 		if (typeof width !== "string") {
 			return false;
 		}
@@ -14,115 +14,130 @@ function setupTabWidthSelector() {
 		return Number.isFinite(n) && n > 0;
 	}
 
-	function applyTabWidth(width) {
-		localStorage.setItem(LOCAL_STORAGE_KEY, width);
-		document.body.style.tabSize = width;
+	static #selector() {
+		return document.getElementById("global-tab-width");
 	}
 
-	const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
-	const value = isValidTabWidth(saved) ? saved : "4";
-	applyTabWidth(value);
+	static sync() {
+		const saved = localStorage.getItem(this.LOCAL_STORAGE_KEY);
+		const value = this.#isValidWidth(saved) ? saved : "4";
+		document.body.style.tabSize = value;
 
-	const selector = document.getElementById("global-tab-width");
-	if (selector) {
-		selector.value = value;
+		const selector = this.#selector();
+		if (selector) {
+			selector.value = saved;
+		}
+	}
 
-		selector.addEventListener("change", event => {
-			if (!isValidTabWidth(event.currentTarget.value)) {
+	static addListener() {
+		this.#selector().addEventListener("change", event => {
+			if (!this.#isValidWidth(event.currentTarget.value)) {
 				return;
 			}
 
-			applyTabWidth(event.currentTarget.value);
+			localStorage.setItem(this.LOCAL_STORAGE_KEY, event.currentTarget.value);
+			this.sync();
 		});
 	}
 }
 
-function setupThemeColor() {
-	const LOCAL_STORAGE_KEY = "legit_theme_color";
-	const VALID_COLORS = ["red", "orange", "green", "gray", "pink", "purple", "yellow"];
+class ThemeColor {
+	static LOCAL_STORAGE_KEY = "legit_theme_color";
+	static VALID_COLORS = ["red", "orange", "green", "gray", "pink", "purple", "yellow"];
 
-	function applyThemeColor(color) {
-		if (color) {
-			localStorage.setItem(LOCAL_STORAGE_KEY, color);
-			document.documentElement.dataset.themeColor = color;
+	static #selector() {
+		return document.getElementById("theme-color");
+	}
+
+	static sync() {
+		const value = localStorage.getItem(this.LOCAL_STORAGE_KEY) || "";
+		if (value) {
+			document.documentElement.dataset.themeColor = value;
 		} else {
-			localStorage.removeItem(LOCAL_STORAGE_KEY);
 			document.documentElement.dataset.themeColor = "";
 		}
+
+		const selector = this.#selector();
+		if (selector) {
+			selector.value = value;
+		}
 	}
 
-	const saved = localStorage.getItem(LOCAL_STORAGE_KEY) || "";
-	applyThemeColor(saved);
-
-	const selector = document.getElementById("theme-color");
-	if (selector) {
-		selector.value = saved;
-
-		selector.addEventListener("change", event => {
+	static addListener() {
+		this.#selector()?.addEventListener("change", event => {
 			const value = event.currentTarget.value;
-			if (value && !VALID_COLORS.includes(value)) {
+			if (value && !this.VALID_COLORS.includes(value)) {
 				return;
 			}
 
-			applyThemeColor(value);
+			if (value) {
+				localStorage.setItem(this.LOCAL_STORAGE_KEY, value);
+			} else {
+				localStorage.removeItem(this.LOCAL_STORAGE_KEY);
+			}
+			this.sync();
 		});
 	}
 }
 
-function setupTreeLayout() {
-	const LOCAL_STORAGE_KEY = "legit_tree_layout";
-	const VALID_LAYOUTS = ["compact"];
+class TreeLayout {
+	static LOCAL_STORAGE_KEY = "legit_tree_layout";
+	static VALID_LAYOUTS = ["compact"];
 
-	function applyTreeLayout(layout) {
-		if (layout) {
-			localStorage.setItem(LOCAL_STORAGE_KEY, layout);
-		} else {
-			localStorage.removeItem(LOCAL_STORAGE_KEY);
-		}
+	static #selector() {
+		return document.getElementById("tree-layout");
+	}
+
+	static sync() {
+		const value = localStorage.getItem(this.LOCAL_STORAGE_KEY) || "";
 
 		for (const tree of document.getElementsByClassName("tree-row")) {
-			tree.dataset.layout = layout;
+			tree.dataset.layout = value;
+		}
+
+		const selector = this.#selector();
+		if (selector) {
+			selector.value = value;
 		}
 	}
 
-	const saved = localStorage.getItem(LOCAL_STORAGE_KEY) || "";
-	applyTreeLayout(saved);
-
-	const selector = document.getElementById("tree-layout");
-	if (selector) {
-		selector.value = saved;
-
-		selector.addEventListener("change", event => {
+	static addListener() {
+		this.#selector()?.addEventListener("change", event => {
 			const value = event.currentTarget.value;
-			if (value && !VALID_LAYOUTS.includes(value)) {
+			if (value && !this.VALID_LAYOUTS.includes(value)) {
 				return;
 			}
 
-			applyTreeLayout(value);
+			if (value) {
+				localStorage.setItem(this.LOCAL_STORAGE_KEY, value);
+			} else {
+				localStorage.removeItem(this.LOCAL_STORAGE_KEY);
+			}
+			this.sync();
 		});
 	}
 }
 
-function setupFileModeFormat() {
-	const LOCAL_STORAGE_KEY = "legit_file_mode_format";
-	const VALID_FORMATS = ["octal", "hidden"];
-	const FILE_MODE_PATTERN = /^[d-]([r-][w-][x-]){3}$/;
+class FileModeFormat {
+	static LOCAL_STORAGE_KEY = "legit_file_mode_format";
+	static VALID_FORMATS = ["octal", "hidden"];
+	static FILE_MODE_PATTERN = /^[d-]([r-][w-][x-]){3}$/;
 
-	function applyFileMode(format) {
-		if (format) {
-			localStorage.setItem(LOCAL_STORAGE_KEY, format);
-		} else {
-			localStorage.removeItem(LOCAL_STORAGE_KEY);
-		}
+	static #selector() {
+		return document.getElementById("file-mode-format");
+	}
+
+	static sync() {
+		const value = localStorage.getItem(this.LOCAL_STORAGE_KEY) || "";
 
 		for (const el of document.querySelectorAll("[data-file-mode]")) {
 			const mode = el.dataset.fileMode;
-			if (!FILE_MODE_PATTERN.test(mode || "")) {
+			if (!this.FILE_MODE_PATTERN.test(mode || "")) {
 				continue;
 			}
 
-			el.dataset.format = format;
-			switch (format) {
+			el.dataset.format = value;
+			switch (value) {
 				case "octal": {
 					const n = 0
 						+ (mode[1] === "r" ? 0o400 : 0)
@@ -142,36 +157,40 @@ function setupFileModeFormat() {
 					break;
 			}
 		}
+
+		const selector = this.#selector();
+		if (selector) {
+			selector.value = value;
+		}
 	}
 
-	const saved = localStorage.getItem(LOCAL_STORAGE_KEY) || "";
-	applyFileMode(saved);
-
-	const selector = document.getElementById("file-mode-format");
-	if (selector) {
-		selector.value = saved;
-
-		selector.addEventListener("change", event => {
+	static addListener() {
+		this.#selector()?.addEventListener("change", event => {
 			const value = event.currentTarget.value;
-			if (value && !VALID_FORMATS.includes(value)) {
+			if (value && !this.VALID_FORMATS.includes(value)) {
 				return;
 			}
 
-			applyFileMode(value);
+			if (value) {
+				localStorage.setItem(this.LOCAL_STORAGE_KEY, value);
+			} else {
+				localStorage.removeItem(this.LOCAL_STORAGE_KEY);
+			}
+			this.sync();
 		});
 	}
 }
 
-function setupFileSizeFormat() {
-	const LOCAL_STORAGE_KEY = "legit_file_size_format";
-	const VALID_FORMATS = ["hidden"];
+class FileSizeFormat {
+	static LOCAL_STORAGE_KEY = "legit_file_size_format";
+	static VALID_FORMATS = ["hidden"];
 
-	function applyFileSize(format) {
-		if (format) {
-			localStorage.setItem(LOCAL_STORAGE_KEY, format);
-		} else {
-			localStorage.removeItem(LOCAL_STORAGE_KEY);
-		}
+	static #selector() {
+		return document.getElementById("file-size-format");
+	}
+
+	static sync() {
+		const value = localStorage.getItem(this.LOCAL_STORAGE_KEY) || "";
 
 		for (const el of document.querySelectorAll("[data-file-size]")) {
 			const size = parseInt(el.dataset.fileSize, 10);
@@ -179,24 +198,28 @@ function setupFileSizeFormat() {
 				continue;
 			}
 
-			el.dataset.format = format;
+			el.dataset.format = value;
+		}
+
+		const selector = this.#selector();
+		if (selector) {
+			selector.value = value;
 		}
 	}
 
-	const saved = localStorage.getItem(LOCAL_STORAGE_KEY) || "";
-	applyFileSize(saved);
-
-	const selector = document.getElementById("file-size-format");
-	if (selector) {
-		selector.value = saved;
-
-		selector.addEventListener("change", event => {
+	static addListener() {
+		this.#selector()?.addEventListener("change", event => {
 			const value = event.currentTarget.value;
-			if (value && !VALID_FORMATS.includes(value)) {
+			if (value && !this.VALID_FORMATS.includes(value)) {
 				return;
 			}
 
-			applyFileSize(value);
+			if (value) {
+				localStorage.setItem(this.LOCAL_STORAGE_KEY, value);
+			} else {
+				localStorage.removeItem(this.LOCAL_STORAGE_KEY);
+			}
+			this.sync();
 		});
 	}
 }
@@ -211,9 +234,18 @@ function setupPreferencesDialog() {
 	});
 }
 
-setupTabWidthSelector();
-setupThemeColor();
-setupTreeLayout();
-setupFileModeFormat();
-setupFileSizeFormat();
+TabWidthSelector.addListener();
+ThemeColor.addListener();
+TreeLayout.addListener();
+FileModeFormat.addListener();
+FileSizeFormat.addListener();
+
 setupPreferencesDialog();
+
+window.addEventListener("pageshow", event => {
+	TabWidthSelector.sync();
+	ThemeColor.sync();
+	TreeLayout.sync();
+	FileModeFormat.sync();
+	FileSizeFormat.sync();
+});
