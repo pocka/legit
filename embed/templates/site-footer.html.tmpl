@@ -47,6 +47,37 @@ SPDX-License-Identifier: MIT
 				Changes the primary color to use for links, buttons, and icons.
 			</p>
 		</div>
+		<div class="preferences--field">
+			<label for="tree-layout">File list layout</label>
+			<select id="tree-layout" aria-describedby="tree-layout-description">
+				<option value="">Default</option>
+				<option value="compact">Compact</option>
+			</select>
+			<p id="tree-layout-description">
+				Row layout of a file list in "Files" page.
+			</p>
+		</div>
+		<div class="preferences--field">
+			<label for="file-mode-format">File permission format</label>
+			<select id="file-mode-format" aria-describedby="file-mode-format-description">
+				<option value="">Default (drwx)</option>
+				<option value="octal">Octal</option>
+				<option value="hidden">Hidden</option>
+			</select>
+			<p id="file-mode-format-description">
+				How to render file permission?
+			</p>
+		</div>
+		<div class="preferences--field">
+			<label for="file-size-format">File size format</label>
+			<select id="file-size-format" aria-describedby="file-size-format-description">
+				<option value="">Default</option>
+				<option value="hidden">Hidden</option>
+			</select>
+			<p id="file-size-format-description">
+				Change display of file size in "Files" page.
+			</p>
+		</div>
 		<button id="preferences-dialog-closer">Close</button>
 	</dialog>
 	{{- if .Config.UI.Footer.PoweredBy }}

@@ -66,8 +66,8 @@ SPDX-License-Identifier: MIT
 								<use href="#icon_dir" />
 							</svg>
 							<span class="tree-row--name">{{ .Name }}/</span>
-							<span class="tree-row--mode">{{ .Mode }}</span>
-							<span class="tree-row--size">{{ .Size }} bytes</span>
+							<span class="tree-row--mode" data-file-mode="{{ .Mode }}">{{ .Mode }}</span>
+							<span class="tree-row--size" data-file-size="{{ .Size }}">{{ .Size }} bytes</span>
 						</a>
 						{{- else -}}
 						<a class="tree-row" href="/{{ $meta.DirName }}/blob/{{ $meta.Ref }}/{{ $prefix }}{{ .Name }}">
@@ -75,8 +75,8 @@ SPDX-License-Identifier: MIT
 								<use href="#icon_file" />
 							</svg>
 							<span class="tree-row--name">{{ .Name }}</span>
-							<span class="tree-row--mode">{{ .Mode }}</span>
-							<span class="tree-row--size">{{ .Size }} bytes</span>
+							<span class="tree-row--mode" data-file-mode="{{ .Mode }}">{{ .Mode }}</span>
+							<span class="tree-row--size" data-file-size="{{ .Size }}">{{ .Size }} bytes</span>
 						</a>
 						{{- end }}
 					</li>
