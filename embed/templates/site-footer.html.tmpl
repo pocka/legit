@@ -31,6 +31,22 @@ SPDX-License-Identifier: MIT
 				Changes the size of a tab character in code blocks and code previews.
 			</p>
 		</div>
+		<div class="preferences--field">
+			<label for="theme-color">Theme color</label>
+			<select id="theme-color" aria-describedby="theme-color-description">
+				<option value="">Blue (default)</option>
+				<option value="purple">Purple</option>
+				<option value="pink">Pink</option>
+				<option value="red">Red</option>
+				<option value="orange">Orange</option>
+				<option value="yellow">Yellow</option>
+				<option value="green">Green</option>
+				<option value="gray">Gray</option>
+			</select>
+			<p id="theme-color-description">
+				Changes the primary color to use for links, buttons, and icons.
+			</p>
+		</div>
 		<button id="preferences-dialog-closer">Close</button>
 	</dialog>
 	{{- if .Config.UI.Footer.PoweredBy }}

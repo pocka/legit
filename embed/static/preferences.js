@@ -37,6 +37,38 @@ function setupTabWidthSelector() {
 	}
 }
 
+function setupThemeColor() {
+	const LOCAL_STORAGE_KEY = "legit_theme_color";
+	const VALID_COLORS = ["red", "orange", "green", "gray", "pink", "purple", "yellow"];
+
+	function applyThemeColor(color) {
+		if (color) {
+			localStorage.setItem(LOCAL_STORAGE_KEY, color);
+			document.documentElement.dataset.themeColor = color;
+		} else {
+			localStorage.removeItem(LOCAL_STORAGE_KEY);
+			document.documentElement.dataset.themeColor = "";
+		}
+	}
+
+	const saved = localStorage.getItem(LOCAL_STORAGE_KEY) || "";
+	applyThemeColor(saved);
+
+	const selector = document.getElementById("theme-color");
+	if (selector) {
+		selector.value = saved;
+
+		selector.addEventListener("change", event => {
+			const value = event.currentTarget.value;
+			if (value && !VALID_COLORS.includes(value)) {
+				return;
+			}
+
+			applyThemeColor(value);
+		});
+	}
+}
+
 function setupPreferencesDialog() {
 	const preferences = document.getElementById("preferences-dialog");
 	document.getElementById("preferences-dialog-trigger")?.addEventListener("click", (event) => {
@@ -48,4 +80,5 @@ function setupPreferencesDialog() {
 }
 
 setupTabWidthSelector();
+setupThemeColor();
 setupPreferencesDialog();
