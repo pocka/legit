@@ -2,7 +2,6 @@
  * SPDX-License-Identifier: MIT
  */
 
-.noscript--feature-unavailable {
-	font-size: var(--font-sm);
-	font-weight: var(--font-thick);
+.script-only {
+	display: none;
 }

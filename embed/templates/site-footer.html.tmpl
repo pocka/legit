@@ -3,7 +3,6 @@ Copyright 2026 Shota FUJI <pockawoooh@gmail.com>
 SPDX-License-Identifier: MIT
 -->
 {{ define "site-footer" -}}
-{{- if or (gt (len .Config.UI.Footer.Links) 0) .Config.UI.Footer.PoweredBy -}}
 <footer class="footer">
 	{{- if gt (len .Config.UI.Footer.Links) 0 }}
 		<ul class="footer--links">
@@ -14,9 +13,28 @@ SPDX-License-Identifier: MIT
 		{{- end }}
 		</ul>
 	{{- end }}
+	<button id="preferences-dialog-trigger" class="footer--preferences script-only" type="button">Preferences</button>
+	<dialog id="preferences-dialog" class="preferences" popover="auto" closedby="any">
+		<script type="module" src="/static/preferences.js"></script>
+		<div class="preferences--field">
+			<label for="global-tab-width">Tab width</label>
+			<select id="global-tab-width" aria-describedby="global-tab-width-description">
+				<option value="1">1</option>
+				<option value="2">2</option>
+				<option value="3">3</option>
+				<option value="4" selected>4</option>
+				<option value="6">6</option>
+				<option value="8">8</option>
+				<option value="12">12</option>
+			</select>
+			<p id="global-tab-width-description">
+				Changes the size of a tab character in code blocks and code previews.
+			</p>
+		</div>
+		<button id="preferences-dialog-closer">Close</button>
+	</dialog>
 	{{- if .Config.UI.Footer.PoweredBy }}
-		<p>Powered by <a href="https://git.pocka.jp/legit.git">legit</a></p>
+		<p class="footer--poweredby">Powered by <a href="https://git.pocka.jp/legit.git">legit</a></p>
 	{{- end }}
 </footer>
-{{- end -}}
 {{- end -}}
