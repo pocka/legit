@@ -88,8 +88,9 @@ for (const target of targets) {
 	}
 
 	const originalText = target.textContent.trim();
+	const format = target.dataset.localFormat || "datetime";
 
-	switch (target.dataset.localFormat || "datetime") {
+	switch (format) {
 		case "datetime":
 			target.textContent = toDateTimeString(new Date(datetime));
 			break;
@@ -111,5 +112,7 @@ for (const target of targets) {
 			break;
 	}
 
-	target.title = originalText;
+	target.title = format !== "relative"
+		? `${originalText} (${toRelativeDatetimeString(new Date(datetime))})`
+		: new Date(datetime).toString();
 }
