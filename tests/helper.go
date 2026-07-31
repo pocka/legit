@@ -25,12 +25,16 @@ func SignatureAlice() *object.Signature {
 }
 
 func CreateRepository(baseDir string, name string) (*git.Repository, *git.Worktree, error) {
-	storage := filesystem.NewStorage(
-		osfs.New(filepath.Join(baseDir, name), osfs.WithBoundOS()),
-		cache.NewObjectLRUDefault(),
-	)
+	fs := osfs.New(filepath.Join(baseDir, name), osfs.WithBoundOS())
 
-	repo, err := git.InitWithOptions(storage, storage.Filesystem(), git.InitOptions{
+	dotgit, err := fs.Chroot(".git")
+	if err != nil {
+		return nil, nil, err
+	}
+
+	storage := filesystem.NewStorage(dotgit, cache.NewObjectLRUDefault())
+
+	repo, err := git.InitWithOptions(storage, fs, git.InitOptions{
 		DefaultBranch: "refs/heads/trunk",
 	})
 	if err != nil {
