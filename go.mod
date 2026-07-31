@@ -5,7 +5,6 @@ go 1.25
 require (
 	github.com/alecthomas/chroma/v2 v2.27.0
 	github.com/bluekeyes/go-gitdiff v0.8.0
-	github.com/cyphar/filepath-securejoin v0.4.1
 	github.com/go-git/go-billy/v5 v5.6.2
 	github.com/go-git/go-git/v5 v5.13.2
 	github.com/landlock-lsm/go-landlock v0.9.0
@@ -21,6 +20,7 @@ require (
 	github.com/ProtonMail/go-crypto v1.1.5 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/cloudflare/circl v1.6.0 // indirect
+	github.com/cyphar/filepath-securejoin v0.4.1 // indirect
 	github.com/dlclark/regexp2/v2 v2.2.1 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/go-git/gcfg v1.5.1-0.20230307220236-3a3c6141e376 // indirect

@@ -4,6 +4,7 @@ import (
 	"html/template"
 	"io/fs"
 	"net/http"
+	"os"
 
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/pocka/legit/config"
@@ -39,12 +40,13 @@ func (d *deps) multiplex(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func Handler(c *config.Config, staticDir fs.FS, templatesDir fs.FS) *http.ServeMux {
+func Handler(c *config.Config, scanRoot *os.Root, staticDir fs.FS, templatesDir fs.FS) *http.ServeMux {
 	mux := http.NewServeMux()
 	ugcPolicy := bluemonday.UGCPolicy()
 
 	d := deps{
 		c:            c,
+		scanRoot:     scanRoot,
 		staticDir:    staticDir,
 		templatesDir: templatesDir,
 		markdown:     html.NewMarkdownRenderer(ugcPolicy),

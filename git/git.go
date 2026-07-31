@@ -7,11 +7,13 @@ import (
 	"io/fs"
 	"path"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/object"
+	"github.com/go-git/go-git/v5/storage/filesystem"
 )
 
 type GitRepo struct {
@@ -102,6 +104,29 @@ func Open(path string, ref string) (*GitRepo, error) {
 		g.h = *hash
 	}
 	return &g, nil
+}
+
+// GitwebDescription returns description text.
+// See https://git-scm.com/docs/gitweb#Documentation/gitweb.txt-descriptionorgitwebdescription
+func (r *GitRepo) GitwebDescription() string {
+	if storage, ok := r.r.Storer.(*filesystem.Storage); ok {
+		file, err := storage.Filesystem().Open("description")
+		if err == nil {
+			defer file.Close()
+			contents, err := io.ReadAll(file)
+			if err == nil {
+				text := string(contents)
+				// git by default copies "description" file from template directory,
+				// and there is no way to detect it other than this "heuristic".
+				if strings.Index(text, "Unnamed repository;") != 0 {
+					return text
+				}
+			}
+		}
+	}
+
+	// TODO: Read from "gitweb.description"
+	return ""
 }
 
 func (g *GitRepo) LastCommit() (*object.Commit, error) {

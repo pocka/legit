@@ -54,7 +54,13 @@ func TestServeRepoIndexOK(t *testing.T) {
 	c.Repo.Readme = []string{"README.md"}
 	c.Repo.MainBranch = []string{"trunk"}
 
-	server := httptest.NewServer(Handler(&c, embed.StaticDir(), embed.TemplatesDir()))
+	scanRoot, err := os.OpenRoot(repos)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer scanRoot.Close()
+
+	server := httptest.NewServer(Handler(&c, scanRoot, embed.StaticDir(), embed.TemplatesDir()))
 	defer server.Close()
 
 	target, err := url.JoinPath(server.URL, "/foo")
@@ -155,7 +161,13 @@ func TestServeRepoIndexPreventPathTraversal(t *testing.T) {
 	c.Repo.Readme = []string{"README.md"}
 	c.Repo.MainBranch = []string{"trunk"}
 
-	server := httptest.NewServer(Handler(&c, embed.StaticDir(), embed.TemplatesDir()))
+	scanRoot, err := os.OpenRoot(child)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer scanRoot.Close()
+
+	server := httptest.NewServer(Handler(&c, scanRoot, embed.StaticDir(), embed.TemplatesDir()))
 	defer server.Close()
 
 	target, err := url.JoinPath(server.URL, "..%2Fprivate")
@@ -240,7 +252,13 @@ func TestServeRepoIndexPreventIgnoredRepoReveal(t *testing.T) {
 	c.Repo.MainBranch = []string{"trunk"}
 	c.Repo.Ignore = []string{"private"}
 
-	server := httptest.NewServer(Handler(&c, embed.StaticDir(), embed.TemplatesDir()))
+	scanRoot, err := os.OpenRoot(repos)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer scanRoot.Close()
+
+	server := httptest.NewServer(Handler(&c, scanRoot, embed.StaticDir(), embed.TemplatesDir()))
 	defer server.Close()
 
 	target, err := url.JoinPath(server.URL, ".%2Fprivate")

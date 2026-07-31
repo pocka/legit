@@ -4,37 +4,19 @@ import (
 	"html/template"
 	"log"
 	"net/http"
-	"path/filepath"
 	"strings"
-
-	securejoin "github.com/cyphar/filepath-securejoin"
-	"github.com/pocka/legit/git"
 )
 
 func (d *deps) serveFileContent(w http.ResponseWriter, r *http.Request) {
 	raw := r.URL.Query().Has("raw")
 
-	name := r.PathValue("name")
-	if d.isIgnored(name) {
+	ref := r.PathValue("ref")
+	gr, name, err := d.openRepository(r.PathValue("name"), ref)
+	if err != nil {
 		d.write404(w)
 		return
 	}
 	treePath := r.PathValue("rest")
-	ref := r.PathValue("ref")
-
-	name = filepath.Clean(name)
-	path, err := securejoin.SecureJoin(d.c.Repo.ScanPath, name)
-	if err != nil {
-		log.Printf("securejoin error: %v", err)
-		d.write404(w)
-		return
-	}
-
-	gr, err := git.Open(path, ref)
-	if err != nil {
-		d.write404(w)
-		return
-	}
 
 	file, err := gr.File(treePath)
 	if err != nil {
@@ -62,7 +44,7 @@ func (d *deps) serveFileContent(w http.ResponseWriter, r *http.Request) {
 	meta := repositoryMeta{
 		DisplayName: getDisplayName(name),
 		DirName:     name,
-		Description: getDescription(path),
+		Description: gr.GitwebDescription(),
 		Ref:         ref,
 	}
 

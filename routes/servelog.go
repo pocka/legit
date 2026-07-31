@@ -5,27 +5,13 @@ import (
 	"log"
 	"net/http"
 
-	securejoin "github.com/cyphar/filepath-securejoin"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/pocka/legit/git"
 )
 
 func (d *deps) serveLog(w http.ResponseWriter, r *http.Request) {
-	name := r.PathValue("name")
-	if d.isIgnored(name) {
-		d.write404(w)
-		return
-	}
 	ref := r.PathValue("ref")
-
-	path, err := securejoin.SecureJoin(d.c.Repo.ScanPath, name)
-	if err != nil {
-		log.Printf("securejoin error: %v", err)
-		d.write404(w)
-		return
-	}
-
-	gr, err := git.Open(path, ref)
+	gr, name, err := d.openRepository(r.PathValue("name"), ref)
 	if err != nil {
 		d.write404(w)
 		return
@@ -68,7 +54,7 @@ func (d *deps) serveLog(w http.ResponseWriter, r *http.Request) {
 		Meta: repositoryMeta{
 			DisplayName: getDisplayName(name),
 			DirName:     name,
-			Description: getDescription(path),
+			Description: gr.GitwebDescription(),
 			Ref:         ref,
 		},
 		Commits:      commits,

@@ -4,27 +4,12 @@ import (
 	"html/template"
 	"log"
 	"net/http"
-	"path/filepath"
 
-	securejoin "github.com/cyphar/filepath-securejoin"
 	"github.com/pocka/legit/git"
 )
 
 func (d *deps) serveRepoIndex(w http.ResponseWriter, r *http.Request) {
-	name := r.PathValue("name")
-	if d.isIgnored(name) {
-		d.write404(w)
-		return
-	}
-	name = filepath.Clean(name)
-	path, err := securejoin.SecureJoin(d.c.Repo.ScanPath, name)
-	if err != nil {
-		log.Printf("securejoin error: %v", err)
-		d.write404(w)
-		return
-	}
-
-	gr, err := git.Open(path, "")
+	gr, name, err := d.openRepository(r.PathValue("name"), "")
 	if err != nil {
 		d.write404(w)
 		return
@@ -78,7 +63,7 @@ func (d *deps) serveRepoIndex(w http.ResponseWriter, r *http.Request) {
 		Meta: repositoryMeta{
 			DisplayName: getDisplayName(name),
 			DirName:     name,
-			Description: getDescription(path),
+			Description: gr.GitwebDescription(),
 			Ref:         mainBranch,
 		},
 		Readme:        readmeContent,

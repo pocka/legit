@@ -4,18 +4,28 @@
 package routes
 
 import (
+	"errors"
 	"html/template"
 	"io/fs"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 
 	"github.com/pocka/legit/config"
+	"github.com/pocka/legit/git"
 	"github.com/pocka/legit/renderer/html"
+)
+
+var (
+	errRepositoryIsIgnored = errors.New("repository is ignored")
 )
 
 // deps holds data required for serving routes. Dependencies.
 type deps struct {
 	c *config.Config
+
+	scanRoot *os.Root
 
 	// staticDir should be path traversal attack resilient FS, such as the one
 	// returned by "os.Root.FS".
@@ -29,6 +39,32 @@ type deps struct {
 
 	markdown  html.MarkdownRenderer
 	plaintext html.PlaintextRenderer
+}
+
+// resolveRepository returns filepath to a repository.
+func (d *deps) resolveRepository(name string) (string, error) {
+	entry, err := d.scanRoot.Stat(name)
+	if err != nil {
+		return "", err
+	}
+
+	dirname := entry.Name()
+	if d.isIgnored(dirname) {
+		return "", errRepositoryIsIgnored
+	}
+
+	return filepath.Join(d.scanRoot.Name(), dirname), nil
+}
+
+func (d *deps) openRepository(name string, ref string) (repo *git.GitRepo, dirname string, err error) {
+	path, err := d.resolveRepository(name)
+	if err != nil {
+		return nil, "", err
+	}
+
+	dirname = filepath.Base(path)
+	repo, err = git.Open(path, ref)
+	return
 }
 
 // template returns compiled HTML templates.

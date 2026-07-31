@@ -58,7 +58,13 @@ func TestIgnoreSymlinkByDefault(t *testing.T) {
 	c.Repo.Readme = []string{"README.md"}
 	c.Repo.MainBranch = []string{"trunk"}
 
-	server := httptest.NewServer(Handler(&c, embed.StaticDir(), embed.TemplatesDir()))
+	scanRoot, err := os.OpenRoot(dest)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer scanRoot.Close()
+
+	server := httptest.NewServer(Handler(&c, scanRoot, embed.StaticDir(), embed.TemplatesDir()))
 	defer server.Close()
 
 	topPage, err := http.Get(server.URL)

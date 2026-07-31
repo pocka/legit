@@ -9,9 +9,6 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
-
-	securejoin "github.com/cyphar/filepath-securejoin"
-	"github.com/pocka/legit/git"
 )
 
 func (d *deps) serveIndex(w http.ResponseWriter, r *http.Request) {
@@ -25,21 +22,17 @@ func (d *deps) serveIndex(w http.ResponseWriter, r *http.Request) {
 	summaries := []repositorySummary{}
 
 	for _, dir := range dirs {
-		name := dir.Name()
-		if !dir.IsDir() || d.isIgnored(name) || d.isUnlisted(name) {
+		if !dir.IsDir() {
 			continue
 		}
 
-		path, err := securejoin.SecureJoin(d.c.Repo.ScanPath, name)
+		gr, name, err := d.openRepository(dir.Name(), "")
 		if err != nil {
-			log.Printf("securejoin error: %v", err)
 			d.write404(w)
 			return
 		}
 
-		gr, err := git.Open(path, "")
-		if err != nil {
-			log.Println(err)
+		if d.isIgnored(name) || d.isUnlisted(name) {
 			continue
 		}
 
@@ -53,7 +46,7 @@ func (d *deps) serveIndex(w http.ResponseWriter, r *http.Request) {
 		summaries = append(summaries, repositorySummary{
 			DisplayName: getDisplayName(name),
 			DirName:     name,
-			Description: getDescription(path),
+			Description: gr.GitwebDescription(),
 			LastCommit:  c,
 		})
 	}
@@ -74,26 +67,13 @@ func (d *deps) serveIndex(w http.ResponseWriter, r *http.Request) {
 }
 
 func (d *deps) serveRepoTree(w http.ResponseWriter, r *http.Request) {
-	name := r.PathValue("name")
-	if d.isIgnored(name) {
+	ref := r.PathValue("ref")
+	gr, name, err := d.openRepository(r.PathValue("name"), ref)
+	if err != nil {
 		d.write404(w)
 		return
 	}
 	treePath := r.PathValue("rest")
-	ref := r.PathValue("ref")
-
-	name = filepath.Clean(name)
-	path, err := securejoin.SecureJoin(d.c.Repo.ScanPath, name)
-	if err != nil {
-		log.Printf("securejoin error: %v", err)
-		d.write404(w)
-		return
-	}
-	gr, err := git.Open(path, ref)
-	if err != nil {
-		d.write404(w)
-		return
-	}
 
 	files, err := gr.FileTree(treePath)
 	if err != nil {
@@ -112,7 +92,7 @@ func (d *deps) serveRepoTree(w http.ResponseWriter, r *http.Request) {
 		Meta: repositoryMeta{
 			DisplayName: getDisplayName(name),
 			DirName:     name,
-			Description: getDescription(path),
+			Description: gr.GitwebDescription(),
 			Ref:         ref,
 		},
 		Path:  relpath,
@@ -127,11 +107,6 @@ func (d *deps) serveRepoTree(w http.ResponseWriter, r *http.Request) {
 
 func (d *deps) serveArchive(w http.ResponseWriter, r *http.Request) {
 	name := r.PathValue("name")
-	if d.isIgnored(name) {
-		d.write404(w)
-		return
-	}
-
 	file := r.PathValue("file")
 
 	// TODO: extend this to add more files compression (e.g.: xz)
@@ -148,14 +123,7 @@ func (d *deps) serveArchive(w http.ResponseWriter, r *http.Request) {
 	setContentDisposition(w, filename)
 	setGZipMIME(w)
 
-	path, err := securejoin.SecureJoin(d.c.Repo.ScanPath, name)
-	if err != nil {
-		log.Printf("securejoin error: %v", err)
-		d.write404(w)
-		return
-	}
-
-	gr, err := git.Open(path, ref)
+	gr, name, err := d.openRepository(name, ref)
 	if err != nil {
 		d.write404(w)
 		return
@@ -183,20 +151,8 @@ func (d *deps) serveArchive(w http.ResponseWriter, r *http.Request) {
 }
 
 func (d *deps) serveDiff(w http.ResponseWriter, r *http.Request) {
-	name := r.PathValue("name")
-	if d.isIgnored(name) {
-		d.write404(w)
-		return
-	}
 	ref := r.PathValue("ref")
-
-	path, err := securejoin.SecureJoin(d.c.Repo.ScanPath, name)
-	if err != nil {
-		log.Printf("securejoin error: %v", err)
-		d.write404(w)
-		return
-	}
-	gr, err := git.Open(path, ref)
+	gr, name, err := d.openRepository(r.PathValue("name"), ref)
 	if err != nil {
 		d.write404(w)
 		return
@@ -214,7 +170,7 @@ func (d *deps) serveDiff(w http.ResponseWriter, r *http.Request) {
 		Meta: repositoryMeta{
 			DisplayName: getDisplayName(name),
 			DirName:     name,
-			Description: getDescription(path),
+			Description: gr.GitwebDescription(),
 			Ref:         diff.Commit.Hash.String(),
 		},
 		Commit: diff.Commit,
@@ -229,20 +185,7 @@ func (d *deps) serveDiff(w http.ResponseWriter, r *http.Request) {
 }
 
 func (d *deps) serveRefs(w http.ResponseWriter, r *http.Request) {
-	name := r.PathValue("name")
-	if d.isIgnored(name) {
-		d.write404(w)
-		return
-	}
-
-	path, err := securejoin.SecureJoin(d.c.Repo.ScanPath, name)
-	if err != nil {
-		log.Printf("securejoin error: %v", err)
-		d.write404(w)
-		return
-	}
-
-	gr, err := git.Open(path, "")
+	gr, name, err := d.openRepository(r.PathValue("name"), "")
 	if err != nil {
 		d.write404(w)
 		return
@@ -273,7 +216,7 @@ func (d *deps) serveRefs(w http.ResponseWriter, r *http.Request) {
 		Meta: repositoryMeta{
 			DisplayName: getDisplayName(name),
 			DirName:     name,
-			Description: getDescription(path),
+			Description: gr.GitwebDescription(),
 			Ref:         mainBranch,
 		},
 		Tags:     tags,

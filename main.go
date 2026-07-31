@@ -165,7 +165,12 @@ func main() {
 		templatesDir = embed.TemplatesDir()
 	}
 
-	mux := routes.Handler(c, staticDir, templatesDir)
+	scanDir, err := os.OpenRoot(c.Repo.ScanPath)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	mux := routes.Handler(c, scanDir, staticDir, templatesDir)
 	addr := fmt.Sprintf("%s:%d", c.Server.Host, c.Server.Port)
 	log.Println("starting server on", addr)
 	log.Fatal(http.ListenAndServe(addr, mux))

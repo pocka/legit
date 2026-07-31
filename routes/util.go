@@ -6,8 +6,6 @@ import (
 	"html/template"
 	"io"
 	"net/http"
-	"os"
-	"path/filepath"
 	"slices"
 	"strings"
 
@@ -25,16 +23,6 @@ func isGoModule(gr *git.GitRepo) bool {
 
 func getDisplayName(name string) string {
 	return strings.TrimSuffix(name, ".git")
-}
-
-func getDescription(path string) (desc string) {
-	db, err := os.ReadFile(filepath.Join(path, "description"))
-	if err == nil {
-		desc = string(db)
-	} else {
-		desc = ""
-	}
-	return
 }
 
 func (d *deps) isUnlisted(name string) bool {
