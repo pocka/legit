@@ -56,6 +56,26 @@ ui:
   # Number of commits to display in a single "Commits" (log) page.
   commitsPageSize: 30
 
+  # You can set repository's category by creating `category` file in $GIT_DIR or
+  # setting `gitweb.category` git config.
+  # https://git-scm.com/docs/gitweb#Documentation/gitweb.txt-categoryorgitwebcategory
+  category:
+    # Group repositories by category in top page. Default is `false`.
+    grouping: true
+
+    # Fallback name for repositories without category configured. If this value is empty,
+    # uncategorized repositories will be listed at the top of repositories list, regardless
+    # of the `order` option. Default value is empty string.
+    default: "No Category"
+
+    # By default, categories are sorted in alphabetical ascending order. You can
+    # configure fixed ordering using this option. Categories not included in this
+    # option will be put after this list in an alphabetical ascending order.
+    order:
+      - "Mirror"
+      - "Demo"
+      - "No Category"
+
   # Footer won't appear if `links` is empty and `poweredBy` is `false`.
   footer:
     # Links to display in the footer.

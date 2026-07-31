@@ -153,3 +153,111 @@ func TestGitwebDescriptionReadsGitConfig(t *testing.T) {
 		t.Errorf("Unexpected description, got: %s", description)
 	}
 }
+
+func TestGitwebCategoryReadsFile(t *testing.T) {
+	root := t.TempDir()
+
+	// non-bare
+	{
+		repo, worktree, err := tests.CreateRepository(root, "foo")
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		_, err = worktree.Commit("init", &git.CommitOptions{
+			AllowEmptyCommits: true,
+			Author:            tests.SignatureAlice(),
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		dotgit := repo.Storer.(*filesystem.Storage)
+		file, err := dotgit.Filesystem().Create("category")
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if _, err := file.Write([]byte("Foo Bar")); err != nil {
+			t.Fatal(err)
+		}
+
+		file.Close()
+
+		r, err := Open(filepath.Join(root, "foo"), "trunk")
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		category := r.GitwebCategory()
+		if category != "Foo Bar" {
+			t.Errorf("Unexpected category, got: %s", category)
+		}
+	}
+
+	// bare
+	{
+		if err := tests.CreateBare(root, "foo"); err != nil {
+			t.Fatal(err)
+		}
+
+		file, err := os.Create(filepath.Join(root, "foo.git", "category"))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if _, err := file.WriteString("Foo Bare"); err != nil {
+			t.Fatal(err)
+		}
+
+		file.Close()
+
+		r, err := Open(filepath.Join(root, "foo.git"), "trunk")
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		category := r.GitwebCategory()
+		if category != "Foo Bare" {
+			t.Errorf("Unexpected category, got: %s", category)
+		}
+	}
+}
+
+func TestGitwebCategoryReadsGitConfig(t *testing.T) {
+	root := t.TempDir()
+
+	repo, worktree, err := tests.CreateRepository(root, "foo")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = worktree.Commit("init", &git.CommitOptions{
+		AllowEmptyCommits: true,
+		Author:            tests.SignatureAlice(),
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	config, err := repo.Config()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	section := config.Raw.Section("gitweb")
+	section.AddOption("category", "Foo Bar")
+	if err := repo.SetConfig(config); err != nil {
+		t.Fatal(err)
+	}
+
+	r, err := Open(filepath.Join(root, "foo"), "trunk")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	category := r.GitwebCategory()
+	if category != "Foo Bar" {
+		t.Errorf("Unexpected category, got: %s", category)
+	}
+}

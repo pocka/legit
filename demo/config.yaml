@@ -12,6 +12,10 @@
 # To test bare repository, add "--bare" option to clone command:
 #
 #   cd demo && git clone --bare https://your-git-repo
+#
+# To set category, use git-config:
+#
+#   git -C demo/your-git-repo config set gitweb.category "Active"
 
 repo:
   scanPath: .
@@ -34,6 +38,15 @@ meta:
   syntaxHighlight: true
 
 ui:
+  category:
+    grouping: true
+    default: "No Category"
+    order:
+      - "Active"
+      - "No Category"
+      - "Mirror"
+      - "Abandoned"
+
   footer:
     links:
       - text: Hosted

@@ -28,7 +28,12 @@ type Config struct {
 	} `yaml:"meta"`
 	UI struct {
 		CommitsPageSize uint32 `yaml:"commitsPageSize"`
-		Footer          struct {
+		Category        struct {
+			Grouping bool     `yaml:"grouping"`
+			Default  string   `yaml:"default"`
+			Order    []string `yaml:"order"`
+		}
+		Footer struct {
 			Links []struct {
 				Text string `yaml:"text"`
 				Href string `yaml:"href"`

@@ -138,6 +138,33 @@ func (r *GitRepo) GitwebDescription() string {
 	return gitweb.Option("description")
 }
 
+// GitwebCategory returns category text.
+// See https://git-scm.com/docs/gitweb#Documentation/gitweb.txt-categoryorgitwebcategory
+func (r *GitRepo) GitwebCategory() string {
+	if storage, ok := r.r.Storer.(*filesystem.Storage); ok {
+		file, err := storage.Filesystem().Open("category")
+		if err == nil {
+			defer file.Close()
+			contents, err := io.ReadAll(file)
+			if err == nil {
+				return string(contents)
+			}
+		}
+	}
+
+	config, err := r.r.Config()
+	if err != nil {
+		return ""
+	}
+
+	gitweb := config.Raw.Section("gitweb")
+	if gitweb == nil {
+		return ""
+	}
+
+	return gitweb.Option("category")
+}
+
 func (g *GitRepo) LastCommit() (*object.Commit, error) {
 	c, err := g.r.CommitObject(g.h)
 	if err != nil {

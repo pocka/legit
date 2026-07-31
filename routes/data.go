@@ -7,6 +7,8 @@ package routes
 
 import (
 	"html/template"
+	"maps"
+	"slices"
 
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/object"
@@ -25,6 +27,10 @@ type repositorySummary struct {
 	// Description is a contents of "description" text file in the repository root.
 	Description string
 
+	// Category is gitweb compatible repository category text. Unless "ui.category.grouping"
+	// option is set, this field is always empty.
+	Category string
+
 	LastCommit *object.Commit
 }
 
@@ -35,6 +41,62 @@ type repoListData struct {
 
 	// Repositories is a slice of every repositories legit sees.
 	Repositories []repositorySummary
+}
+
+type repositoriesByCategory struct {
+	Category     string
+	Repositories []repositorySummary
+}
+
+func (d repoListData) RepositoriesByCategory() []repositoriesByCategory {
+	if !d.Config.UI.Category.Grouping {
+		return []repositoriesByCategory{
+			{
+				Category:     "",
+				Repositories: d.Repositories,
+			},
+		}
+	}
+
+	m := make(map[string]*repositoriesByCategory, len(d.Config.UI.Category.Order))
+
+	for _, repo := range d.Repositories {
+		category := repo.Category
+		if category == "" {
+			category = d.Config.UI.Category.Default
+		}
+
+		if group, ok := m[category]; !ok {
+			m[category] = &repositoriesByCategory{
+				Category:     category,
+				Repositories: []repositorySummary{repo},
+			}
+		} else {
+			group.Repositories = append(group.Repositories, repo)
+		}
+	}
+
+	out := make([]repositoriesByCategory, 0, len(m))
+
+	if empty, ok := m[""]; ok {
+		out = append(out, *empty)
+	}
+
+	for _, prioritized := range d.Config.UI.Category.Order {
+		if group, ok := m[prioritized]; ok {
+			out = append(out, *group)
+		}
+	}
+
+	for _, category := range slices.Sorted(maps.Keys(m)) {
+		if category == "" || slices.Contains(d.Config.UI.Category.Order, category) {
+			continue
+		}
+
+		out = append(out, *m[category])
+	}
+
+	return out
 }
 
 // repositoryMeta is a shared data object passed to every pages under each repositories.
