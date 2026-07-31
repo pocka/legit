@@ -125,8 +125,17 @@ func (r *GitRepo) GitwebDescription() string {
 		}
 	}
 
-	// TODO: Read from "gitweb.description"
-	return ""
+	config, err := r.r.Config()
+	if err != nil {
+		return ""
+	}
+
+	gitweb := config.Raw.Section("gitweb")
+	if gitweb == nil {
+		return ""
+	}
+
+	return gitweb.Option("description")
 }
 
 func (g *GitRepo) LastCommit() (*object.Commit, error) {
