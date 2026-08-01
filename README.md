@@ -8,18 +8,19 @@ SPDX-License-Identifier: MIT
 legit is a web frontend for git repositories, written in Go.
 
 This code is a fork of <https://github.com/icyphox/legit>, with HTML/CSS/JS customization and typed template pipelines.
-I'm using legit along with [soft-serve](https://github.com/charmbracelet/soft-serve) and this fork is optimized for this usecase; good viewing experience, minimum Git operation for security and integration for soft-serve.
+I'm using legit along with [soft-serve](https://github.com/charmbracelet/soft-serve) and this fork is optimized for this usecase; good browsing experience, minimum Git operation for security and integration for soft-serve.
 
 ## Features
 
 - Repository browsing; commits, refs, tree, etc.
 - Simple deployment; single binary without CGI.
 - Template customization; modify HTML/CSS/JS to your liking.
-- Supports GitWeb `description` file.
+- Supports GitWeb-compatible description and category display.
+- Secure readonly file access with unveil (OpenBSD) and Landlock (Linux).
 
 ## Requirements
 
-- Building and running without building requires Go toolchain >= v1.24.1.
+- Building and running without building requires Go toolchain >= v1.25.0.
 - Both Linux and macOS is supported.
 - Put TLS terminating proxy such as nginx or Caddy in front of legit.
 
