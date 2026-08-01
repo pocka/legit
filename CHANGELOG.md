@@ -5,6 +5,34 @@ SPDX-License-Identifier: MIT
 
 # Changelog
 
+## v1.1.0
+
+### New Features
+
+- Grouping repositories by gitweb-compatible category (opt-in, see the added `ui.category.*` options). For how to set a category for a repository, wefer to [gitweb's document](https://git-scm.com/docs/gitweb#Documentation/gitweb.txt-categoryorgitwebcategory).
+- Added "Preferences" dialog to let users (visitors) allow customize theme color and file list appearance.
+- Tooltip on commit / author datetime now has relative time. E.g., 1 year ago
+- When `$DIR_DIR/description` file is absent, legit now reads `gitweb.description` git config and use it as a description text, for gitweb compatibility.
+- Added `staticDirRevision` config / build flag for browser-cache busting.
+
+### Bug Fixes
+
+- Fixed `git clone` and `git fetch` are unavailable on OCI image.
+- Fixed ignored repository reveal using URL-encoded slash character, such as `.%2Fprivate_repo`.
+- Fixed `description` file in a checked out worktree being treated as a description file.
+- Fixed broken layout of 404/500 pages.
+
+### Security
+
+- Switched to more robust repository directory path check for more secure filesystem access outside OpenBSD and Linux.
+
+### Other Changes
+
+- Tab width selector has been moved to the new "Preferences" dialog.
+- Made the repository list page (`/`) cache-friendly by outputting timestamp rather than relative time. If user enabled JS in a browser, this change is effectively no-op.
+- Added `-compileTemplatesOnRequest`, `-dirs.static` and `-dirs.templates` CLI flags.
+- Fixed links that always 307 redirects due to lack of trailing slash.
+
 ## v1.0.0
 
 This entry states changes from the original legit.
