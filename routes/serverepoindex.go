@@ -11,20 +11,20 @@ import (
 func (d *deps) serveRepoIndex(w http.ResponseWriter, r *http.Request) {
 	gr, name, err := d.openRepository(r.PathValue("name"), "")
 	if err != nil {
-		d.write404(w)
+		d.write404(w, r)
 		return
 	}
 
 	commits, _, err := gr.Commits(git.CommitsOptions{Limit: 3})
 	if err != nil {
-		d.write500(w)
+		d.write500(w, r)
 		log.Println(err)
 		return
 	}
 
 	mainBranch, err := gr.FindMainBranch(d.c.Repo.MainBranch)
 	if err != nil {
-		d.write500(w)
+		d.write500(w, r)
 		log.Println(err)
 		return
 	}

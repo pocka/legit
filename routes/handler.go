@@ -17,7 +17,7 @@ import (
 func (d *deps) multiplex(w http.ResponseWriter, r *http.Request) {
 	name := r.PathValue("name")
 	if d.isIgnored(name) {
-		d.write404(w)
+		d.write404(w, r)
 		return
 	}
 

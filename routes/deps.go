@@ -5,12 +5,14 @@ package routes
 
 import (
 	"errors"
+	"fmt"
 	"html/template"
 	"io/fs"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/pocka/legit/config"
 	"github.com/pocka/legit/git"
@@ -78,9 +80,12 @@ func (d *deps) template() *template.Template {
 	return t
 }
 
-func (d *deps) write404(w http.ResponseWriter) {
+func (d *deps) write404(w http.ResponseWriter, r *http.Request) {
+	timestamp := time.Now().Format(time.RFC3339)
+
 	data := error404Data{
-		Config: d.c,
+		Config:    d.c,
+		Diagnosis: fmt.Sprintf("Status: 404\nTimestamp: %s\nURL: %s\nUA: %s", timestamp, r.URL, r.UserAgent()),
 	}
 
 	w.WriteHeader(404)
@@ -89,9 +94,12 @@ func (d *deps) write404(w http.ResponseWriter) {
 	}
 }
 
-func (d *deps) write500(w http.ResponseWriter) {
+func (d *deps) write500(w http.ResponseWriter, r *http.Request) {
+	timestamp := time.Now().Format(time.RFC3339)
+
 	data := error500Data{
-		Config: d.c,
+		Config:    d.c,
+		Diagnosis: fmt.Sprintf("Status: 500\nTimestamp: %s\nURL: %s\nUA: %s", timestamp, r.URL, r.UserAgent()),
 	}
 
 	w.WriteHeader(500)

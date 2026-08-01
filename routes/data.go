@@ -245,10 +245,16 @@ type repoCommitData struct {
 type error404Data struct {
 	// Config represents a resolved config based on "config.yaml".
 	Config *config.Config
+
+	// Diagnosis is debug text supposed to attach to a bug report for website owner.
+	Diagnosis string
 }
 
 // error500Data is a data object passed to "500" template.
 type error500Data struct {
 	// Config represents a resolved config based on "config.yaml".
 	Config *config.Config
+
+	// Diagnosis is debug text supposed to attach to a bug report for website owner.
+	Diagnosis string
 }

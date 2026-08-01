@@ -10,7 +10,7 @@ import (
 func (d *deps) serveIndex(w http.ResponseWriter, r *http.Request) {
 	dirs, err := os.ReadDir(d.c.Repo.ScanPath)
 	if err != nil {
-		d.write500(w)
+		d.write500(w, r)
 		log.Printf("reading scan path: %s", err)
 		return
 	}
@@ -37,7 +37,7 @@ func (d *deps) serveIndex(w http.ResponseWriter, r *http.Request) {
 
 		c, err := gr.LastCommit()
 		if err != nil {
-			d.write500(w)
+			d.write500(w, r)
 			log.Println(err)
 			return
 		}

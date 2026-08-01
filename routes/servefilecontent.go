@@ -13,20 +13,20 @@ func (d *deps) serveFileContent(w http.ResponseWriter, r *http.Request) {
 	ref := r.PathValue("ref")
 	gr, name, err := d.openRepository(r.PathValue("name"), ref)
 	if err != nil {
-		d.write404(w)
+		d.write404(w, r)
 		return
 	}
 	treePath := r.PathValue("rest")
 
 	file, err := gr.File(treePath)
 	if err != nil {
-		d.write500(w)
+		d.write500(w, r)
 		return
 	}
 
 	contents, err := file.Contents()
 	if err != nil {
-		d.write500(w)
+		d.write500(w, r)
 		return
 	}
 
@@ -61,14 +61,14 @@ func (d *deps) serveFileContent(w http.ResponseWriter, r *http.Request) {
 			renderer := d.htmlRenderer(file)
 			if renderer == nil {
 				log.Printf("Requested HTML preview for %s/%s, but the filetype has no HTML renderer", name, treePath)
-				d.write404(w)
+				d.write404(w, r)
 				return
 			}
 
 			html, err := renderer.Render([]byte(contents), newRepoLinkTransformer(name, ref))
 			if err != nil {
 				log.Printf("Failed to render HTML preview: %s", err)
-				d.write500(w)
+				d.write500(w, r)
 				return
 			}
 
@@ -87,7 +87,7 @@ func (d *deps) serveFileContent(w http.ResponseWriter, r *http.Request) {
 			return
 		default:
 			log.Printf("Got ?preview=%s, but not preview renderer is available for the type", previewType)
-			d.write404(w)
+			d.write404(w, r)
 			return
 		}
 	}
@@ -95,7 +95,7 @@ func (d *deps) serveFileContent(w http.ResponseWriter, r *http.Request) {
 	lc, err := countLines(strings.NewReader(contents))
 	if err != nil {
 		log.Printf("Failed to count lines for %s: %s", r.URL.Path, err)
-		d.write500(w)
+		d.write500(w, r)
 		return
 	}
 

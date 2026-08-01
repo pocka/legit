@@ -13,14 +13,14 @@ func (d *deps) serveRepoTree(w http.ResponseWriter, r *http.Request) {
 	ref := r.PathValue("ref")
 	gr, name, err := d.openRepository(r.PathValue("name"), ref)
 	if err != nil {
-		d.write404(w)
+		d.write404(w, r)
 		return
 	}
 	treePath := r.PathValue("rest")
 
 	files, err := gr.FileTree(treePath)
 	if err != nil {
-		d.write500(w)
+		d.write500(w, r)
 		log.Println(err)
 		return
 	}
@@ -54,7 +54,7 @@ func (d *deps) serveArchive(w http.ResponseWriter, r *http.Request) {
 
 	// TODO: extend this to add more files compression (e.g.: xz)
 	if !strings.HasSuffix(file, ".tar.gz") {
-		d.write404(w)
+		d.write404(w, r)
 		return
 	}
 
@@ -68,7 +68,7 @@ func (d *deps) serveArchive(w http.ResponseWriter, r *http.Request) {
 
 	gr, name, err := d.openRepository(name, ref)
 	if err != nil {
-		d.write404(w)
+		d.write404(w, r)
 		return
 	}
 
@@ -97,13 +97,13 @@ func (d *deps) serveDiff(w http.ResponseWriter, r *http.Request) {
 	ref := r.PathValue("ref")
 	gr, name, err := d.openRepository(r.PathValue("name"), ref)
 	if err != nil {
-		d.write404(w)
+		d.write404(w, r)
 		return
 	}
 
 	diff, err := gr.Diff()
 	if err != nil {
-		d.write500(w)
+		d.write500(w, r)
 		log.Println(err)
 		return
 	}
@@ -130,7 +130,7 @@ func (d *deps) serveDiff(w http.ResponseWriter, r *http.Request) {
 func (d *deps) serveRefs(w http.ResponseWriter, r *http.Request) {
 	gr, name, err := d.openRepository(r.PathValue("name"), "")
 	if err != nil {
-		d.write404(w)
+		d.write404(w, r)
 		return
 	}
 
@@ -143,13 +143,13 @@ func (d *deps) serveRefs(w http.ResponseWriter, r *http.Request) {
 	branches, err := gr.Branches()
 	if err != nil {
 		log.Println(err)
-		d.write500(w)
+		d.write500(w, r)
 		return
 	}
 
 	mainBranch, err := gr.FindMainBranch(d.c.Repo.MainBranch)
 	if err != nil {
-		d.write500(w)
+		d.write500(w, r)
 		log.Println(err)
 		return
 	}
@@ -176,7 +176,7 @@ func (d *deps) serveStatic(w http.ResponseWriter, r *http.Request) {
 	name := r.PathValue("file")
 	name = filepath.Clean(name)
 	if !filepath.IsLocal(name) {
-		d.write404(w)
+		d.write404(w, r)
 		return
 	}
 

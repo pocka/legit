@@ -12,7 +12,7 @@ import (
 func (d *deps) serveInfoRefs(w http.ResponseWriter, r *http.Request) {
 	repo, err := d.resolveRepository(r.PathValue("name"))
 	if err != nil {
-		d.write404(w)
+		d.write404(w, r)
 		return
 	}
 
@@ -34,7 +34,7 @@ func (d *deps) serveInfoRefs(w http.ResponseWriter, r *http.Request) {
 func (d *deps) serveUploadPack(w http.ResponseWriter, r *http.Request) {
 	repo, err := d.resolveRepository(r.PathValue("name"))
 	if err != nil {
-		d.write404(w)
+		d.write404(w, r)
 		return
 	}
 

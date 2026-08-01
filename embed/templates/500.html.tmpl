@@ -11,19 +11,30 @@ SPDX-License-Identifier: MIT
 		{{- if .Config.Meta.Description }}
 		<meta name="description" content="{{ .Config.Meta.Description }}" />
 		{{- end }}
+		<link rel="stylesheet" href="/static/errorpage.css" />
 	</head>
 	<body>
-		<header>
-			<ol>
-				<li>
-					<a href="/">Top</a>
-				</li>
-			</ol>
+		<header class="header">
+			<div class="header-title">
+				<h1 class="header-title--name">{{ .Config.Meta.Title }}</h1>
+				<p class="header-title--description">{{ .Config.Meta.Description }}</p>
+			</div>
 		</header>
-		<main>
-			<h1>Internal error</h1>
-			<p>Sorry, we can't serve this page due to our application error.</p>
+		<main class="main">
+			<h1>Internal server error</h1>
+			<p>
+				Sorry, we can't serve this page due to our application error.
+				Reload this page or browse from <a href="/">top page</a>.
+			</p>
+			<p>
+				Please contact the website owner with this text:
+			</p>
+			<textarea class="diagnosis" readonly>{{ .Diagnosis }}</textarea>
+			<p>
+				If you're the website owner, please submit a bug report at <a href="https://tangled.org/pocka.jp/legit/issues">here</a>.
+			</p>
 		</main>
+		{{ template "site-footer" . }}
 	</body>
 </html>
 {{- end }}

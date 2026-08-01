@@ -11,18 +11,34 @@ SPDX-License-Identifier: MIT
 		{{- if .Config.Meta.Description }}
 		<meta name="description" content="{{ .Config.Meta.Description }}" />
 		{{- end }}
+		<link rel="stylesheet" href="/static/errorpage.css" />
 	</head>
 	<body>
-		<header>
-			<ol>
-				<li>
-					<a href="/">Top</a>
-				</li>
-			</ol>
+		<header class="header">
+			<div class="header-title">
+				<h1 class="header-title--name">{{ .Config.Meta.Title }}</h1>
+				<p class="header-title--description">{{ .Config.Meta.Description }}</p>
+			</div>
 		</header>
-		<main>
+		<main class="main">
 			<h1>Page not found</h1>
+			<p>
+				URL is incorrect or this page has been deleted.
+				Browse from <a href="/">top page</a> to find the page you're looking for.
+			</p>
+			<details>
+				<summary>If you are sure this is a correct URL</summary>
+				<p>
+					If you belive this website is misbehaving, contact the website owner with this text:
+				</p>
+				<textarea class="diagnosis" readonly>{{ .Diagnosis }}</textarea>
+				<p>
+					If you're the website owner and think this is a legit's bug,
+					please submit a bug report at <a href="https://tangled.org/pocka.jp/legit/issues">here</a>.
+				</p>
+			</details>
 		</main>
+		{{ template "site-footer" . }}
 	</body>
 </html>
 {{- end }}

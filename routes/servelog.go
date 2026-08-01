@@ -13,7 +13,7 @@ func (d *deps) serveLog(w http.ResponseWriter, r *http.Request) {
 	ref := r.PathValue("ref")
 	gr, name, err := d.openRepository(r.PathValue("name"), ref)
 	if err != nil {
-		d.write404(w)
+		d.write404(w, r)
 		return
 	}
 
@@ -31,7 +31,7 @@ func (d *deps) serveLog(w http.ResponseWriter, r *http.Request) {
 
 	commits, page, err := gr.Commits(opts)
 	if err != nil {
-		d.write500(w)
+		d.write500(w, r)
 		log.Println(err)
 		return
 	}
