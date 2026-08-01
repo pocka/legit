@@ -24,8 +24,11 @@ func (d *deps) serveIndex(w http.ResponseWriter, r *http.Request) {
 
 		gr, name, err := d.openRepository(dir.Name(), "")
 		if err != nil {
-			d.write404(w)
-			return
+			// This can be user having non-repository directory inside repo.scanPath.
+			// In that case, logging an error would flood log output.
+			// This makes debugging "repository not visible on top page" more difficult,
+			// but is safer and steadier.
+			continue
 		}
 
 		if d.isIgnored(name) || d.isUnlisted(name) {
