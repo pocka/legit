@@ -6,13 +6,13 @@ SPDX-License-Identifier: MIT
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		{{ template "head" }}
-		<link rel="stylesheet" href="/static/repo-log-ref.css" />
+		{{ template "head" . }}
+		<link rel="stylesheet" href="/static/repo-log-ref.css?r={{ .Config.StaticDirRevision }}" />
 		<title>
 			Commit history at {{ .Meta.Ref }} - {{ .Meta.DisplayName }}
 		</title>
 		<meta name="description" content='Commit history on {{ .Meta.DisplayName }} at {{ .Meta.Ref }}' />
-		<script type="module" src="/static/convert-to-local-datetime.js"></script>
+		<script type="module" src="/static/convert-to-local-datetime.js?r={{ .Config.StaticDirRevision }}"></script>
 	</head>
 	<body>
 		<header class="header">

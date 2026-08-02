@@ -3,11 +3,14 @@ package config
 import (
 	"fmt"
 	"math"
+	"net/url"
 	"os"
 	"path/filepath"
 
 	"gopkg.in/yaml.v3"
 )
+
+var staticDirRevision string
 
 type Config struct {
 	Repo struct {
@@ -48,6 +51,11 @@ type Config struct {
 		Port uint   `yaml:"port"`
 	} `yaml:"server"`
 
+	// StaticDirRevision represents version / revision of "Dirs.Static" (or the
+	// "embed/static" directory if the option is unset.) HTML templates uses
+	// this string for browser-cache bust.
+	StaticDirRevision string `yaml:"staticDirRevision"`
+
 	filepath string
 }
 
@@ -61,6 +69,7 @@ func NewWithDefaults() *Config {
 	}
 
 	c.Meta.Title = "Repositories"
+	c.StaticDirRevision = staticDirRevision
 
 	return &c
 }
@@ -121,6 +130,8 @@ func (c *Config) Resolve(cwd string) error {
 	} else if c.Server.Port > math.MaxUint16 {
 		return fmt.Errorf("server.port should be in 0 < x <= %d range", math.MaxUint16)
 	}
+
+	c.StaticDirRevision = url.QueryEscape(c.StaticDirRevision)
 
 	return nil
 }

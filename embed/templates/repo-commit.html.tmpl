@@ -7,13 +7,13 @@ SPDX-License-Identifier: MIT
 <html lang="en">
 	{{ $shorthash := slice .Commit.Hash.String 0 8 }}
 	<head>
-		{{ template "head" }}
-		<link rel="stylesheet" href="/static/repo-commit.css" />
+		{{ template "head" . }}
+		<link rel="stylesheet" href="/static/repo-commit.css?r={{ .Config.StaticDirRevision }}" />
 		<title>
 			{{ $shorthash }} - {{ .Meta.DisplayName }}
 		</title>
 		<meta name="description" content='{{ $shorthash }} in {{ .Meta.DisplayName }}' />
-		<script type="module" src="/static/convert-to-local-datetime.js"></script>
+		<script type="module" src="/static/convert-to-local-datetime.js?r={{ .Config.StaticDirRevision }}"></script>
 	</head>
 	<body>
 		<header class="header">

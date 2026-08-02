@@ -6,8 +6,8 @@ SPDX-License-Identifier: MIT
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<link rel="stylesheet" href="/static/html-content.css" />
-		{{ template "head" }}
+		<link rel="stylesheet" href="/static/html-content.css?r={{ .Config.StaticDirRevision }}" />
+		{{ template "head" . }}
 		{{- $path := "" -}}
 		{{- $name := "" -}}
 		{{- range .Path -}}

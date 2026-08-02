@@ -6,13 +6,13 @@ SPDX-License-Identifier: MIT
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		{{ template "head" }}
-		<link rel="stylesheet" href="/static/repo-list.css" />
+		{{ template "head" . }}
+		<link rel="stylesheet" href="/static/repo-list.css?r={{ .Config.StaticDirRevision }}" />
 		<title>{{ .Config.Meta.Title }}</title>
 		{{- if .Config.Meta.Description }}
 		<meta name="description" content="{{ .Config.Meta.Description }}" />
 		{{- end }}
-		<script type="module" src="/static/convert-to-local-datetime.js"></script>
+		<script type="module" src="/static/convert-to-local-datetime.js?r={{ .Config.StaticDirRevision }}"></script>
 	</head>
 	<body>
 		<header class="header">

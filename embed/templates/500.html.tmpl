@@ -6,12 +6,12 @@ SPDX-License-Identifier: MIT
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		{{ template "head" }}
+		{{ template "head" . }}
 		<title>{{ .Config.Meta.Title }}</title>
 		{{- if .Config.Meta.Description }}
 		<meta name="description" content="{{ .Config.Meta.Description }}" />
 		{{- end }}
-		<link rel="stylesheet" href="/static/errorpage.css" />
+		<link rel="stylesheet" href="/static/errorpage.css?r={{ .Config.StaticDirRevision }}" />
 	</head>
 	<body>
 		<header class="header">

@@ -2,7 +2,7 @@
 Shared HTML tags to put inside <head> tag.
 Include inside <head> tag, like this:
 	<head>
-		{{ template "head" }}
+		{{ template "head" . }}
 		<title>Page Title</title>
 	</head>
 
@@ -13,10 +13,10 @@ SPDX-License-Identifier: MIT
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="color-scheme" content="light dark" />
-<link rel="icon" href="/static/favicon.png" type="image/png" />
-<link rel="stylesheet" href="/static/colors.css" />
-<link rel="stylesheet" href="/static/global.css" />
+<link rel="icon" href="/static/favicon.png?r={{ .Config.StaticDirRevision }}" type="image/png" />
+<link rel="stylesheet" href="/static/colors.css?r={{ .Config.StaticDirRevision }}" />
+<link rel="stylesheet" href="/static/global.css?r={{ .Config.StaticDirRevision }}" />
 <noscript>
-	<link rel="stylesheet" href="/static/noscript.css" />
+	<link rel="stylesheet" href="/static/noscript.css?r={{ .Config.StaticDirRevision }}" />
 </noscript>
 {{- end }}

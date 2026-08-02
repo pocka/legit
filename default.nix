@@ -6,7 +6,7 @@
   lib,
   git,
 }:
-buildGoModule {
+buildGoModule (finalAttrs: {
   name = "legit";
   version = "1.0.0";
 
@@ -28,6 +28,7 @@ buildGoModule {
     # git binary from nixpkgs links against libs under "/nix/store/.../lib"
     "-X main.additionalAccessDirs=/nix/store"
     "-X github.com/pocka/legit/git/exe.gitPath=${lib.getExe git}"
+    "-X github.com/pocka/legit/config.staticDirRevision=v${finalAttrs.version}-embed"
   ];
 
   # Test scripts invoke system "git" command.
@@ -36,4 +37,4 @@ buildGoModule {
   meta = {
     mainProgram = "legit";
   };
-}
+})

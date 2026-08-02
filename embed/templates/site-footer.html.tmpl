@@ -15,7 +15,7 @@ SPDX-License-Identifier: MIT
 	{{- end }}
 	<button id="preferences-dialog-trigger" class="footer--preferences script-only" type="button">Preferences</button>
 	<dialog id="preferences-dialog" class="preferences" popover="auto" closedby="any">
-		<script type="module" src="/static/preferences.js"></script>
+		<script type="module" src="/static/preferences.js?r={{ .Config.StaticDirRevision }}"></script>
 		<div class="preferences--field">
 			<label for="global-tab-width">Tab width</label>
 			<select id="global-tab-width" aria-describedby="global-tab-width-description">
