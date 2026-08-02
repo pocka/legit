@@ -14,8 +14,8 @@ SPDX-License-Identifier: MIT
 {{ define "repo-nav" -}}
 <nav class="repo-nav">
 	<a href="/{{ .Meta.DirName }}">Summary</a>
-	<a href="/{{ .Meta.DirName }}/refs">Refs</a>
+	<a href="/{{ .Meta.DirName }}/refs/">Refs</a>
 	<a href="/{{ .Meta.DirName }}/log/{{ .Meta.Ref }}">Commits</a>
-	<a href="/{{ .Meta.DirName }}/tree/{{ .Meta.Ref }}">Files</a>
+	<a href="/{{ .Meta.DirName }}/tree/{{ .Meta.Ref }}/">Files</a>
 </nav>
 {{- end -}}

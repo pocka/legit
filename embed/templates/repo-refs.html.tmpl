@@ -36,7 +36,7 @@ SPDX-License-Identifier: MIT
 					<span class="ref-name">{{ .Name.Short }}</span>
 					<div class="ref-actions">
 						<a href="/{{ $meta.DirName }}/log/{{ .Name.Short }}">Commits</a>
-						<a href="/{{ $meta.DirName }}/tree/{{ .Name.Short }}">Files</a>
+						<a href="/{{ $meta.DirName }}/tree/{{ .Name.Short }}/">Files</a>
 						<a href="/{{ $meta.DirName }}/archive/{{ .Name.Short }}.tar.gz">Archive</a>
 					</div>
 				</li>
@@ -53,7 +53,7 @@ SPDX-License-Identifier: MIT
 					{{ end -}}
 					<div class="ref-actions">
 						<a href="/{{ $meta.DirName }}/log/{{ .Name }}">Commits</a>
-						<a href="/{{ $meta.DirName }}/tree/{{ .Name }}">Files</a>
+						<a href="/{{ $meta.DirName }}/tree/{{ .Name }}/">Files</a>
 						<a href="/{{ $meta.DirName }}/archive/{{ .Name }}.tar.gz">Archive</a>
 					</div>
 				</li>
