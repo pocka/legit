@@ -64,5 +64,23 @@ git ${GIT_FLAGS[@]} -C foo commit \
 	-m "Create Go application entrypoint" \
 	--date "2026-06-06T12:01:00+09:00"
 
+echo "first write, start" > foo/diff-whole.txt
+for i in $(seq 1 9999); do
+	echo "first write, #$i" >> foo/diff-whole.txt
+done
+git ${GIT_FLAGS[@]} -C foo add diff-whole.txt
+git ${GIT_FLAGS[@]} -C foo commit \
+	-m "diff-whole.txt, first write" \
+	--date "2026-06-06T12:01:00+09:00"
+
+echo "second write, start" > foo/diff-whole.txt
+for i in $(seq 1 9999); do
+	echo "second write, #$i" >> foo/diff-whole.txt
+done
+git ${GIT_FLAGS[@]} -C foo add diff-whole.txt
+git ${GIT_FLAGS[@]} -C foo commit \
+	-m "diff-whole.txt, second write" \
+	--date "2026-06-06T12:02:00+09:00"
+
 git clone --bare foo foo.git
 rm -rf foo
