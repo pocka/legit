@@ -25,12 +25,14 @@ func main() {
 	var port uint
 	var scanPath string
 	var compileTemplatesOnRequest bool
+	var repoDiff string
 	var staticDirOverride string
 	var templatesDirOverride string
 	flag.StringVar(&cfg, "config", "", "path to config file")
 	flag.StringVar(&host, "server.host", "", "override server.host config")
 	flag.UintVar(&port, "server.port", 0, "override server.port config")
 	flag.StringVar(&scanPath, "repo.scanPath", "", "override repo.scanPath config")
+	flag.StringVar(&repoDiff, "repo.diff", "", "override repo.diff config")
 	flag.BoolVar(&compileTemplatesOnRequest, "compileTemplatesOnRequest", false, "override compileTemplatesOnRequest config")
 	flag.StringVar(&staticDirOverride, "dirs.static", "", "override dirs.static config")
 	flag.StringVar(&templatesDirOverride, "dirs.templates", "", "override dirs.templates config")
@@ -59,6 +61,10 @@ func main() {
 
 	if scanPath != "" {
 		c.Repo.ScanPath = scanPath
+	}
+
+	if repoDiff != "" {
+		c.Repo.Diff = repoDiff
 	}
 
 	if compileTemplatesOnRequest {

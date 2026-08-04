@@ -19,6 +19,9 @@ import (
 type GitRepo struct {
 	r *git.Repository
 	h plumbing.Hash
+
+	// Repository path
+	path string
 }
 
 type TagList struct {
@@ -84,7 +87,9 @@ func (self *TagList) Less(i, j int) bool {
 
 func Open(path string, ref string) (*GitRepo, error) {
 	var err error
-	g := GitRepo{}
+	g := GitRepo{
+		path: path,
+	}
 	g.r, err = git.PlainOpen(path)
 	if err != nil {
 		return nil, fmt.Errorf("opening %s: %w", path, err)

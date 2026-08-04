@@ -21,6 +21,20 @@ repo:
     - master
     - main
 
+  # How to generate commit diffs? Valid values are "system" and "go" (default).
+  #
+  # "system" uses system git to generate diff. It's faster and its output is
+  # familiar.
+  #
+  # "go" uses pure-Go diff implementation. Slower, but absolutely stable output
+  # as it does not use system git installation. Its output has unfamiliar hunk
+  # (chunk header's context line.) Unfortunately, its performance is significantly
+  # worse than system git. For large diffs such as auto-generated files, it can
+  # take 10x~ times compared to system git.
+  #
+  # Default value is "go" for backwards compatibility.
+  diff: go
+
 # Runtime directories.
 dirs:
   # [optional]

@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"path/filepath"
 	"strings"
+
+	"github.com/pocka/legit/git"
 )
 
 func (d *deps) serveRepoTree(w http.ResponseWriter, r *http.Request) {
@@ -101,7 +103,12 @@ func (d *deps) serveDiff(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	diff, err := gr.Diff()
+	var diff *git.NiceDiff
+	if d.c.Repo.Diff == "system" {
+		diff, err = gr.SystemDiff()
+	} else {
+		diff, err = gr.Diff()
+	}
 	if err != nil {
 		d.write500(w, r)
 		log.Println(err)

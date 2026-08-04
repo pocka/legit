@@ -19,6 +19,10 @@ type Config struct {
 		MainBranch []string `yaml:"mainBranch"`
 		Ignore     []string `yaml:"ignore,omitempty"`
 		Unlisted   []string `yaml:"unlisted,omitempty"`
+
+		// Diff method. "system" uses system git and "go" uses go-git and go-diff.
+		// Default is "go".
+		Diff string `yaml:"diff"`
 	} `yaml:"repo"`
 	Dirs struct {
 		Templates string `yaml:"templates"`
@@ -67,6 +71,7 @@ func NewWithDefaults() *Config {
 		"README", "README.txt", "README.md", "README.adoc",
 		"readme", "readme.txt", "readme.md", "readme.adoc",
 	}
+	c.Repo.Diff = "go"
 
 	c.Meta.Title = "Repositories"
 	c.StaticDirRevision = staticDirRevision
@@ -101,6 +106,13 @@ func (c *Config) Resolve(cwd string) error {
 		c.Repo.ScanPath = cwd
 	} else if c.Repo.ScanPath, err = resolvePath(c.Repo.ScanPath, basePath); err != nil {
 		return err
+	}
+
+	switch c.Repo.Diff {
+	case "go":
+	case "system":
+	default:
+		return fmt.Errorf("\"%s\" is not a valid repo.diff value", c.Repo.Diff)
 	}
 
 	// Override templates dir
