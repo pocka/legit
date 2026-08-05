@@ -5,6 +5,25 @@ SPDX-License-Identifier: MIT
 
 # Changelog
 
+## v1.2.0
+
+### New Features
+
+- Added `repo.diff` config option / CLI flag to select `go` (pure Go diff implementation, default) or `system` (system install git, much faster) for generating diffs.
+- Added `ui.diff.hideThresholdLines` config option to collapse large diffs.
+- Added `repo.trimDotGitSuffix` config option to serve bare repositories without `.git` suffix. You can still access `/<name>.git/*` paths when this option is enabled.
+- Added `meta.robotsTxt` config option to specify a file for `/robots.txt` requests.
+
+### Bug Fixes
+
+- Fixed pages for a ref including slash character (e.g., `feature/foo`) not working.
+- Removed double-slash from links on tree page.
+- Fixed header section overlaps hash-scroll target (e.g., latest commit link on a log page.)
+
+### Other Changes
+
+- Reduced reflow / screen flickering on commit page.
+
 ## v1.1.0
 
 ### New Features
