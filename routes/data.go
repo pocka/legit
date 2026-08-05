@@ -6,10 +6,12 @@
 package routes
 
 import (
+	"fmt"
 	"html/template"
 	"maps"
 	"slices"
 
+	"github.com/bluekeyes/go-gitdiff/gitdiff"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/pocka/legit/config"
@@ -239,6 +241,33 @@ type repoCommitData struct {
 	Parent *object.Commit
 
 	Diff *git.NiceDiff
+}
+
+func (r repoCommitData) IsLargeDiff(file *gitdiff.File) bool {
+	if r.Config.UI.Diff.HideThresholdLines == 0 {
+		return false
+	}
+
+	var n uint32
+
+	for _, fragment := range file.TextFragments {
+		n += uint32(max(0, fragment.LinesAdded))
+		n += uint32(max(0, fragment.LinesDeleted))
+	}
+
+	return n > r.Config.UI.Diff.HideThresholdLines
+}
+
+func (r repoCommitData) FileDiffStat(file *gitdiff.File) string {
+	var added int64
+	var deleted int64
+
+	for _, fragment := range file.TextFragments {
+		added += fragment.LinesAdded
+		deleted += fragment.LinesDeleted
+	}
+
+	return fmt.Sprintf("+%d/-%d", added, deleted)
 }
 
 // error404Data is a data object passed to "404" template.

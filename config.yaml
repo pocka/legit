@@ -70,6 +70,21 @@ ui:
   # Number of commits to display in a single "Commits" (log) page.
   commitsPageSize: 30
 
+  diff:
+    # When a total line count of added and deleted lines exceeds this value,
+    # default UI hides diff view for the file and displays an interactive
+    # element to reveal the diff lazily.
+    #
+    # Displaying large diffs slows browser's rendering process down significantly.
+    # This option prevents surprising slow loading: user may not know the commit
+    # contains large diffs prior to visit.
+    #
+    # The does not affect server load for large diffs. For server-side diff
+    # generation performance, see "repo.diff" config option.
+    #
+    # Setting 0 disables the hiding mechanism. Default value is 0.
+    hideThresholdLines: 1000
+
   # You can set repository's category by creating `category` file in $GIT_DIR or
   # setting `gitweb.category` git config.
   # https://git-scm.com/docs/gitweb#Documentation/gitweb.txt-categoryorgitwebcategory

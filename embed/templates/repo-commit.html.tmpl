@@ -66,6 +66,10 @@ SPDX-License-Identifier: MIT
 							{{ if .IsBinary -}}
 							<p>Diff for binary file is unavailable.</p>
 							{{- else -}}
+							{{- if $root.IsLargeDiff . -}}
+							<details>
+							<summary>Diff ({{ $root.FileDiffStat . }})</summary>
+							{{- end -}}
 							<ul class="repo-commit--diff">
 								{{- range .TextFragments }}
 								<li class="repo-commit--diff-item">
@@ -93,6 +97,9 @@ SPDX-License-Identifier: MIT
 								</li>
 								{{ end -}}
 							</ul>
+							{{- if $root.IsLargeDiff . -}}
+							</details>
+							{{- end -}}
 							{{- end }}
 						</div>
 					</li>

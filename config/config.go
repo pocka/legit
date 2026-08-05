@@ -35,7 +35,12 @@ type Config struct {
 	} `yaml:"meta"`
 	UI struct {
 		CommitsPageSize uint32 `yaml:"commitsPageSize"`
-		Category        struct {
+		Diff            struct {
+			// HideThresholdLines controls threshold to hide diff for the file.
+			// Unit is line count, and set 0 to disable diff hiding at all.
+			HideThresholdLines uint32 `yaml:"hideThresholdLines"`
+		}
+		Category struct {
 			Grouping bool     `yaml:"grouping"`
 			Default  string   `yaml:"default"`
 			Order    []string `yaml:"order"`

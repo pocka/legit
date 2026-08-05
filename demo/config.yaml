@@ -47,6 +47,9 @@ ui:
       - "Mirror"
       - "Abandoned"
 
+  diff:
+    hideThresholdLines: 1000
+
   footer:
     links:
       - text: Hosted
