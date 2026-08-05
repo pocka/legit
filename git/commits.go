@@ -26,18 +26,18 @@ type CommitsPageMeta struct {
 	HasPrevPage bool
 }
 
-func (g *GitRepo) Commits(opts CommitsOptions) ([]*object.Commit, CommitsPageMeta, error) {
+func Commits(repo *git.Repository, rev plumbing.Hash, opts CommitsOptions) ([]*object.Commit, CommitsPageMeta, error) {
 	if !opts.After.IsZero() {
-		return g.commitsAfter(opts)
+		return commitsAfter(repo, rev, opts)
 	} else if !opts.Before.IsZero() {
-		return g.commitsBefore(opts)
+		return commitsBefore(repo, opts)
 	} else {
-		return g.commitsFromTip(opts)
+		return commitsFromTip(repo, rev, opts)
 	}
 }
 
-func (g *GitRepo) commitsFromTip(opts CommitsOptions) ([]*object.Commit, CommitsPageMeta, error) {
-	ci, err := g.r.Log(&git.LogOptions{From: g.h})
+func commitsFromTip(repo *git.Repository, rev plumbing.Hash, opts CommitsOptions) ([]*object.Commit, CommitsPageMeta, error) {
+	ci, err := repo.Log(&git.LogOptions{From: rev})
 	if err != nil {
 		return nil, CommitsPageMeta{}, fmt.Errorf("commits from ref: %w", err)
 	}
@@ -69,8 +69,8 @@ func (g *GitRepo) commitsFromTip(opts CommitsOptions) ([]*object.Commit, Commits
 	return commits, meta, nil
 }
 
-func (g *GitRepo) commitsBefore(opts CommitsOptions) ([]*object.Commit, CommitsPageMeta, error) {
-	ci, err := g.r.Log(&git.LogOptions{
+func commitsBefore(repo *git.Repository, opts CommitsOptions) ([]*object.Commit, CommitsPageMeta, error) {
+	ci, err := repo.Log(&git.LogOptions{
 		From: opts.Before,
 	})
 	if err != nil {
@@ -102,8 +102,8 @@ func (g *GitRepo) commitsBefore(opts CommitsOptions) ([]*object.Commit, CommitsP
 	return commits, meta, nil
 }
 
-func (g *GitRepo) commitsAfter(opts CommitsOptions) ([]*object.Commit, CommitsPageMeta, error) {
-	ci, err := g.r.Log(&git.LogOptions{From: g.h})
+func commitsAfter(repo *git.Repository, rev plumbing.Hash, opts CommitsOptions) ([]*object.Commit, CommitsPageMeta, error) {
+	ci, err := repo.Log(&git.LogOptions{From: rev})
 	if err != nil {
 		return nil, CommitsPageMeta{}, fmt.Errorf("commits from ref: %w", err)
 	}
@@ -135,7 +135,7 @@ func (g *GitRepo) commitsAfter(opts CommitsOptions) ([]*object.Commit, CommitsPa
 	commits := queue.toSlice()
 
 	if len(commits) > 0 {
-		meta.HasPrevPage = g.h != commits[0].Hash
+		meta.HasPrevPage = rev != commits[0].Hash
 	}
 
 	return commits, meta, nil

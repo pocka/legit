@@ -15,4 +15,6 @@ import (
 	"net/http"
 )
 
-func Register(*http.ServeMux) {}
+func Handle(_ http.ResponseWriter, _ *http.Request) bool {
+	return false
+}

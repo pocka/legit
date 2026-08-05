@@ -21,19 +21,14 @@ type NiceDiff struct {
 	Files []*gitdiff.File
 }
 
-func (g *GitRepo) Diff() (*NiceDiff, error) {
-	c, err := g.r.CommitObject(g.h)
-	if err != nil {
-		return nil, fmt.Errorf("commit object: %w", err)
-	}
-
+func Diff(commit *object.Commit) (*NiceDiff, error) {
 	patch := &object.Patch{}
-	commitTree, err := c.Tree()
+	commitTree, err := commit.Tree()
 	parent := &object.Commit{}
 	if err == nil {
 		parentTree := &object.Tree{}
-		if c.NumParents() != 0 {
-			parent, err = c.Parents().Next()
+		if commit.NumParents() != 0 {
+			parent, err = commit.Parents().Next()
 			if err == nil {
 				parentTree, err = parent.Tree()
 				if err == nil {
@@ -57,7 +52,7 @@ func (g *GitRepo) Diff() (*NiceDiff, error) {
 	}
 
 	nd := NiceDiff{}
-	nd.Commit = c
+	nd.Commit = commit
 	nd.Parent = parent
 	nd.Files = diffs
 

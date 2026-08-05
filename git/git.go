@@ -16,14 +16,6 @@ import (
 	"github.com/go-git/go-git/v5/storage/filesystem"
 )
 
-type GitRepo struct {
-	r *git.Repository
-	h plumbing.Hash
-
-	// Repository path
-	path string
-}
-
 type TagList struct {
 	refs []*TagReference
 	r    *git.Repository
@@ -85,36 +77,10 @@ func (self *TagList) Less(i, j int) bool {
 	return dateI.After(dateJ)
 }
 
-func Open(path string, ref string) (*GitRepo, error) {
-	var err error
-	g := GitRepo{
-		path: path,
-	}
-	g.r, err = git.PlainOpen(path)
-	if err != nil {
-		return nil, fmt.Errorf("opening %s: %w", path, err)
-	}
-
-	if ref == "" {
-		head, err := g.r.Head()
-		if err != nil {
-			return nil, fmt.Errorf("getting head of %s: %w", path, err)
-		}
-		g.h = head.Hash()
-	} else {
-		hash, err := g.r.ResolveRevision(plumbing.Revision(ref))
-		if err != nil {
-			return nil, fmt.Errorf("resolving rev %s for %s: %w", ref, path, err)
-		}
-		g.h = *hash
-	}
-	return &g, nil
-}
-
 // GitwebDescription returns description text.
 // See https://git-scm.com/docs/gitweb#Documentation/gitweb.txt-descriptionorgitwebdescription
-func (r *GitRepo) GitwebDescription() string {
-	if storage, ok := r.r.Storer.(*filesystem.Storage); ok {
+func GitwebDescription(repo *git.Repository) string {
+	if storage, ok := repo.Storer.(*filesystem.Storage); ok {
 		file, err := storage.Filesystem().Open("description")
 		if err == nil {
 			defer file.Close()
@@ -130,7 +96,7 @@ func (r *GitRepo) GitwebDescription() string {
 		}
 	}
 
-	config, err := r.r.Config()
+	config, err := repo.Config()
 	if err != nil {
 		return ""
 	}
@@ -145,8 +111,8 @@ func (r *GitRepo) GitwebDescription() string {
 
 // GitwebCategory returns category text.
 // See https://git-scm.com/docs/gitweb#Documentation/gitweb.txt-categoryorgitwebcategory
-func (r *GitRepo) GitwebCategory() string {
-	if storage, ok := r.r.Storer.(*filesystem.Storage); ok {
+func GitwebCategory(repo *git.Repository) string {
+	if storage, ok := repo.Storer.(*filesystem.Storage); ok {
 		file, err := storage.Filesystem().Open("category")
 		if err == nil {
 			defer file.Close()
@@ -157,7 +123,7 @@ func (r *GitRepo) GitwebCategory() string {
 		}
 	}
 
-	config, err := r.r.Config()
+	config, err := repo.Config()
 	if err != nil {
 		return ""
 	}
@@ -170,36 +136,8 @@ func (r *GitRepo) GitwebCategory() string {
 	return gitweb.Option("category")
 }
 
-func (g *GitRepo) LastCommit() (*object.Commit, error) {
-	c, err := g.r.CommitObject(g.h)
-	if err != nil {
-		return nil, fmt.Errorf("last commit: %w", err)
-	}
-	return c, nil
-}
-
-// Head returns hash of the tip. This is same to the hash of a commit object
-// returned by LastCommit() method.
-func (g *GitRepo) Head() plumbing.Hash {
-	return g.h
-}
-
-func (g *GitRepo) File(path string) (*object.File, error) {
-	c, err := g.r.CommitObject(g.h)
-	if err != nil {
-		return nil, fmt.Errorf("commit object: %w", err)
-	}
-
-	tree, err := c.Tree()
-	if err != nil {
-		return nil, fmt.Errorf("file tree: %w", err)
-	}
-
-	return tree.File(path)
-}
-
-func (g *GitRepo) Tags() ([]*TagReference, error) {
-	iter, err := g.r.Tags()
+func Tags(repo *git.Repository) ([]*TagReference, error) {
+	iter, err := repo.Tags()
 	if err != nil {
 		return nil, fmt.Errorf("tag objects: %w", err)
 	}
@@ -207,7 +145,7 @@ func (g *GitRepo) Tags() ([]*TagReference, error) {
 	tags := make([]*TagReference, 0)
 
 	if err := iter.ForEach(func(ref *plumbing.Reference) error {
-		obj, err := g.r.TagObject(ref.Hash())
+		obj, err := repo.TagObject(ref.Hash())
 		switch err {
 		case nil:
 			tags = append(tags, &TagReference{
@@ -226,13 +164,13 @@ func (g *GitRepo) Tags() ([]*TagReference, error) {
 		return nil, err
 	}
 
-	tagList := &TagList{r: g.r, refs: tags}
+	tagList := &TagList{r: repo, refs: tags}
 	sort.Sort(tagList)
 	return tags, nil
 }
 
-func (g *GitRepo) Branches() ([]*plumbing.Reference, error) {
-	bi, err := g.r.Branches()
+func Branches(repo *git.Repository) ([]*plumbing.Reference, error) {
+	bi, err := repo.Branches()
 	if err != nil {
 		return nil, fmt.Errorf("branchs: %w", err)
 	}
@@ -247,9 +185,9 @@ func (g *GitRepo) Branches() ([]*plumbing.Reference, error) {
 	return branches, nil
 }
 
-func (g *GitRepo) FindMainBranch(branches []string) (string, error) {
+func FindMainBranch(repo *git.Repository, branches []string) (string, error) {
 	for _, b := range branches {
-		_, err := g.r.ResolveRevision(plumbing.Revision(b))
+		_, err := repo.ResolveRevision(plumbing.Revision(b))
 		if err == nil {
 			return b, nil
 		}
@@ -259,19 +197,9 @@ func (g *GitRepo) FindMainBranch(branches []string) (string, error) {
 
 // WriteTar writes itself from a tree into a binary tar file format.
 // prefix is root folder to be appended.
-func (g *GitRepo) WriteTar(w io.Writer, prefix string) error {
+func WriteTar(w io.Writer, prefix string, tree *object.Tree) error {
 	tw := tar.NewWriter(w)
 	defer tw.Close()
-
-	c, err := g.r.CommitObject(g.h)
-	if err != nil {
-		return fmt.Errorf("commit object: %w", err)
-	}
-
-	tree, err := c.Tree()
-	if err != nil {
-		return err
-	}
 
 	walker := object.NewTreeWalker(tree, true, nil)
 	defer walker.Close()

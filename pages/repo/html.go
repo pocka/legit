@@ -1,14 +1,20 @@
 // Copyright 2026 Shota FUJI <pockawoooh@gmail.com>
 // SPDX-License-Identifier: MIT
 
-package routes
+package repo
 
 import (
+	"bytes"
 	"fmt"
+	"html/template"
 	"path/filepath"
 	"strings"
 
+	htmlout "github.com/alecthomas/chroma/v2/formatters/html"
+	"github.com/alecthomas/chroma/v2/lexers"
+	"github.com/alecthomas/chroma/v2/styles"
 	"github.com/go-git/go-git/v5/plumbing/object"
+
 	"github.com/pocka/legit/renderer/html"
 )
 
@@ -70,11 +76,33 @@ func (t *repoLinkTransformer) RewriteInternalLink(link string) string {
 	return path
 }
 
-func (d *deps) htmlRenderer(file *object.File) html.Renderer {
+func (repo *Repo) htmlRenderer(file *object.File) html.Renderer {
 	switch filepath.Ext(file.Name) {
 	case ".md", ".mkd", ".markdown":
-		return &d.markdown
+		return &repo.core.Markdown
 	default:
 		return nil
 	}
+}
+
+func highlightCode(fileName string, code string) (template.HTML, error) {
+	lexer := lexers.Get(fileName)
+	if lexer == nil {
+		return "", nil
+	}
+
+	formatter := htmlout.New(htmlout.WithClasses(true), htmlout.ClassPrefix("chroma-"))
+
+	iter, err := lexer.Tokenise(nil, code)
+	if err != nil {
+		return "", fmt.Errorf("failed to tokenize code: %s", err)
+	}
+
+	var output bytes.Buffer
+	err = formatter.Format(&output, styles.Fallback, iter)
+	if err != nil {
+		return "", fmt.Errorf("failed to highlight code: %s", err)
+	}
+
+	return template.HTML(output.String()), nil
 }

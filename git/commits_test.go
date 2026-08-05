@@ -5,7 +5,6 @@ package git
 
 import (
 	"fmt"
-	"path/filepath"
 	"testing"
 
 	"github.com/go-git/go-git/v5"
@@ -13,9 +12,9 @@ import (
 	"github.com/pocka/legit/tests"
 )
 
-func createCommitsTestRepo(t *testing.T, numberOfCommits int) (*GitRepo, []plumbing.Hash) {
+func createCommitsTestRepo(t *testing.T, numberOfCommits int) (*git.Repository, plumbing.Hash, []plumbing.Hash) {
 	repos := t.TempDir()
-	_, worktree, err := tests.CreateRepository(repos, "foo")
+	repo, worktree, err := tests.CreateRepository(repos, "foo")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -48,21 +47,21 @@ func createCommitsTestRepo(t *testing.T, numberOfCommits int) (*GitRepo, []plumb
 		commits[numberOfCommits-1-i] = hash
 	}
 
-	repo, err := Open(filepath.Join(repos, "foo"), "trunk")
+	head, err := repo.Head()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	return repo, commits
+	return repo, head.Hash(), commits
 }
 
 func TestCommitsOK(t *testing.T) {
 	// Reusing repo & commits as creating commits is not cheap.
-	repo, commits := createCommitsTestRepo(t, 50)
+	repo, rev, commits := createCommitsTestRepo(t, 50)
 
 	// len(commits) == opts.Limit
 	{
-		log, meta, err := repo.Commits(CommitsOptions{
+		log, meta, err := Commits(repo, rev, CommitsOptions{
 			Limit: 50,
 		})
 		if err != nil {
@@ -93,7 +92,7 @@ func TestCommitsOK(t *testing.T) {
 
 	// len(commits) < opts.Limit
 	{
-		log, meta, err := repo.Commits(CommitsOptions{
+		log, meta, err := Commits(repo, rev, CommitsOptions{
 			Limit: 100,
 		})
 		if err != nil {
@@ -124,7 +123,7 @@ func TestCommitsOK(t *testing.T) {
 
 	// len(commits) > opts.Limit
 	{
-		log, meta, err := repo.Commits(CommitsOptions{
+		log, meta, err := Commits(repo, rev, CommitsOptions{
 			Limit: 10,
 		})
 		if err != nil {
@@ -155,7 +154,7 @@ func TestCommitsOK(t *testing.T) {
 
 	// len(commits) > opts.Limit && Before
 	{
-		log, meta, err := repo.Commits(CommitsOptions{
+		log, meta, err := Commits(repo, rev, CommitsOptions{
 			Limit:  5,
 			Before: commits[15],
 		})
@@ -187,7 +186,7 @@ func TestCommitsOK(t *testing.T) {
 
 	// len(commits) > opts.Limit && After
 	{
-		log, meta, err := repo.Commits(CommitsOptions{
+		log, meta, err := Commits(repo, rev, CommitsOptions{
 			Limit: 5,
 			After: commits[40],
 		})

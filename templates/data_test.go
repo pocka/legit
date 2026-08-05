@@ -1,7 +1,7 @@
 // Copyright 2026 Shota FUJI <pockawoooh@gmail.com>
 // SPDX-License-Identifier: MIT
 
-package routes
+package templates
 
 import (
 	"slices"
@@ -12,7 +12,7 @@ import (
 
 func TestRepositoriesByCategorySkipsByDefault(t *testing.T) {
 	cfg := config.Config{}
-	repos := []repositorySummary{
+	repos := []RepositorySummary{
 		{
 			DisplayName: "Foo",
 			Category:    "B",
@@ -31,7 +31,7 @@ func TestRepositoriesByCategorySkipsByDefault(t *testing.T) {
 		},
 	}
 
-	data := repoListData{
+	data := RepoListData{
 		Config:       &cfg,
 		Repositories: repos,
 	}
@@ -56,7 +56,7 @@ func TestRepositoriesByCategoryOK(t *testing.T) {
 	cfg.UI.Category.Grouping = true
 	cfg.UI.Category.Order = []string{"A"}
 
-	repos := []repositorySummary{
+	repos := []RepositorySummary{
 		{
 			DisplayName: "Foo",
 			Category:    "B",
@@ -75,7 +75,7 @@ func TestRepositoriesByCategoryOK(t *testing.T) {
 		},
 	}
 
-	data := repoListData{
+	data := RepoListData{
 		Config:       &cfg,
 		Repositories: repos,
 	}
@@ -86,29 +86,29 @@ func TestRepositoriesByCategoryOK(t *testing.T) {
 		t.Fatalf("Expected three categories, got %d", len(got))
 	}
 
-	expected := []repositoriesByCategory{
+	expected := []RepositoriesByCategory{
 		{
 			Category: "",
-			Repositories: []repositorySummary{
+			Repositories: []RepositorySummary{
 				{DisplayName: "Qux", Category: ""},
 			},
 		},
 		{
 			Category: "A",
-			Repositories: []repositorySummary{
+			Repositories: []RepositorySummary{
 				{DisplayName: "Bar", Category: "A"},
 				{DisplayName: "Baz", Category: "A"},
 			},
 		},
 		{
 			Category: "B",
-			Repositories: []repositorySummary{
+			Repositories: []RepositorySummary{
 				{DisplayName: "Foo", Category: "B"},
 			},
 		},
 	}
 
-	if !slices.EqualFunc(got, expected, func(e1, e2 repositoriesByCategory) bool {
+	if !slices.EqualFunc(got, expected, func(e1, e2 RepositoriesByCategory) bool {
 		return e1.Category == e2.Category && slices.Equal(e1.Repositories, e2.Repositories)
 	}) {
 		t.Error("Unexpected output")

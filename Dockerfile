@@ -11,9 +11,11 @@ RUN go mod download
 # Copy source files needed for building the binary.
 COPY *.go ./
 COPY config/*.go ./config/
+COPY templates ./templates
 COPY renderer ./renderer
 COPY git ./git
-COPY routes ./routes
+COPY core ./core
+COPY pages ./pages
 COPY embed ./embed
 RUN go build -o /bin/legit -ldflags="-X 'main.additionalAccessDirs=/usr/lib,/lib'"
 

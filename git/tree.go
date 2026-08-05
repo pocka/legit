@@ -1,22 +1,11 @@
 package git
 
 import (
-	"fmt"
-
 	"github.com/go-git/go-git/v5/plumbing/object"
 )
 
-func (g *GitRepo) FileTree(path string) ([]NiceTree, error) {
-	c, err := g.r.CommitObject(g.h)
-	if err != nil {
-		return nil, fmt.Errorf("commit object: %w", err)
-	}
-
+func NewNiceTree(tree *object.Tree, path string) ([]NiceTree, error) {
 	files := []NiceTree{}
-	tree, err := c.Tree()
-	if err != nil {
-		return nil, fmt.Errorf("file tree: %w", err)
-	}
 
 	if path == "" {
 		files = makeNiceTree(tree)
@@ -49,7 +38,7 @@ type NiceTree struct {
 }
 
 func makeNiceTree(t *object.Tree) []NiceTree {
-	nts := []NiceTree{}
+	nts := make([]NiceTree, 0, len(t.Entries))
 
 	for _, e := range t.Entries {
 		mode, _ := e.Mode.ToOSFileMode()

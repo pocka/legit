@@ -14,27 +14,23 @@ import (
 )
 
 // SystemDiff generates diff lines using system git.
-func (g *GitRepo) SystemDiff() (*NiceDiff, error) {
-	c, err := g.r.CommitObject(g.h)
-	if err != nil {
-		return nil, fmt.Errorf("commit object: %w", err)
-	}
-
+func SystemDiff(repoPath string, commit *object.Commit) (*NiceDiff, error) {
+	var err error
 	var parent *object.Commit
-	if parent, err = c.Parent(0); err != nil {
+	if parent, err = commit.Parent(0); err != nil {
 		if err != object.ErrParentNotFound {
-			return nil, fmt.Errorf("unable to read parent of %s: %w", c.Hash, err)
+			return nil, fmt.Errorf("unable to read parent of %s: %w", commit.Hash, err)
 		}
 	}
 
 	nd := NiceDiff{}
-	nd.Commit = c
+	nd.Commit = commit
 	nd.Parent = parent
 	if parent == nil {
 		nd.Parent = &object.Commit{}
 	}
 
-	diffs, err := g.getSystemGitDiff(c)
+	diffs, err := getSystemGitDiff(repoPath, commit)
 	if err == nil {
 		nd.Files = diffs
 
@@ -59,13 +55,13 @@ func (g *GitRepo) SystemDiff() (*NiceDiff, error) {
 	return &nd, nil
 }
 
-func (g *GitRepo) getSystemGitDiff(commit *object.Commit) ([]*gitdiff.File, error) {
+func getSystemGitDiff(repoPath string, commit *object.Commit) ([]*gitdiff.File, error) {
 	cmd := exec.Command(exe.GitBin(), []string{
 		// repo.scanPath is trusted directory, thus g.path (inside repo.scanPath) is
 		// trusted too.
 		// https://git-scm.com/docs/git-config#Documentation/git-config.txt-safedirectory
-		"-c", fmt.Sprintf("safe.directory=%s", g.path),
-		"-C", g.path,
+		"-c", fmt.Sprintf("safe.directory=%s", repoPath),
+		"-C", repoPath,
 		"show", commit.Hash.String(),
 		"--no-ext-diff",
 	}...)
@@ -76,7 +72,7 @@ func (g *GitRepo) getSystemGitDiff(commit *object.Commit) ([]*gitdiff.File, erro
 		"GIT_CONFIG_GLOBAL=/dev/null",
 		"GIT_CONFIG_SYSTEM=/dev/null",
 		"GIT_CONFIG_NOSYSTEM=1",
-		fmt.Sprintf("GIT_CEILING_DIRECTORIES=%s", g.path),
+		fmt.Sprintf("GIT_CEILING_DIRECTORIES=%s", repoPath),
 	}
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {

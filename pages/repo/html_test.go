@@ -1,7 +1,7 @@
 // Copyright 2026 Shota FUJI <pockawoooh@gmail.com>
 // SPDX-License-Identifier: MIT
 
-package routes
+package repo
 
 import (
 	"testing"

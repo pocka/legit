@@ -1,7 +1,7 @@
 // Copyright 2026 Shota FUJI <pockawoooh@gmail.com>
 // SPDX-License-Identifier: MIT
 
-package routes
+package pages
 
 import (
 	"io"
@@ -15,8 +15,9 @@ import (
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/storage/memory"
+
 	"github.com/pocka/legit/config"
-	"github.com/pocka/legit/embed"
+	"github.com/pocka/legit/core"
 	"github.com/pocka/legit/tests"
 )
 
@@ -58,13 +59,12 @@ func TestIgnoreSymlinkByDefault(t *testing.T) {
 	c.Repo.Readme = []string{"README.md"}
 	c.Repo.MainBranch = []string{"trunk"}
 
-	scanRoot, err := os.OpenRoot(dest)
+	core, err := core.New(&c)
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer scanRoot.Close()
 
-	server := httptest.NewServer(Handler(&c, scanRoot, embed.StaticDir(), embed.TemplatesDir()))
+	server := httptest.NewServer(New(core))
 	defer server.Close()
 
 	topPage, err := http.Get(server.URL)

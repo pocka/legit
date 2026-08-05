@@ -1,9 +1,7 @@
-// This file tests git operations.
-//
 // Copyright 2026 Shota FUJI <pockawoooh@gmail.com>
 // SPDX-License-Identifier: MIT
 
-package routes
+package pages
 
 import (
 	"net/http/httptest"
@@ -14,8 +12,9 @@ import (
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/storage/memory"
+
 	"github.com/pocka/legit/config"
-	"github.com/pocka/legit/embed"
+	"github.com/pocka/legit/core"
 	"github.com/pocka/legit/tests"
 )
 
@@ -54,13 +53,12 @@ func TestGitCloneOK(t *testing.T) {
 	c.Repo.Readme = []string{"README.md"}
 	c.Repo.MainBranch = []string{"trunk"}
 
-	scanRoot, err := os.OpenRoot(repos)
+	core, err := core.New(&c)
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer scanRoot.Close()
 
-	server := httptest.NewServer(Handler(&c, scanRoot, embed.StaticDir(), embed.TemplatesDir()))
+	server := httptest.NewServer(New(core))
 	defer server.Close()
 
 	cloneURL, err := url.JoinPath(server.URL, "/foo")
@@ -135,13 +133,12 @@ I'm [Markdown](https://commonmark.org/) file for *load* **testing**.
 	c.Repo.Readme = []string{"README.md"}
 	c.Repo.MainBranch = []string{"trunk"}
 
-	scanRoot, err := os.OpenRoot(repos)
+	core, err := core.New(&c)
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer scanRoot.Close()
 
-	server := httptest.NewServer(Handler(&c, scanRoot, embed.StaticDir(), embed.TemplatesDir()))
+	server := httptest.NewServer(New(core))
 	defer server.Close()
 
 	cloneURL, err := url.JoinPath(server.URL, "/foo.git")
@@ -216,13 +213,12 @@ func TestCloneRespectVisibilityConfig(t *testing.T) {
 	c.Repo.Ignore = []string{"ignored.git"}
 	c.Repo.Unlisted = []string{"unlisted.git"}
 
-	scanRoot, err := os.OpenRoot(repos)
+	core, err := core.New(&c)
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer scanRoot.Close()
 
-	server := httptest.NewServer(Handler(&c, scanRoot, embed.StaticDir(), embed.TemplatesDir()))
+	server := httptest.NewServer(New(core))
 	defer server.Close()
 
 	publicUrl, err := url.JoinPath(server.URL, "/public.git")

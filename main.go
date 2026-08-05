@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/fs"
 	"log"
 	"net/http"
 	"os"
@@ -12,9 +11,9 @@ import (
 	"strings"
 
 	"github.com/pocka/legit/config"
-	"github.com/pocka/legit/embed"
+	"github.com/pocka/legit/core"
 	"github.com/pocka/legit/git/exe"
-	"github.com/pocka/legit/routes"
+	"github.com/pocka/legit/pages"
 )
 
 var additionalAccessDirs string
@@ -151,33 +150,12 @@ func main() {
 		log.Fatalf("Unable to restrict filesystem access: %s", err)
 	}
 
-	var staticDir fs.FS
-	if c.Dirs.Static != "" {
-		root, err := os.OpenRoot(c.Dirs.Static)
-		if err != nil {
-			log.Fatalf("Unable to open static dir: %s", err)
-		}
-		defer root.Close()
-
-		staticDir = root.FS()
-	} else {
-		staticDir = embed.StaticDir()
-	}
-
-	var templatesDir fs.FS
-	if c.Dirs.Templates != "" {
-		templatesDir = os.DirFS(c.Dirs.Templates)
-	} else {
-		templatesDir = embed.TemplatesDir()
-	}
-
-	scanDir, err := os.OpenRoot(c.Repo.ScanPath)
+	core, err := core.New(c)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	mux := routes.Handler(c, scanDir, staticDir, templatesDir)
 	addr := fmt.Sprintf("%s:%d", c.Server.Host, c.Server.Port)
 	log.Println("starting server on", addr)
-	log.Fatal(http.ListenAndServe(addr, mux))
+	log.Fatal(http.ListenAndServe(addr, pages.New(core)))
 }

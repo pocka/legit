@@ -1,9 +1,9 @@
-// This file defines the data passed to templates.
+// This package defines the data passed to templates.
 //
-// Copyright 2025 Shota FUJI <pockawoooh@gmail.com>
+// Copyright 2026 Shota FUJI <pockawoooh@gmail.com>
 // SPDX-License-Identifier: MIT
 
-package routes
+package templates
 
 import (
 	"fmt"
@@ -14,12 +14,13 @@ import (
 	"github.com/bluekeyes/go-gitdiff/gitdiff"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/object"
+
 	"github.com/pocka/legit/config"
 	"github.com/pocka/legit/git"
 )
 
-// repositorySummary contains overview of a git repository.
-type repositorySummary struct {
+// RepositorySummary contains overview of a git repository.
+type RepositorySummary struct {
 	// DisplayName is a directory name without ".git" suffix.
 	DisplayName string
 
@@ -36,23 +37,23 @@ type repositorySummary struct {
 	LastCommit *object.Commit
 }
 
-// repoListData is a data object passed to "repo-list" template.
-type repoListData struct {
+// RepoListData is a data object passed to "repo-list" template.
+type RepoListData struct {
 	// Config represents a resolved config based on "config.yaml".
 	Config *config.Config
 
 	// Repositories is a slice of every repositories legit sees.
-	Repositories []repositorySummary
+	Repositories []RepositorySummary
 }
 
-type repositoriesByCategory struct {
+type RepositoriesByCategory struct {
 	Category     string
-	Repositories []repositorySummary
+	Repositories []RepositorySummary
 }
 
-func (d repoListData) RepositoriesByCategory() []repositoriesByCategory {
+func (d RepoListData) RepositoriesByCategory() []RepositoriesByCategory {
 	if !d.Config.UI.Category.Grouping {
-		return []repositoriesByCategory{
+		return []RepositoriesByCategory{
 			{
 				Category:     "",
 				Repositories: d.Repositories,
@@ -60,7 +61,7 @@ func (d repoListData) RepositoriesByCategory() []repositoriesByCategory {
 		}
 	}
 
-	m := make(map[string]*repositoriesByCategory, len(d.Config.UI.Category.Order))
+	m := make(map[string]*RepositoriesByCategory, len(d.Config.UI.Category.Order))
 
 	for _, repo := range d.Repositories {
 		category := repo.Category
@@ -69,16 +70,16 @@ func (d repoListData) RepositoriesByCategory() []repositoriesByCategory {
 		}
 
 		if group, ok := m[category]; !ok {
-			m[category] = &repositoriesByCategory{
+			m[category] = &RepositoriesByCategory{
 				Category:     category,
-				Repositories: []repositorySummary{repo},
+				Repositories: []RepositorySummary{repo},
 			}
 		} else {
 			group.Repositories = append(group.Repositories, repo)
 		}
 	}
 
-	out := make([]repositoriesByCategory, 0, len(m))
+	out := make([]RepositoriesByCategory, 0, len(m))
 
 	if empty, ok := m[""]; ok {
 		out = append(out, *empty)
@@ -101,8 +102,8 @@ func (d repoListData) RepositoriesByCategory() []repositoriesByCategory {
 	return out
 }
 
-// repositoryMeta is a shared data object passed to every pages under each repositories.
-type repositoryMeta struct {
+// RepositoryMeta is a shared data object passed to every pages under each repositories.
+type RepositoryMeta struct {
 	// DisplayName is a directory name without ".git" suffix.
 	DisplayName string
 
@@ -117,12 +118,12 @@ type repositoryMeta struct {
 	Ref string
 }
 
-// repoTopData is a data object passed to "repo-top" template.
-type repoTopData struct {
+// RepoTopData is a data object passed to "repo-top" template.
+type RepoTopData struct {
 	// Config represents a resolved config based on "config.yaml".
 	Config *config.Config
 
-	Meta repositoryMeta
+	Meta RepositoryMeta
 
 	// Rendered README.
 	Readme template.HTML
@@ -137,12 +138,12 @@ type repoTopData struct {
 	IsGoModule bool
 }
 
-// repoRefsData is a data object passed to "repo-refs" template.
-type repoRefsData struct {
+// RepoRefsData is a data object passed to "repo-refs" template.
+type RepoRefsData struct {
 	// Config represents a resolved config based on "config.yaml".
 	Config *config.Config
 
-	Meta repositoryMeta
+	Meta RepositoryMeta
 
 	// Tags is a list of git tags (annotate and lightweight) in the repository.
 	Tags []*git.TagReference
@@ -150,12 +151,12 @@ type repoRefsData struct {
 	Branches []*plumbing.Reference
 }
 
-// repoTreeRefData is a data object passed to "repo-tree-ref" template.
-type repoTreeRefData struct {
+// RepoTreeRefData is a data object passed to "repo-tree-ref" template.
+type RepoTreeRefData struct {
 	// Config represents a resolved config based on "config.yaml".
 	Config *config.Config
 
-	Meta repositoryMeta
+	Meta RepositoryMeta
 
 	// Path to the current directory. On repository root, this is empty slice.
 	Path []string
@@ -164,12 +165,12 @@ type repoTreeRefData struct {
 	Files []git.NiceTree
 }
 
-// repoBlobRefData is a data object passed to "repo-blob-ref" template.
-type repoBlobRefData struct {
+// RepoBlobRefData is a data object passed to "repo-blob-ref" template.
+type RepoBlobRefData struct {
 	// Config represents a resolved config based on "config.yaml".
 	Config *config.Config
 
-	Meta repositoryMeta
+	Meta RepositoryMeta
 
 	// Path to the blob.
 	Path []string
@@ -186,12 +187,12 @@ type repoBlobRefData struct {
 	PreviewTypes []string
 }
 
-// repoBlobRefHTMLPreviewData is a data object passed to "repo-blob-ref-html-preview" template.
-type repoBlobRefHTMLPreviewData struct {
+// RepoBlobRefHTMLPreviewData is a data object passed to "repo-blob-ref-html-preview" template.
+type RepoBlobRefHTMLPreviewData struct {
 	// Config represents a resolved config based on "config.yaml".
 	Config *config.Config
 
-	Meta repositoryMeta
+	Meta RepositoryMeta
 
 	// Path to the blob.
 	Path []string
@@ -200,12 +201,12 @@ type repoBlobRefHTMLPreviewData struct {
 	Content template.HTML
 }
 
-// repoLogRefData is a data object passed to "repo-log-ref" template.
-type repoLogRefData struct {
+// RepoLogRefData is a data object passed to "repo-log-ref" template.
+type RepoLogRefData struct {
 	// Config represents a resolved config based on "config.yaml".
 	Config *config.Config
 
-	Meta repositoryMeta
+	Meta RepositoryMeta
 
 	// Commits made to the ref.
 	Commits []*object.Commit
@@ -214,7 +215,7 @@ type repoLogRefData struct {
 	NextPageHref string
 }
 
-func (r repoLogRefData) TopCommitForRange() *object.Commit {
+func (r RepoLogRefData) TopCommitForRange() *object.Commit {
 	if len(r.Commits) == 0 {
 		return nil
 	}
@@ -222,7 +223,7 @@ func (r repoLogRefData) TopCommitForRange() *object.Commit {
 	return r.Commits[0]
 }
 
-func (r repoLogRefData) BottomCommitForRange() *object.Commit {
+func (r RepoLogRefData) BottomCommitForRange() *object.Commit {
 	if len(r.Commits) == 0 {
 		return nil
 	}
@@ -230,12 +231,12 @@ func (r repoLogRefData) BottomCommitForRange() *object.Commit {
 	return r.Commits[len(r.Commits)-1]
 }
 
-// repoCommitData is a data object passed to "repo-commit" template.
-type repoCommitData struct {
+// RepoCommitData is a data object passed to "repo-commit" template.
+type RepoCommitData struct {
 	// Config represents a resolved config based on "config.yaml".
 	Config *config.Config
 
-	Meta repositoryMeta
+	Meta RepositoryMeta
 
 	Commit *object.Commit
 	Parent *object.Commit
@@ -243,7 +244,7 @@ type repoCommitData struct {
 	Diff *git.NiceDiff
 }
 
-func (r repoCommitData) IsLargeDiff(file *gitdiff.File) bool {
+func (r RepoCommitData) IsLargeDiff(file *gitdiff.File) bool {
 	if r.Config.UI.Diff.HideThresholdLines == 0 {
 		return false
 	}
@@ -258,7 +259,7 @@ func (r repoCommitData) IsLargeDiff(file *gitdiff.File) bool {
 	return n > r.Config.UI.Diff.HideThresholdLines
 }
 
-func (r repoCommitData) FileDiffStat(file *gitdiff.File) string {
+func (r RepoCommitData) FileDiffStat(file *gitdiff.File) string {
 	var added int64
 	var deleted int64
 
@@ -270,8 +271,8 @@ func (r repoCommitData) FileDiffStat(file *gitdiff.File) string {
 	return fmt.Sprintf("+%d/-%d", added, deleted)
 }
 
-// error404Data is a data object passed to "404" template.
-type error404Data struct {
+// Error404Data is a data object passed to "404" template.
+type Error404Data struct {
 	// Config represents a resolved config based on "config.yaml".
 	Config *config.Config
 
@@ -279,8 +280,8 @@ type error404Data struct {
 	Diagnosis string
 }
 
-// error500Data is a data object passed to "500" template.
-type error500Data struct {
+// Error500Data is a data object passed to "500" template.
+type Error500Data struct {
 	// Config represents a resolved config based on "config.yaml".
 	Config *config.Config
 

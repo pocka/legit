@@ -43,12 +43,7 @@ func TestGitwebDescriptionReadsDescriptionFile(t *testing.T) {
 
 		file.Close()
 
-		r, err := Open(filepath.Join(root, "foo"), "trunk")
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		description := r.GitwebDescription()
+		description := GitwebDescription(repo)
 		if description != "Foo Bar" {
 			t.Errorf("Unexpected description, got: %s", description)
 		}
@@ -71,12 +66,12 @@ func TestGitwebDescriptionReadsDescriptionFile(t *testing.T) {
 
 		file.Close()
 
-		r, err := Open(filepath.Join(root, "foo.git"), "trunk")
+		repo, err := git.PlainOpen(filepath.Join(root, "foo.git"))
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		description := r.GitwebDescription()
+		description := GitwebDescription(repo)
 		if description != "Foo Bare" {
 			t.Errorf("Unexpected description, got: %s", description)
 		}
@@ -86,7 +81,7 @@ func TestGitwebDescriptionReadsDescriptionFile(t *testing.T) {
 func TestGitwebDescriptionShouldNotAccessWorktree(t *testing.T) {
 	root := t.TempDir()
 
-	_, worktree, err := tests.CreateRepository(root, "foo")
+	repo, worktree, err := tests.CreateRepository(root, "foo")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -105,12 +100,7 @@ func TestGitwebDescriptionShouldNotAccessWorktree(t *testing.T) {
 	}
 	file.Close()
 
-	r, err := Open(filepath.Join(root, "foo"), "trunk")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	description := r.GitwebDescription()
+	description := GitwebDescription(repo)
 	if description != "" {
 		t.Errorf("Expected empty description, got: %s", description)
 	}
@@ -143,12 +133,7 @@ func TestGitwebDescriptionReadsGitConfig(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	r, err := Open(filepath.Join(root, "foo"), "trunk")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	description := r.GitwebDescription()
+	description := GitwebDescription(repo)
 	if description != "Foo Bar" {
 		t.Errorf("Unexpected description, got: %s", description)
 	}
@@ -184,12 +169,7 @@ func TestGitwebCategoryReadsFile(t *testing.T) {
 
 		file.Close()
 
-		r, err := Open(filepath.Join(root, "foo"), "trunk")
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		category := r.GitwebCategory()
+		category := GitwebCategory(repo)
 		if category != "Foo Bar" {
 			t.Errorf("Unexpected category, got: %s", category)
 		}
@@ -212,12 +192,12 @@ func TestGitwebCategoryReadsFile(t *testing.T) {
 
 		file.Close()
 
-		r, err := Open(filepath.Join(root, "foo.git"), "trunk")
+		repo, err := git.PlainOpen(filepath.Join(root, "foo.git"))
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		category := r.GitwebCategory()
+		category := GitwebCategory(repo)
 		if category != "Foo Bare" {
 			t.Errorf("Unexpected category, got: %s", category)
 		}
@@ -251,12 +231,7 @@ func TestGitwebCategoryReadsGitConfig(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	r, err := Open(filepath.Join(root, "foo"), "trunk")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	category := r.GitwebCategory()
+	category := GitwebCategory(repo)
 	if category != "Foo Bar" {
 		t.Errorf("Unexpected category, got: %s", category)
 	}
