@@ -11,6 +11,8 @@
 }
 
 :root {
+	--page-scroll-padding-top: 9rem;
+
 	--font-content: Helvetica, sans-serif;
 	--font-ui: Inter, system-ui, sans-serif;
 	--font-mono: ui-monospace, monospace;
@@ -441,6 +443,10 @@ body {
 }
 
 @media (min-width: 40rem) {
+	:root {
+		--page-scroll-padding-top: 8rem;
+	}
+
 	.header-title {
 		flex-direction: row;
 		align-items: center;
@@ -556,6 +562,10 @@ body {
 
 /* Sticky header and aside */
 @media (min-height: 50rem) {
+	:root {
+		scroll-padding-top: var(--page-scroll-padding-top);
+	}
+
 	.header {
 		position: sticky;
 		top: 0;
@@ -596,6 +606,10 @@ body {
 
 /* 3-column layout */
 @media (min-width: 100rem) {
+	:root {
+		--page-scroll-padding-top: var(--space-lg);
+	}
+
 	body {
 		grid-template-columns: minmax(0, 40rem) minmax(60rem, 1fr) minmax(0, 40rem);
 		grid-template-rows: minmax(0, 1fr) min-content;
