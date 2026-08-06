@@ -100,7 +100,8 @@ func main() {
 	}
 
 	// os.exec.Cmd use /dev/null. Without this, git operations fail with
-	// "open /dev/null: permission denied".
+	// "open /dev/null: permission denied" under Landlock. Unveil does not
+	// error on access to /dev/null.
 	// https://rohitpaulk.com/articles/cmd-run-dev-null
 	fsAllowList[1] = filesystemAccess{
 		path:  "/dev/null",
