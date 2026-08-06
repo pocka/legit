@@ -36,6 +36,13 @@ func (pages *Pages) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if strings.HasSuffix(r.URL.Path, "/") {
+		r.URL.Path = strings.TrimRight(r.URL.Path, "/")
+		w.Header().Add("Location", r.URL.String())
+		w.WriteHeader(http.StatusPermanentRedirect)
+		return
+	}
+
 	// "/static/<path>*"
 	if strings.Index(r.URL.Path, staticPrefix) == 0 {
 		http.ServeFileFS(w, r, pages.core.StaticDir, strings.TrimPrefix(r.URL.Path, staticPrefix))

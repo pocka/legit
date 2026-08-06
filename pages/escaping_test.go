@@ -131,7 +131,7 @@ func TestRepoTreePreventsPathTraversal(t *testing.T) {
 	server := httptest.NewServer(New(core))
 	defer server.Close()
 
-	for _, p := range []string{"/../", "/.././../"} {
+	for _, p := range []string{"/../", "/.././.."} {
 		target, err := url.JoinPath(server.URL, "/foo/tree/trunk")
 		if err != nil {
 			t.Fatal(err)
