@@ -131,7 +131,7 @@ func (repo *Repo) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	errors.WriteInternalServerError(repo.core, w, r)
+	errors.WriteNotFound(repo.core, w, r)
 }
 
 func takeRef(repo *git.Repository, relpath string) (resolved *plumbing.Hash, ref string, childPath string, err error) {
