@@ -13,3 +13,6 @@ profile
 
 # Temporary file, for example snapshots and download files.
 tmp.*
+
+# Go produces testdata/fuzz directory when "go test -fuzz" failed.
+fuzz
