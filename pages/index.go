@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"slices"
 	"sort"
+	"strings"
 
 	gogit "github.com/go-git/go-git/v5"
 
@@ -71,9 +72,15 @@ func (pages *Pages) index(w http.ResponseWriter, r *http.Request) {
 			category = git.GitwebCategory(repo)
 		}
 
+		dirname := name
+		if pages.core.Config.Repo.TrimDotGitSuffix {
+			// Prefer suffix-less URL when TrimDotGitSuffix is enabled.
+			dirname = strings.TrimSuffix(dirname, ".git")
+		}
+
 		summaries = append(summaries, templates.RepositorySummary{
 			DisplayName: pages.core.RepositoryName(path),
-			DirName:     name,
+			DirName:     dirname,
 			Description: git.GitwebDescription(repo),
 			Category:    category,
 			LastCommit:  commit,

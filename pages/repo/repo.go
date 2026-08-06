@@ -48,6 +48,10 @@ func New(repositoryPath string, innerPath string, core *core.Core) (*Repo, error
 	var err error
 	repo := Repo{core: core, innerPath: innerPath, path: repositoryPath, dirname: filepath.Base(repositoryPath)}
 
+	if core.Config.Repo.TrimDotGitSuffix {
+		repo.dirname = strings.TrimSuffix(repo.dirname, ".git")
+	}
+
 	repo.r, err = git.PlainOpen(repositoryPath)
 	if err != nil {
 		return nil, fmt.Errorf("opening %s: %w", repositoryPath, err)

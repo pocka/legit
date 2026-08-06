@@ -35,6 +35,24 @@ repo:
   # Default value is "go" for backwards compatibility.
   diff: go
 
+  # Allows reading bare repository without ".git" suffix.
+  #
+  # A bare repository normally have ".git" suffix in its filename.
+  # Without this option, a visitor always has to add ".git" suffix
+  # (for example "foo.git" rather than "foo") and is not able to use tools
+  # incompatible with ".git" suffix, such as "go mod".
+  #
+  # When this option is enabled, legit searches directory with ".git"
+  # suffix after corresponding is not found. For example, when repositories
+  # directory has "foo.git" then access to "/foo/refs":
+  # - open "foo"
+  # - the directory does not exist
+  # - open "foo.git"
+  # - use that as a repository
+  #
+  # This option is disabled by default for compatibility reasons.
+  trimDotGitSuffix: true
+
 # Runtime directories.
 dirs:
   # [optional]

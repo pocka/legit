@@ -23,6 +23,9 @@ type Config struct {
 		// Diff method. "system" uses system git and "go" uses go-git and go-diff.
 		// Default is "go".
 		Diff string `yaml:"diff"`
+
+		// TrimDotGitSuffix allows accessing bare repository without ".git" suffix.
+		TrimDotGitSuffix bool `yaml:"trimDotGitSuffix"`
 	} `yaml:"repo"`
 	Dirs struct {
 		Templates string `yaml:"templates"`

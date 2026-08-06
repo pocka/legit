@@ -20,6 +20,10 @@ import (
 	"github.com/pocka/legit/renderer/html"
 )
 
+const (
+	dotGitSuffix = ".git"
+)
+
 var (
 	ErrRepositoryIsIgnored = errors.New("repository is ignored")
 )
@@ -90,10 +94,18 @@ func (core *Core) Template() *template.Template {
 }
 
 // RepositoryPath finds a repository by name and returns its filepath.
+// name is not supposed to contain slash characters.
 func (core *Core) RepositoryPath(name string) (string, error) {
 	stat, err := core.ScanDir.Stat(name)
 	if err != nil {
-		return "", err
+		if !core.Config.Repo.TrimDotGitSuffix || strings.HasSuffix(name, dotGitSuffix) {
+			return "", err
+		}
+
+		stat, err = core.ScanDir.Stat(name + dotGitSuffix)
+		if err != nil {
+			return "", err
+		}
 	}
 
 	dirname := stat.Name()
