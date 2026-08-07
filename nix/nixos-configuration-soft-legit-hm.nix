@@ -99,6 +99,10 @@ in
         enable = true;
         config = {
           repo.scanPath = "${config.xdg.dataHome}/soft-serve/repos";
+          meta.robotsTxt = builtins.toFile "robots.txt" ''
+            User-Agent: *
+            Disallow: /
+          '';
         };
       };
 

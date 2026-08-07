@@ -129,6 +129,10 @@ in
     enable = true;
     config = {
       repo.scanPath = "${softserveData}/repos";
+      meta.robotsTxt = builtins.toFile "robots.txt" ''
+        User-Agent: *
+        Disallow: /
+      '';
     };
     user = "legit";
     group = "git";
