@@ -37,6 +37,7 @@ meta:
   title: legit Demo
   description: Test legit features with real repositories.
   syntaxHighlight: true
+  robotsTxt: ./robots.txt
 
 ui:
   category:

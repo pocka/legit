@@ -1,0 +1,3 @@
+# Demo server for legit, web frontend for git. URLs are not permanent.
+User-Agent: *
+Disallow: /

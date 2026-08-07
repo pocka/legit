@@ -4,6 +4,8 @@ result
 # demo/ directory acts as a playground/sandbox, and real git repositories sits there.
 demo/*
 !demo/config.yaml
+!demo/robots.txt
+!demo/robots.txt.license
 
 # QEMU disk image.
 *.qcow2

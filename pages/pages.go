@@ -4,6 +4,7 @@
 package pages
 
 import (
+	"io"
 	"net/http"
 	"path"
 	"strings"
@@ -33,6 +34,19 @@ func (pages *Pages) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	if r.URL.Path == "/" {
 		pages.index(w, r)
+		return
+	}
+
+	if strings.TrimPrefix(r.URL.Path, "/") == "robots.txt" {
+		reader := pages.core.RobotsTxt()
+		if reader == nil {
+			errors.WriteNotFound(pages.core, w, r)
+			return
+		}
+
+		w.Header().Add("Content-Type", "text/plain")
+		w.WriteHeader(http.StatusOK)
+		io.Copy(w, reader)
 		return
 	}
 

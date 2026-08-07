@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
+	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -42,6 +43,8 @@ type Core struct {
 	// t stores compiled templates for caching.
 	tmpl         *template.Template
 	templatesDir fs.FS
+
+	robotsTxt string
 }
 
 func New(config *config.Config) (*Core, error) {
@@ -79,6 +82,21 @@ func New(config *config.Config) (*Core, error) {
 	core.ScanDir, err = os.OpenRoot(config.Repo.ScanPath)
 	if err != nil {
 		return nil, fmt.Errorf("unable to open scan dir: %w", err)
+	}
+
+	if config.Meta.RobotsTxt != "" {
+		file, err := os.Open(config.Meta.RobotsTxt)
+		if err != nil {
+			return nil, fmt.Errorf("unable to open robots.txt: %w", err)
+		}
+		defer file.Close()
+
+		contents, err := io.ReadAll(file)
+		if err != nil {
+			return nil, fmt.Errorf("unable to read robots.txt (%s): %w", config.Meta.RobotsTxt, err)
+		}
+
+		core.robotsTxt = string(contents)
 	}
 
 	return &core, nil
@@ -119,4 +137,12 @@ func (core *Core) RepositoryPath(name string) (string, error) {
 // RepositoryName returns formatted display name of a repository.
 func (_ *Core) RepositoryName(path string) string {
 	return strings.TrimSuffix(filepath.Base(path), ".git")
+}
+
+func (c *Core) RobotsTxt() io.Reader {
+	if c.Config.Meta.RobotsTxt == "" {
+		return nil
+	}
+
+	return strings.NewReader(c.robotsTxt)
 }

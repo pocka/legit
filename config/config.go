@@ -35,6 +35,7 @@ type Config struct {
 		Title           string `yaml:"title"`
 		Description     string `yaml:"description"`
 		SyntaxHighlight bool   `yaml:"syntaxHighlight"`
+		RobotsTxt       string `yaml:"robotsTxt"`
 	} `yaml:"meta"`
 	UI struct {
 		CommitsPageSize uint32 `yaml:"commitsPageSize"`
@@ -133,6 +134,12 @@ func (c *Config) Resolve(cwd string) error {
 	// Override static dir
 	if c.Dirs.Static != "" {
 		if c.Dirs.Static, err = resolvePath(c.Dirs.Static, basePath); err != nil {
+			return err
+		}
+	}
+
+	if c.Meta.RobotsTxt != "" {
+		if c.Meta.RobotsTxt, err = resolvePath(c.Meta.RobotsTxt, basePath); err != nil {
 			return err
 		}
 	}

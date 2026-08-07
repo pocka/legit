@@ -92,7 +92,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fsAllowList := make([]filesystemAccess, 2, 10)
+	fsAllowList := make([]filesystemAccess, 2, 11)
 	fsAllowList[0] = filesystemAccess{
 		path:  c.Repo.ScanPath,
 		isDir: true,
@@ -116,6 +116,13 @@ func main() {
 			path:    path,
 			read:    true,
 			execute: true,
+		})
+	}
+
+	if c.Meta.RobotsTxt != "" {
+		fsAllowList = append(fsAllowList, filesystemAccess{
+			path: c.Meta.RobotsTxt,
+			read: true,
 		})
 	}
 

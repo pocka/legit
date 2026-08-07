@@ -84,6 +84,10 @@ meta:
   # NOTE: This applies only to blob page. Code blocks inside README will be untouched.
   syntaxHighlight: true
 
+  # Path to a text file to return for "/robots.txt" requests.
+  # Omit this option or set empty string to return HTTP 404.
+  robotsTxt: ./path/to/robots.txt
+
 ui:
   # Number of commits to display in a single "Commits" (log) page.
   commitsPageSize: 30
