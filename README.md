@@ -5,100 +5,47 @@ SPDX-License-Identifier: MIT
 
 # legit
 
-legit is a web frontend for git repositories, written in Go.
+legit is a readonly web frontend for git repositories, written in [Go](https://go.dev/).
 
-This code is a fork of <https://github.com/icyphox/legit>, with HTML/CSS/JS customization and typed template pipelines.
-I'm using legit along with [soft-serve](https://github.com/charmbracelet/soft-serve) and this fork is optimized for this usecase; good browsing experience, minimum Git operation for security and integration for soft-serve.
+This code is a hard fork of <https://github.com/icyphox/legit>.
+Various bugs are fixed and templates (HTML/CSS/JS) are completely different.
+New features are opt-in, so you can use a config file from the upstream in this fork.
 
 ## Features
 
 - Repository browsing; commits, refs, tree, etc.
 - Simple deployment; single binary without CGI.
-- Template customization; modify HTML/CSS/JS to your liking.
-- Supports GitWeb-compatible description and category display.
-- Secure readonly file access with unveil (OpenBSD) and Landlock (Linux).
+- Supports [gitweb](https://git-scm.com/docs/gitweb)-compatible description and category.
+- Secure readonly file access with [unveil(2)](https://man.openbsd.org/unveil.2) (OpenBSD) and [Landlock](https://docs.kernel.org/userspace-api/landlock.html) (Linux).
 
 ## Requirements
 
-- Building and running without building requires Go toolchain >= v1.25.0.
-- Both Linux and macOS is supported.
-- Put TLS terminating proxy such as nginx or Caddy in front of legit.
+- Supports Linux and OpenBSD. Probably runs on other UNIX-y systems as well, but lacks important security features.
+- Put TLS terminating proxy such as reverse proxy or CDN in front of legit.
 
-## Install
+## Quick Start
 
-### Manual
-
-Clone and run `go build` at repository root directory.
-Go compiler generates `legit` executable file at the repository root directory.
-
-You can also run legit without installing by `go run .`.
-
-legit uses unveil(2) on OpenBSD and Landlock LSM on Linux.
-If you find unexpected filesystem permission error, add the _directory_ to `main.additionalAccessDirs` ldflag.
-That flag takes comma-separated list of directories, and unveil/Landlock allows a readonly access to that paths.
-
-### Nix
-
-Add this repository as a Flake input and use `nixosModules.default` or `homeManagerModules.default`.
-
-```nix
-# your/flake.nix
-{
-	inputs = {
-		# --- snip ---
-
-		legit = {
-			url = "github:pocka/legit";
-			inputs.nixpkgs.follows = "nixpkgs"; # optional
-		};
-	};
-
-	outputs =
-		{ nixpkgs, legit, ... }:
-		{
-			nixosConfigurations.foo = nixpkgs.lib.nixosSystem {
-				# --- snip ---
-
-				modules = [
-					# --- snip ---
-					legit.nixosModules.default
-				];
-			};
-		};
-}
-```
-
-### OCI (Docker, Podman)
-
-Build the image on the project root.
-The image exposes TCP port 5555 for HTTP server.
-
-Generated image expectes two volume mounts:
-
-- `/var/www/legit` ... a directory containing git repositories to host.
-- `/etc/legit/config.yaml` ... config file for UI and metadata customization.
-
-Example commands using podman:
+Clone this repository and run `go run .` on the worktree.
+You need Go toolchain >= v1.25.0 to run `go` commands.
 
 ```sh
-podman build . -t pocka/legit
-podman run -v ./demo:/var/www/legit -v ./config.yaml:/etc/legit/config.yaml --publish 5555:5555 pocka/legit:latest
+go run . -repo.scanPath demo
 ```
 
-OCI image entrypoint overwrites these config options, so values inside your `config.yaml` will be ignored:
-
-- `server.host`
-- `server.port`
-- `repo.scanPath`
+See [docs/INSTALL.md](./docs/INSTALL.md) for more info.
 
 ## Configuration
 
 legit reads YAML config file. Create YAML file somewhere (e.g. `$XDG_CONFIG_HOME/legit/config.yaml`) and pass the path to legit via `--config` flag.
 See the sample [`config.yaml`](./config.yaml) for more info.
 
+## Bug Reports
+
+If you find a bug in this software, please report it on <https://tangled.org/pocka.jp/legit/issues>.
+
 ## License
 
 This software is licensed under MIT.
-See `LICENSE` file for license text.
+See [`license`](./license) for license text.
 
 Newly added files have [REUSE](https://reuse.software/) compliant comment headers for easier per-file use.
