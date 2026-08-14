@@ -8,7 +8,11 @@ import (
 )
 
 func TestRewriteInternalMediaSource(t *testing.T) {
-	r := newRepoLinkTransformer("foo", "trunk")
+	repo := Repo{
+		dirname: "foo",
+	}
+
+	r := newRepoLinkTransformer(&repo, "trunk")
 
 	{
 		input := "media/screenshot.png"
@@ -57,7 +61,11 @@ func TestRewriteInternalMediaSource(t *testing.T) {
 }
 
 func TestRewriteInternalLink(t *testing.T) {
-	r := newRepoLinkTransformer("foo", "trunk")
+	repo := Repo{
+		dirname: "foo",
+	}
+
+	r := newRepoLinkTransformer(&repo, "trunk")
 
 	{
 		input := "CHANGELOG.md"
