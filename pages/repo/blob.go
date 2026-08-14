@@ -107,7 +107,7 @@ func (repo *Repo) blob(pathRemainings string, w http.ResponseWriter, r *http.Req
 				return
 			}
 
-			html, err := renderer.Render([]byte(contents), newRepoLinkTransformer(repo, ref))
+			html, err := renderer.Render([]byte(contents), newRepoLinkTransformer(repo, ref, file.Name))
 			if err != nil {
 				errors.WriteInternalServerError(repo.core, w, r)
 				log.Printf("Failed to render HTML preview: %s", err)

@@ -20,12 +20,16 @@ import (
 type repoLinkTransformer struct {
 	repo *Repo
 	ref  string
+
+	// filename is a "path" of the processing file.
+	filename string
 }
 
-func newRepoLinkTransformer(repo *Repo, ref string) *repoLinkTransformer {
+func newRepoLinkTransformer(repo *Repo, ref string, filename string) *repoLinkTransformer {
 	return &repoLinkTransformer{
-		repo: repo,
-		ref:  ref,
+		repo:     repo,
+		ref:      ref,
+		filename: filename,
 	}
 }
 
@@ -44,7 +48,7 @@ func (t *repoLinkTransformer) RewriteInternalMediaSource(src string) string {
 
 	// Output path should not go beyond this.
 	basePath := fmt.Sprintf("/%s/blob/%s", t.repo.dirname, t.ref)
-	path := filepath.Join(basePath, href)
+	path := filepath.Join(basePath, filepath.Dir(t.filename), href)
 	if strings.Index(path, basePath) != 0 {
 		path = basePath + path
 	}
@@ -67,7 +71,7 @@ func (t *repoLinkTransformer) RewriteInternalLink(link string) string {
 	} else {
 		basePath = fmt.Sprintf("/%s/blob/%s", t.repo.dirname, t.ref)
 	}
-	path := filepath.Join(basePath, href)
+	path := filepath.Join(basePath, filepath.Dir(t.filename), href)
 	if strings.Index(path, basePath) != 0 {
 		path = basePath + path
 	}

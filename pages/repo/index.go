@@ -50,8 +50,6 @@ func (repo *Repo) index(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	transformer := newRepoLinkTransformer(repo, mainBranch)
-
 	var readmeContent template.HTML
 	for _, readme := range repo.core.Config.Repo.Readme {
 		file, _ := tree.File(readme)
@@ -59,6 +57,7 @@ func (repo *Repo) index(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 
+		transformer := newRepoLinkTransformer(repo, mainBranch, file.Name)
 		content, _ := file.Contents()
 
 		// Skip empty files.
