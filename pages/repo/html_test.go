@@ -5,14 +5,25 @@ package repo
 
 import (
 	"testing"
+
+	"github.com/pocka/legit/config"
+	"github.com/pocka/legit/core"
 )
 
 func TestRewriteInternalMediaSource(t *testing.T) {
-	repo := Repo{
-		dirname: "foo",
+	var c config.Config
+	c.Repo.ScanPath = t.TempDir()
+	core, err := core.New(&c)
+	if err != nil {
+		t.Fatal(err)
 	}
 
-	r := newRepoLinkTransformer(&repo, "trunk")
+	repo := Repo{
+		dirname: "foo",
+		core:    core,
+	}
+
+	r := newRepoLinkTransformer(&repo, "trunk", "bar.md")
 
 	{
 		input := "media/screenshot.png"
@@ -61,15 +72,23 @@ func TestRewriteInternalMediaSource(t *testing.T) {
 }
 
 func TestRewriteInternalLink(t *testing.T) {
-	repo := Repo{
-		dirname: "foo",
+	var c config.Config
+	c.Repo.ScanPath = t.TempDir()
+	core, err := core.New(&c)
+	if err != nil {
+		t.Fatal(err)
 	}
 
-	r := newRepoLinkTransformer(&repo, "trunk")
+	repo := Repo{
+		dirname: "foo",
+		core:    core,
+	}
+
+	r := newRepoLinkTransformer(&repo, "trunk", "bar.md")
 
 	{
 		input := "CHANGELOG.md"
-		expected := "/foo/blob/trunk/CHANGELOG.md"
+		expected := "/foo/blob/trunk/CHANGELOG.md?preview=html"
 
 		if out := r.RewriteInternalLink(input); out != expected {
 			t.Errorf("Expected %s, got %s", expected, out)
