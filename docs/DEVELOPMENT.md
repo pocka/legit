@@ -7,16 +7,12 @@ SPDX-License-Identifier: MIT
 
 Commands and tips for developing legit.
 
-## Issues / Tickets
-
-See <https://tangled.org/pocka.jp/legit/issues> for active issues.
-
 ## Load Testing
 
 `tests/k6` directory contains `*.js` for [k6](https://grafana.com/oss/k6/), an OSS load testing tool.
 
 These test files access a test server on localhost:8080.
-Run `nix run .#testing` (you need Nix Flakes) or follow steps described in `tests/k6/.gitignore` manually (you need bash, git, and built `legit` binary) to launch the test server.
+Run `nix run .#testing` (you need Nix Flakes) or follow steps described in [`tests/k6/.gitignore`](../tests/k6/.gitignore) manually (you need bash, git, and built `legit` binary) to launch the test server.
 
 Once the test server is ready, pass your desired test file to `k6 run` command.
 Nix user can use `nix run .#k6 -- run` without installing k6 manually.

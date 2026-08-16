@@ -13,20 +13,23 @@ import (
 	htmlout "github.com/alecthomas/chroma/v2/formatters/html"
 	"github.com/alecthomas/chroma/v2/lexers"
 	"github.com/alecthomas/chroma/v2/styles"
-	"github.com/go-git/go-git/v5/plumbing/object"
 
 	"github.com/pocka/legit/renderer/html"
 )
 
 type repoLinkTransformer struct {
-	repoName string
-	ref      string
+	repo *Repo
+	ref  string
+
+	// filename is a "path" of the processing file.
+	filename string
 }
 
-func newRepoLinkTransformer(repoName string, ref string) *repoLinkTransformer {
+func newRepoLinkTransformer(repo *Repo, ref string, filename string) *repoLinkTransformer {
 	return &repoLinkTransformer{
-		repoName: repoName,
+		repo:     repo,
 		ref:      ref,
+		filename: filename,
 	}
 }
 
@@ -44,8 +47,8 @@ func (t *repoLinkTransformer) RewriteInternalMediaSource(src string) string {
 	}
 
 	// Output path should not go beyond this.
-	basePath := fmt.Sprintf("/%s/blob/%s", t.repoName, t.ref)
-	path := filepath.Join(basePath, href)
+	basePath := fmt.Sprintf("/%s/blob/%s", t.repo.dirname, t.ref)
+	path := filepath.Join(basePath, filepath.Dir(t.filename), href)
 	if strings.Index(path, basePath) != 0 {
 		path = basePath + path
 	}
@@ -64,20 +67,24 @@ func (t *repoLinkTransformer) RewriteInternalLink(link string) string {
 	// Output path should not go beyond this.
 	var basePath string
 	if strings.LastIndexByte(href, '/') == len(href)-1 {
-		basePath = fmt.Sprintf("/%s/tree/%s", t.repoName, t.ref)
+		basePath = fmt.Sprintf("/%s/tree/%s", t.repo.dirname, t.ref)
 	} else {
-		basePath = fmt.Sprintf("/%s/blob/%s", t.repoName, t.ref)
+		basePath = fmt.Sprintf("/%s/blob/%s", t.repo.dirname, t.ref)
 	}
-	path := filepath.Join(basePath, href)
+	path := filepath.Join(basePath, filepath.Dir(t.filename), href)
 	if strings.Index(path, basePath) != 0 {
 		path = basePath + path
+	}
+
+	if t.repo.htmlRenderer(path) != nil && !strings.ContainsRune(path, '?') {
+		path += "?preview=html"
 	}
 
 	return path
 }
 
-func (repo *Repo) htmlRenderer(file *object.File) html.Renderer {
-	switch filepath.Ext(file.Name) {
+func (repo *Repo) htmlRenderer(filename string) html.Renderer {
+	switch filepath.Ext(filename) {
 	case ".md", ".mkd", ".markdown":
 		return &repo.core.Markdown
 	default:

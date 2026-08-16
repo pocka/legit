@@ -100,14 +100,14 @@ func (repo *Repo) blob(pathRemainings string, w http.ResponseWriter, r *http.Req
 		previewType := query.Get("preview")
 		switch previewType {
 		case "html":
-			renderer := repo.htmlRenderer(file)
+			renderer := repo.htmlRenderer(file.Name)
 			if renderer == nil {
 				errors.WriteNotFound(repo.core, w, r)
 				log.Printf("Requested HTML preview for %s/%s, but the filetype has no HTML renderer", repo.dirname, childPath)
 				return
 			}
 
-			html, err := renderer.Render([]byte(contents), newRepoLinkTransformer(repo.dirname, ref))
+			html, err := renderer.Render([]byte(contents), newRepoLinkTransformer(repo, ref, file.Name))
 			if err != nil {
 				errors.WriteInternalServerError(repo.core, w, r)
 				log.Printf("Failed to render HTML preview: %s", err)
@@ -143,7 +143,7 @@ func (repo *Repo) blob(pathRemainings string, w http.ResponseWriter, r *http.Req
 	}
 
 	previewTypes := make([]string, 0, 1)
-	if repo.htmlRenderer(file) != nil {
+	if repo.htmlRenderer(file.Name) != nil {
 		previewTypes = append(previewTypes, "html")
 	}
 
