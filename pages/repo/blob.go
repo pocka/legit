@@ -62,8 +62,8 @@ func (repo *Repo) blob(pathRemainings string, w http.ResponseWriter, r *http.Req
 			return
 		}
 
-		w.WriteHeader(http.StatusOK)
 		w.Header().Set("Content-Type", "text/plain")
+		w.WriteHeader(http.StatusOK)
 
 		if _, err := io.Copy(w, reader); err != nil {
 			log.Printf("io copy failed: %s", err)
