@@ -9,6 +9,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"path/filepath"
 	"strings"
 
 	"github.com/go-git/go-git/v5/plumbing/object"
@@ -62,11 +63,78 @@ func (repo *Repo) blob(pathRemainings string, w http.ResponseWriter, r *http.Req
 			return
 		}
 
-		w.Header().Set("Content-Type", "text/plain")
+		data, err := io.ReadAll(reader)
+		if err != nil {
+			errors.WriteInternalServerError(repo.core, w, r)
+			log.Println(err)
+			return
+		}
+
+		header := w.Header()
+
+		switch filepath.Ext(childPath) {
+		case ".svg", ".SVG":
+			// net/http.DetectContentType inappropriately uses MIME sniffing algorithm
+			// for *user agents*. Because the spec intentionally disallows sniffing to
+			// SVG, we have to manually "detect" SVG files and add appropriate content
+			// type.
+			header.Set("Content-Type", "image/svg+xml")
+			header.Set("X-Content-Type-Options", "nosniff")
+
+			// Raw contents are completely user (committer) controlled, so use of inline
+			// style is perfectly fine. SVG graphics often use <style> element for
+			// essential styles. Remote resouces are still prohibited.
+			header.Set("Content-Security-Policy", "default-src 'none'; style-src 'unsafe-inline'; sandbox")
+
+			w.WriteHeader(http.StatusOK)
+
+			if _, err := w.Write(data); err != nil {
+				log.Printf("SVG write failed: %s", err)
+			}
+			return
+		}
+
+		sniffed := http.DetectContentType(data)
+
+		if strings.HasPrefix(sniffed, "image/") ||
+			strings.HasPrefix(sniffed, "video/") ||
+			strings.HasPrefix(sniffed, "audio/") ||
+			sniffed == "application/octet-stream" {
+			// Serve media file and binary file as-is, and let browsers sniff if it wants to.
+			// The reason this branch allows sniffing is the "DetectContentType" hardcodes
+			// client MIME sniffing alghorithm and that can be outdated due to Go standard
+			// library lagged behind browsers or use of old Go version for compiling legit.
+			// As both server (this code) and client (browser) use the same spec, the risk of
+			// deviation should be low enough.
+			header.Set("Content-Type", sniffed)
+
+			// In case DetectContentType detects DOM-enabled content (image/svg+xml).
+			// As of Go v1.25, that function never returns "image/svg+xml" though.
+			// The only effect this directive does to non-HTML/SVG files is it prevents
+			// page (browser tab) from loading a favicon, which is fine to this endpoint.
+			header.Set("Content-Security-Policy", "default-src 'none'; style-src 'unsafe-inline'; sandbox")
+
+			w.WriteHeader(http.StatusOK)
+
+			if _, err := w.Write(data); err != nil {
+				log.Printf("media or binary write failed: %s", err)
+			}
+			return
+		}
+
+		// Everything else should be served as plain text, to prevent browsers from
+		// automatically doing their magics. The primary purpose of this is to prevent
+		// attacker from distributing malicious HTML/JS/CSS files via this endpoint.
+		header.Set("Content-Type", "text/plain")
+		header.Set("X-Content-Type-Options", "nosniff")
+
+		// In case browser ignored nosniff directive and opens the content as HTML/SVG.
+		header.Set("Content-Security-Policy", "default-src 'none'")
+
 		w.WriteHeader(http.StatusOK)
 
-		if _, err := io.Copy(w, reader); err != nil {
-			log.Printf("io copy failed: %s", err)
+		if _, err := w.Write(data); err != nil {
+			log.Printf("write failed: %s", err)
 		}
 
 		return
