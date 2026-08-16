@@ -14,6 +14,7 @@ SPDX-License-Identifier: MIT
 		</title>
 		<meta name="description" content='{{ $shorthash }} in {{ .Meta.DisplayName }}' />
 		<script type="module" src="/static/convert-to-local-datetime.js?r={{ .Config.StaticDirRevision }}"></script>
+		{{ template "commit-signature-script" . }}
 	</head>
 	<body>
 		<header class="header">
@@ -39,9 +40,7 @@ SPDX-License-Identifier: MIT
 					<dl class="metadata">
 						<dt class="metadata--key">Authored by</dt>
 						<dd class="metadata--value">
-							<a href="mailto:{{ .Commit.Author.Email }}">
-								{{- .Commit.Author.Name -}}
-							</a>
+							{{ template "commit-signature" (.Meta.Signature .Config .Commit.Author) }}
 						</dd>
 						<dt class="metadata--key">Authored at</dt>
 						<dd class="metadata--value">
@@ -54,9 +53,7 @@ SPDX-License-Identifier: MIT
 						</dd>
 						<dt class="metadata--key">Committed by</dt>
 						<dd class="metadata--value">
-							<a href="mailto:{{ .Commit.Committer.Email }}">
-								{{- .Commit.Committer.Name -}}
-							</a>
+							{{ template "commit-signature" (.Meta.Signature .Config .Commit.Committer) }}
 						</dd>
 						<dt class="metadata--key">Committed at</dt>
 						<dd class="metadata--value">

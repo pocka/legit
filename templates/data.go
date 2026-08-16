@@ -10,6 +10,7 @@ import (
 	"html/template"
 	"maps"
 	"slices"
+	"strings"
 
 	"github.com/bluekeyes/go-gitdiff/gitdiff"
 	"github.com/go-git/go-git/v5/plumbing"
@@ -18,6 +19,30 @@ import (
 	"github.com/pocka/legit/config"
 	"github.com/pocka/legit/git"
 )
+
+// CommitSignature contains all the data needed to render signature identity (who).
+type CommitSignature struct {
+	Config    *config.Config
+	Signature *object.Signature
+}
+
+func (c CommitSignature) EmailUsername() string {
+	username, _, found := strings.Cut(c.Signature.Email, "@")
+	if !found {
+		return ""
+	}
+
+	return username
+}
+
+func (c CommitSignature) EmailDomain() string {
+	_, domain, found := strings.Cut(c.Signature.Email, "@")
+	if !found {
+		return ""
+	}
+
+	return domain
+}
 
 // RepositorySummary contains overview of a git repository.
 type RepositorySummary struct {
@@ -116,6 +141,15 @@ type RepositoryMeta struct {
 	// Ref is a ref for the current context. If a page is not tied to refs, default branch
 	// will be set.
 	Ref string
+}
+
+// Signature returns template pipeline data for "commit-signature-" templates.
+// This method is for RepositoryMeta, because every page data contains RepositoryMeta.
+func (_ RepositoryMeta) Signature(config *config.Config, signature *object.Signature) CommitSignature {
+	return CommitSignature{
+		Config:    config,
+		Signature: signature,
+	}
 }
 
 // RepoTopData is a data object passed to "repo-top" template.

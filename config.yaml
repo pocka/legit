@@ -107,6 +107,18 @@ ui:
     # Setting 0 disables the hiding mechanism. Default value is 0.
     hideThresholdLines: 1000
 
+  # Display of author and committer email addresses. This does not affect the rendering of email links
+  # inside Markdown previews and footer links. The purpose of obfuscation is to prevent email scrapers
+  # from scraping email addresses, under the assumption most of the scrapers are low-effort ones.
+  #
+  # Available values:
+  # "mailto"     ... Simply place an email address into "mailto:" link.
+  # "mailto-js"  ... Render without email address, then replace with "mailto:" link using JavaScript. (default)
+  #                  Display obfuscated email address next to author / committer name if JS is unavailable.
+  # "obfuscate"  ... Display obfuscated email address next to author / committer name.
+  # "none"       ... Do not output committer / author email address at all.
+  email: "mailto-js"
+
   # You can set repository's category by creating `category` file in $GIT_DIR or
   # setting `gitweb.category` git config.
   # https://git-scm.com/docs/gitweb#Documentation/gitweb.txt-categoryorgitwebcategory

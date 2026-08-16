@@ -10,6 +10,10 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+const (
+	defaultEmailFormat = "mailto-js"
+)
+
 var staticDirRevision string
 
 type Config struct {
@@ -49,6 +53,7 @@ type Config struct {
 			Default  string   `yaml:"default"`
 			Order    []string `yaml:"order"`
 		}
+		Email  string `yaml:"email"`
 		Footer struct {
 			Links []struct {
 				Text string `yaml:"text"`
@@ -84,6 +89,8 @@ func NewWithDefaults() *Config {
 
 	c.Meta.Title = "Repositories"
 	c.StaticDirRevision = staticDirRevision
+
+	c.UI.Email = defaultEmailFormat
 
 	return &c
 }
@@ -146,6 +153,19 @@ func (c *Config) Resolve(cwd string) error {
 
 	if c.UI.CommitsPageSize == 0 {
 		c.UI.CommitsPageSize = 30
+	}
+
+	if c.UI.Email == "" {
+		c.UI.Email = defaultEmailFormat
+	}
+
+	switch c.UI.Email {
+	case "mailto":
+	case "mailto-js":
+	case "obfuscate":
+	case "none":
+	default:
+		return fmt.Errorf("\"%s\" is not a valid email display format, choose from [mailto, mailto-js, obfuscate, none]", c.UI.Email)
 	}
 
 	if c.Server.Host == "" {

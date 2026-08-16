@@ -1,0 +1,24 @@
+<!--
+Copyright 2026 Shota FUJI <pockawoooh@gmail.com>
+SPDX-License-Identifier: MIT
+
+JavaScript for "mailto-js" email format.
+Expects object with ".Config" field for data pipeline.
+-->
+{{ define "commit-signature-script" -}}
+{{- if eq .Config.UI.Email "mailto-js" -}}
+<script type="module">
+document.querySelectorAll("[data-signature-id-user][data-signature-id-domain]").forEach(el => {
+	const textContent = el.textContent;
+	const username = el.dataset.signatureIdUser;
+	const domain = el.dataset.signatureIdDomain;
+	if (username && domain) {
+		const a = document.createElement("a");
+		a.href = "mailto:" + username + "@" + domain;
+		a.textContent = textContent;
+		el.replaceWith(a);
+	}
+})
+</script>
+{{- end -}}
+{{- end -}}
