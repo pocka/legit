@@ -37,7 +37,10 @@ func Commits(repo *git.Repository, rev plumbing.Hash, opts CommitsOptions) ([]*o
 }
 
 func commitsFromTip(repo *git.Repository, rev plumbing.Hash, opts CommitsOptions) ([]*object.Commit, CommitsPageMeta, error) {
-	ci, err := repo.Log(&git.LogOptions{From: rev})
+	ci, err := repo.Log(&git.LogOptions{
+		From:  rev,
+		Order: git.LogOrderCommitterTime,
+	})
 	if err != nil {
 		return nil, CommitsPageMeta{}, fmt.Errorf("commits from ref: %w", err)
 	}
@@ -71,7 +74,8 @@ func commitsFromTip(repo *git.Repository, rev plumbing.Hash, opts CommitsOptions
 
 func commitsBefore(repo *git.Repository, opts CommitsOptions) ([]*object.Commit, CommitsPageMeta, error) {
 	ci, err := repo.Log(&git.LogOptions{
-		From: opts.Before,
+		From:  opts.Before,
+		Order: git.LogOrderCommitterTime,
 	})
 	if err != nil {
 		return nil, CommitsPageMeta{}, fmt.Errorf("commits from ref: %w", err)
@@ -103,7 +107,10 @@ func commitsBefore(repo *git.Repository, opts CommitsOptions) ([]*object.Commit,
 }
 
 func commitsAfter(repo *git.Repository, rev plumbing.Hash, opts CommitsOptions) ([]*object.Commit, CommitsPageMeta, error) {
-	ci, err := repo.Log(&git.LogOptions{From: rev})
+	ci, err := repo.Log(&git.LogOptions{
+		From:  rev,
+		Order: git.LogOrderCommitterTime,
+	})
 	if err != nil {
 		return nil, CommitsPageMeta{}, fmt.Errorf("commits from ref: %w", err)
 	}
