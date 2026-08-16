@@ -5,6 +5,12 @@ SPDX-License-Identifier: MIT
 
 # Changelog
 
+## v1.2.1
+
+### Security
+
+- Fixed XSS in raw preview of attacker controlled HTML file.
+
 ## v1.2.0
 
 ### New Features
