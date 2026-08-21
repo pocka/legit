@@ -5,6 +5,27 @@ SPDX-License-Identifier: MIT
 
 # Changelog
 
+## v1.3.0 - 2026-08-21
+
+### New Features
+
+- Added `ui.email` config option as a countermeasure against email spammers.
+- Raw page for SVG files now returns `image/svg+xml` rather than `text/plain`, to allow browsers to render the image.
+
+### Bug Fixes
+
+- Fixed certain parent commits are not displayed for a multiple parent commit. (e.g., commit created by `jj new x y`)
+- Fixed relative link in HTML preview of Markdown files inside a directory (e.g., `foo/bar.md`) pointing a nonexistent path.
+
+### Security
+
+- Return `X-Content-Type-Options: nosiff` HTTP header on raw pages to prevent browsers from MIME sniffing (change content type based on file content, instead of the `Content-Type` returned by server.)
+
+### Other Changes
+
+- Opening a link to another Markdown file now opens HTML preview of the file, rather than source code view.
+- Email address of commit author and committer is not available on HTML. Let client-side JavaScript restores the data, or you can restore the previous spammer-friendly behavior by setting `ui.email` to `"mailto"`.
+
 ## v1.2.1 - 2026-08-16
 
 ### Security

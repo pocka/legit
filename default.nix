@@ -8,7 +8,7 @@
 }:
 buildGoModule (finalAttrs: {
   name = "legit";
-  version = "1.2.1";
+  version = "1.3.0";
 
   src =
     with lib.fileset;
