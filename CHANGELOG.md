@@ -5,13 +5,13 @@ SPDX-License-Identifier: MIT
 
 # Changelog
 
-## v1.2.1
+## v1.2.1 - 2026-08-16
 
 ### Security
 
 - Fixed XSS in raw preview of attacker controlled HTML file.
 
-## v1.2.0
+## v1.2.0 - 2026-08-08
 
 ### New Features
 
@@ -30,7 +30,7 @@ SPDX-License-Identifier: MIT
 
 - Reduced reflow / screen flickering on commit page.
 
-## v1.1.0
+## v1.1.0 - 2026-08-02
 
 ### New Features
 
@@ -58,7 +58,7 @@ SPDX-License-Identifier: MIT
 - Added `-compileTemplatesOnRequest`, `-dirs.static` and `-dirs.templates` CLI flags.
 - Fixed links that always 307 redirects due to lack of trailing slash.
 
-## v1.0.0
+## v1.0.0 - 2026-07-19
 
 This entry states changes from the original legit.
 
